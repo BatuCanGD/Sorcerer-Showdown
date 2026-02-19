@@ -1,9 +1,5 @@
-#include <iostream>
-#include <memory>
-#include <random>
-
+import std;
 using namespace std;
-
 
 class Shikigami;
 class Sorcerer;
@@ -14,9 +10,6 @@ class Agito;
 
 struct CombatContext;
 
-
-
-
 class Character { // base classes
 protected:
 	double health;
@@ -25,6 +18,7 @@ public:
 	Character(double hp) {
 		health = hp;
 	}
+	virtual ~Character() = default;
 
 	void Damage(double h) {
 		health -= h;
@@ -47,8 +41,8 @@ public:
 class Domain{
 protected:
 	double domain_health = 200.0;
-	int base_range = 15;
-	int current_range = 15;
+	const double base_range = 15;
+	double current_range = 15;
 	bool clashing = false;
 public:
 	virtual ~Domain() = default;
@@ -59,37 +53,37 @@ public:
 	void SetClashState(bool a) {
 		clashing = a;
 	}
-
-	virtual void OnSureHit(Sorcerer& target) = 0;
-};
-
-struct CombatContext {
-	bool is_amplification_active;
-
-	void SetDomainAmplification(bool t) {
-		is_amplification_active = t;
+	
+	double DomainRangeMult()const {
+		return current_range / base_range;
 	}
+
+	virtual void OnSureHit(Character& target) = 0;
+};
+class Technique {
+public:
+	enum class Status {Usable,DomainBoost,BurntOut};
+protected:
+	const double base_output = 10.0;
+	Status state = Status::Usable;
+public:
+	virtual ~Technique() = default;
+
+	void Set(Status s) { state = s; }
+	Status GetStatus() const { return state; }
 };
 
 class Sorcerer : public Character{ 
 protected:
 	double cursed_energy;
+	
+	unique_ptr<Domain> domain;
+	unique_ptr<Technique> technique;
+
+	bool domain_active = false;
 	int domain_limit = 5;
 
-	std::unique_ptr<Domain> domain;
-	bool domain_active = false;
-
-	enum class Technique {
-		Usable,
-		DomainBoost,
-		BurntOut
-	};
-	Technique technique_state = Technique::Usable;
-	enum class DomainState {
-		Inactive,
-		Active,
-	};
-	DomainState domain_state = DomainState::Inactive;
+	bool domain_amplification_active = false;
 	enum class ReverseCT {
 		Disabled,
 		Active,
@@ -101,16 +95,12 @@ public:
 		cursed_energy = ce;
 	}
 	
-
 	bool DomainActive() const {
 		return domain_active;
 	}
 	Domain* GetDomain() {
 		return domain.get();
 	}
-
-
-
 
 	void DisableRCT() {
 		rct_state = ReverseCT::Disabled;
@@ -122,40 +112,13 @@ public:
 		rct_state = ReverseCT::Overdrive;
 	}
 
-
 	void DeactivateDomain() {
-		domain_state = DomainState::Inactive;
-		BurntOut();
+		domain_active = false;
 	}
 	void ActivateDomain() {
-		domain_state = DomainState::Active;
-	}
-	bool DomainIsActive()const{
-		return domain_state == DomainState::Active;
+		domain_active = true;
 	}
 
-	
-
-
-	void BurntOut() {
-		technique_state = Technique::BurntOut;
-
-	}
-	bool IsBurntOut() const {
-		return technique_state == Technique::BurntOut;
-	}
-	void Boosted() {
-		technique_state = Technique::DomainBoost;
-	}
-	bool IsBoosted() const {
-		return technique_state == Technique::DomainBoost;
-	}
-	void Restore() {
-		technique_state = Technique::Usable;
-	}
-	bool IsRestored() const {
-		return technique_state == Technique::Usable;
-	}
 
 	double GetSorcererCE() const {
 		return cursed_energy;
@@ -175,9 +138,9 @@ class InfiniteVoid : public Domain { // domains
 protected:
 	static constexpr double surehit_braindamage = 30.0;
 public:
-	void OnSureHit(Sorcerer& target) {
+	void OnSureHit(Character& target) {
 		if (clashing) return;
-		target.Damage(surehit_braindamage);
+		target.Damage(surehit_braindamage * DomainRangeMult());
 		target.SetStunState(true);
 	}
 };
@@ -185,9 +148,9 @@ class MalevolentShrine : public Domain {
 protected:
 	static constexpr double surehit_slashdamage = 75.0;
 public:
-	void OnSureHit(Sorcerer& target) {
+	void OnSureHit(Character& target) {
 		if (clashing) return;
-		target.Damage(surehit_slashdamage);
+		target.Damage(surehit_slashdamage * DomainRangeMult());
 	}
 };
 
@@ -236,7 +199,7 @@ public:
 class Gojo : public Sorcerer { // fighters
 public:
 	Gojo() : Sorcerer(400.0, 4000.0) {
-		domain = std::make_unique<InfiniteVoid>();
+		domain = make_unique<InfiniteVoid>();
 	}
 };
 
@@ -249,11 +212,10 @@ protected:
 	};
 	Understanding techknow = Understanding::None;
 public:
-	Sukuna() : Sorcerer(500.0, 12000.0) {
-		domain = std::make_unique<MalevolentShrine>();
+	Sukuna() : Sorcerer(800.0, 12000.0) {
+		domain = make_unique<MalevolentShrine>();
 	}
 };
-
 
 int main() { // main
 	Gojo gojo;
