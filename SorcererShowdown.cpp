@@ -13,10 +13,11 @@ struct CombatContext;
 class Character { // base classes
 protected:
 	double health;
+	double cursed_energy;
 	bool is_stunned = false;
 public:
-	Character(double hp) {
-		health = hp;
+	Character(double hp, double ce) {
+		health = hp; cursed_energy = ce;
 	}
 	virtual ~Character() = default;
 
@@ -25,6 +26,16 @@ public:
 	}
 	void Regen(double h) {
 		health += h;
+	}
+
+	double GetCharacterCE() const {
+		return cursed_energy;
+	}
+	void SpendCE(double c) {
+		cursed_energy -= c;
+	}
+	void RegenCE(double c) {
+		cursed_energy += c;
 	}
 
 	void SetStunState(bool s) {
@@ -60,6 +71,7 @@ public:
 
 	virtual void OnSureHit(Character& target) = 0;
 };
+
 class Technique {
 public:
 	enum class Status {Usable,DomainBoost,BurntOut};
@@ -73,10 +85,35 @@ public:
 	Status GetStatus() const { return state; }
 };
 
+class Limitless : public Technique {
+protected:
+	enum class BlueChants {
+
+	};
+	enum class RedChants {
+
+	};
+	enum class PurpleChants {
+
+	};
+};
+class Shrine : public Technique {
+protected:
+	bool world_cutting_slash_allowed = false;
+public:
+
+
+	void SetWCS(bool s) {
+		world_cutting_slash_allowed = s;
+	}
+};
+
+
+
+
+
 class Sorcerer : public Character{ 
 protected:
-	double cursed_energy;
-	
 	unique_ptr<Domain> domain;
 	unique_ptr<Technique> technique;
 
@@ -91,9 +128,7 @@ protected:
 	};
 	ReverseCT rct_state = ReverseCT::Disabled;
 public:
-	Sorcerer(double hp, double ce) : Character(hp) {
-		cursed_energy = ce;
-	}
+	Sorcerer(double hp, double ce) : Character(hp, ce) {}
 	
 	bool DomainActive() const {
 		return domain_active;
@@ -117,17 +152,6 @@ public:
 	}
 	void ActivateDomain() {
 		domain_active = true;
-	}
-
-
-	double GetSorcererCE() const {
-		return cursed_energy;
-	}
-	void SpendCE(double c) {
-		cursed_energy -= c;
-	}
-	void RegenCE(double c) {
-		cursed_energy += c;
 	}
 
 	virtual ~Sorcerer() = default;
@@ -167,7 +191,7 @@ protected:
 	};
 	ShikigamiStatus shikigami_stats = ShikigamiStatus::Shadow;
 public:
-	Shikigami(double hp) : Character(hp) {}
+	Shikigami(double hp, double ce) : Character(hp, ce) {}
 
 	void PartiallyManifest() {
 		shikigami_stats = ShikigamiStatus::PartialManifestation;
@@ -187,11 +211,11 @@ public:
 
 class Mahoraga : public Shikigami {
 public:
-	Mahoraga() : Shikigami(500.0) {}
+	Mahoraga() : Shikigami(500.0, 1000.0) {}
 };
 class Agito : public Shikigami {
 public:
-	Agito() : Shikigami(200.0) {}
+	Agito() : Shikigami(200.0, 1000.0) {}
 };
 
 
