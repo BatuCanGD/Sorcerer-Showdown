@@ -226,6 +226,9 @@ protected:
 		FourthSpin
 	};
 	InfinityAdaptation InfStage = InfinityAdaptation::None;
+
+
+
 public:
 
 	void Adapt() {
@@ -259,10 +262,13 @@ public:
 	Agito() : Shikigami(200.0, 1000.0) {}
 protected:
 	const double passive_heal_amount = 10.0;
-	const double passive_regen_amount = 20.0;
+	const double summon_amount = 20.0;
 public:
-	void PassiveSupport() {
-		
+	void PassiveSupport(Sorcerer* user) {
+		if (this->IsActive()) {
+			user->Regen(passive_heal_amount);
+			user->SpendCE(summon_amount);
+		}
 	}
 };
 
@@ -291,7 +297,7 @@ public:
 	}
 };
 
-struct CombatContext {
+struct CombatContext { // use for special interactions and checks
 	void WorldCuttingSlashReady(Sorcerer* user) {
 		const auto& shikigami_list = user->GetShikigami();
 		for (const auto& s : shikigami_list) {
@@ -313,6 +319,8 @@ struct CombatContext {
 int main() { // main
 	Gojo gojo;
 	Sukuna sukuna;
+	println("unfinished");
+	println("press enter to end the game...");
+	cin.ignore();
 	return 0;
-
 }
