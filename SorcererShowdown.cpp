@@ -101,8 +101,6 @@ class Shrine : public Technique {
 protected:
 	bool world_cutting_slash_allowed = false;
 public:
-
-
 	void SetWCS(bool s) {
 		world_cutting_slash_allowed = s;
 	}
@@ -114,8 +112,8 @@ public:
 
 class Sorcerer : public Character{ 
 protected:
-	unique_ptr<Domain> domain;
-	unique_ptr<Technique> technique;
+	unique_ptr<Domain> domain = nullptr;
+	unique_ptr<Technique> technique = nullptr;
 
 	bool domain_active = false;
 	int domain_limit = 5;
@@ -128,7 +126,8 @@ protected:
 	};
 	ReverseCT rct_state = ReverseCT::Disabled;
 public:
-	Sorcerer(double hp, double ce) : Character(hp, ce) {}
+	Sorcerer(double hp, double ce) 
+		: Character(hp, ce) {}
 	
 	bool DomainActive() const {
 		return domain_active;
@@ -136,6 +135,12 @@ public:
 	Domain* GetDomain() {
 		return domain.get();
 	}
+	Technique* GetTechnique() {
+		return technique.get();
+	}
+
+
+
 
 	void DisableRCT() {
 		rct_state = ReverseCT::Disabled;
@@ -184,6 +189,7 @@ public:
 
 class Shikigami : public Character {
 protected:
+	int active_turn_amount = 0;
 	enum class ShikigamiStatus {
 		Shadow,
 		PartialManifestation,
@@ -212,7 +218,49 @@ public:
 class Mahoraga : public Shikigami {
 public:
 	Mahoraga() : Shikigami(500.0, 1000.0) {}
+protected:
+	enum class InfinityAdaptation {
+		None,
+		FirstSpin,
+		SecondSpin,
+		ThirdSpin,
+		FourthSpin
+	};
+	InfinityAdaptation InfStage = InfinityAdaptation::None;
+public:
+
+	void Adapt() {
+		if (!IsActive()) return;
+
+		if (active_turn_amount >= 50) {
+			InfStage = InfinityAdaptation::FourthSpin;
+		}
+		else if(active_turn_amount >= 40){
+			InfStage = InfinityAdaptation::ThirdSpin;
+		}
+		else if (active_turn_amount >= 25) {
+			InfStage = InfinityAdaptation::SecondSpin;
+		}
+		else if (active_turn_amount >= 10) {
+			InfStage = InfinityAdaptation::FirstSpin;
+		}
+		else {
+			InfStage = InfinityAdaptation::None;
+		}
+	}
+
+	void ActiveTimeIncrementor() {
+		if (!IsActive()) return;
+		active_turn_amount++;
+	}
+
+	bool FullyAdaptedToInfinity()const{
+		return InfStage == InfinityAdaptation::FourthSpin;
+	}
+
 };
+
+
 class Agito : public Shikigami {
 public:
 	Agito() : Shikigami(200.0, 1000.0) {}
@@ -240,6 +288,29 @@ public:
 		domain = make_unique<MalevolentShrine>();
 	}
 };
+
+struct CombatContext {
+
+	void WordlCuttingSlashReady(Mahoraga& m, Sorcerer* user) {
+		if (m.FullyAdaptedToInfinity()){
+			Shrine* shrinePtr = dynamic_cast<Shrine*>(user->GetTechnique());
+
+			if (shrinePtr != nullptr) {
+				shrinePtr->SetWCS(true);
+				println("The blueprint is complete. World Cutting Slash enabled!");
+			}	
+		}
+	}
+
+};
+
+
+
+
+
+
+
+
 
 int main() { // main
 	Gojo gojo;
