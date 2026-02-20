@@ -292,7 +292,7 @@ public:
 };
 
 struct CombatContext {
-	void WorldCuttingSlashReady(Mahoraga& m, Sorcerer* user) {
+	void WorldCuttingSlashReady(Sorcerer* user) {
 		const auto& shikigami_list = user->GetShikigami();
 		for (const auto& s : shikigami_list) {
 			Mahoraga* m = dynamic_cast<Mahoraga*>(s.get());
@@ -314,4 +314,5 @@ int main() { // main
 	Gojo gojo;
 	Sukuna sukuna;
 	return 0;
+
 }
