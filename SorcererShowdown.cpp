@@ -209,6 +209,11 @@ public:
 		shikigami_stats = ShikigamiStatus::Shadow;
 	}
 
+	void ActiveTimeIncrementor() {
+		if (!IsActive()) return;
+		active_turn_amount++;
+	}
+
 	bool IsActive() const {
 		return shikigami_stats == ShikigamiStatus::PartialManifestation ||
 				shikigami_stats == ShikigamiStatus::Manifested;
@@ -247,11 +252,6 @@ public:
 		else {
 			InfStage = InfinityAdaptation::None;
 		}
-	}
-
-	void ActiveTimeIncrementor() {
-		if (!IsActive()) return;
-		active_turn_amount++;
 	}
 
 	bool FullyAdaptedToInfinity()const{
@@ -303,12 +303,6 @@ struct CombatContext {
 	}
 
 };
-
-
-
-
-
-
 
 
 
