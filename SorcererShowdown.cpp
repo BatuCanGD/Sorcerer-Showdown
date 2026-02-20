@@ -15,6 +15,7 @@ protected:
 	double health;
 	double cursed_energy;
 	bool is_stunned = false;
+	bool is_heavenly_restricted = false;
 public:
 	Character(double hp, double ce) {
 		health = hp; cursed_energy = ce;
@@ -87,14 +88,12 @@ public:
 
 class Limitless : public Technique {
 protected:
-	enum class BlueChants {
-
-	};
-	enum class RedChants {
-
-	};
-	enum class PurpleChants {
-
+	enum class TechniqueChants {
+		None,
+		FirstChant,
+		SecondChant,
+		ThirdChant,
+		FourthChant
 	};
 };
 class Shrine : public Technique {
@@ -106,14 +105,11 @@ public:
 	}
 };
 
-
-
-
-
 class Sorcerer : public Character{ 
 protected:
 	unique_ptr<Domain> domain = nullptr;
 	unique_ptr<Technique> technique = nullptr;
+	vector<unique_ptr<Shikigami>> shikigami;
 
 	bool domain_active = false;
 	int domain_limit = 5;
@@ -138,9 +134,9 @@ public:
 	Technique* GetTechnique() {
 		return technique.get();
 	}
-
-
-
+	const vector<unique_ptr<Shikigami>>& GetShikigami() const {
+		return shikigami;
+	}
 
 	void DisableRCT() {
 		rct_state = ReverseCT::Disabled;
@@ -183,19 +179,17 @@ public:
 	}
 };
 
-
-
-
-
 class Shikigami : public Character {
 protected:
 	int active_turn_amount = 0;
+
 	enum class ShikigamiStatus {
 		Shadow,
 		PartialManifestation,
 		Manifested
 	};
 	ShikigamiStatus shikigami_stats = ShikigamiStatus::Shadow;
+
 public:
 	Shikigami(double hp, double ce) : Character(hp, ce) {}
 
@@ -260,18 +254,23 @@ public:
 
 };
 
-
 class Agito : public Shikigami {
 public:
 	Agito() : Shikigami(200.0, 1000.0) {}
+protected:
+	const double passive_heal_amount = 10.0;
+	const double passive_regen_amount = 20.0;
+public:
+	void PassiveSupport() {
+		
+	}
 };
-
-
 
 class Gojo : public Sorcerer { // fighters
 public:
 	Gojo() : Sorcerer(400.0, 4000.0) {
 		domain = make_unique<InfiniteVoid>();
+		technique = make_unique<Limitless>();
 	}
 };
 
@@ -286,22 +285,27 @@ protected:
 public:
 	Sukuna() : Sorcerer(800.0, 12000.0) {
 		domain = make_unique<MalevolentShrine>();
+		technique = make_unique<Shrine>();
+		shikigami.push_back(make_unique<Mahoraga>());
+		shikigami.push_back(make_unique<Agito>());
 	}
 };
 
 struct CombatContext {
-
-	void WordlCuttingSlashReady(Mahoraga& m, Sorcerer* user) {
-		if (m.FullyAdaptedToInfinity()){
-			Shrine* shrinePtr = dynamic_cast<Shrine*>(user->GetTechnique());
-
-			if (shrinePtr != nullptr) {
-				shrinePtr->SetWCS(true);
-				println("The blueprint is complete. World Cutting Slash enabled!");
-			}	
+	void WorldCuttingSlashReady(Mahoraga& m, Sorcerer* user) {
+		const auto& shikigami_list = user->GetShikigami();
+		for (const auto& s : shikigami_list) {
+			Mahoraga* m = dynamic_cast<Mahoraga*>(s.get());
+			if (m != nullptr && m->FullyAdaptedToInfinity()) {
+				Shrine* shrinePtr = dynamic_cast<Shrine*>(user->GetTechnique());
+				if (shrinePtr != nullptr) {
+					shrinePtr->SetWCS(true);
+					println("The blueprint is complete. World Cutting Slash enabled!");
+				}
+				return;
+			}
 		}
 	}
-
 };
 
 
@@ -309,7 +313,5 @@ struct CombatContext {
 int main() { // main
 	Gojo gojo;
 	Sukuna sukuna;
-	Mahoraga mahoraga;
-	Agito agito;
 	return 0;
 }
