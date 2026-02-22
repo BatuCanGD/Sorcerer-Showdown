@@ -17,11 +17,9 @@ protected:
 	bool is_stunned = false;
 	bool is_heavenly_restricted = false;
 public:
-	Character(double hp, double ce) {
-		health = hp; cursed_energy = ce;
-	}
 	virtual ~Character() = default;
-
+	Character(double hp, double ce) : health(hp), cursed_energy(ce) {}
+	
 	void Damage(double h) {
 		health -= h;
 	}
@@ -154,7 +152,9 @@ public:
 	void ActivateDomain() {
 		domain_active = true;
 	}
-
+	virtual string GetName() const {
+		return "Sorcerer";
+	}
 	virtual ~Sorcerer() = default;
 };
 
@@ -180,16 +180,15 @@ public:
 };
 
 class Shikigami : public Character {
-protected:
+public:
 	int active_turn_amount = 0;
-
+protected:
 	enum class ShikigamiStatus {
 		Shadow,
 		PartialManifestation,
 		Manifested
 	};
 	ShikigamiStatus shikigami_stats = ShikigamiStatus::Shadow;
-
 public:
 	Shikigami(double hp, double ce) : Character(hp, ce) {}
 
@@ -212,6 +211,8 @@ public:
 		return shikigami_stats == ShikigamiStatus::PartialManifestation ||
 				shikigami_stats == ShikigamiStatus::Manifested;
 	}
+
+	virtual void OnTurn() = 0;
 };
 
 class Mahoraga : public Shikigami {
@@ -226,9 +227,6 @@ protected:
 		FourthSpin
 	};
 	InfinityAdaptation InfStage = InfinityAdaptation::None;
-
-
-
 public:
 
 	void Adapt() {
@@ -255,6 +253,11 @@ public:
 		return InfStage == InfinityAdaptation::FourthSpin;
 	}
 
+	virtual void OnTurn() override {
+		ActiveTimeIncrementor();
+		Adapt();
+	}
+
 };
 
 class Agito : public Shikigami {
@@ -268,7 +271,11 @@ public:
 		if (this->IsActive()) {
 			user->Regen(passive_heal_amount);
 			user->SpendCE(summon_amount);
+			ActiveTimeIncrementor();
 		}
+	}
+	virtual void OnTurn() override { // forgot to add for agito
+		ActiveTimeIncrementor(); // reminder; dont forget to add the virtual functions
 	}
 };
 
@@ -277,6 +284,9 @@ public:
 	Gojo() : Sorcerer(400.0, 4000.0) {
 		domain = make_unique<InfiniteVoid>();
 		technique = make_unique<Limitless>();
+	}
+	virtual string GetName() const override {
+		return "Gojo";
 	}
 };
 
@@ -295,11 +305,14 @@ public:
 		shikigami.push_back(make_unique<Mahoraga>());
 		shikigami.push_back(make_unique<Agito>());
 	}
+	virtual string GetName() const override {
+		return "Sukuna";
+	}
 };
 
 struct CombatContext { // use for special interactions and checks
 	void WorldCuttingSlashReady(Sorcerer* user) {
-		const auto& shikigami_list = user->GetShikigami();
+		const auto& shikigami_list = user->GetShikigami(); // <- this keeps getting marked as an error but it works fine
 		for (const auto& s : shikigami_list) {
 			Mahoraga* m = dynamic_cast<Mahoraga*>(s.get());
 			if (m != nullptr && m->FullyAdaptedToInfinity()) {
@@ -317,8 +330,15 @@ struct CombatContext { // use for special interactions and checks
 
 
 int main() { // main
-	Gojo gojo;
-	Sukuna sukuna;
+	vector<unique_ptr<Sorcerer>> fighters;
+	fighters.push_back(make_unique<Gojo>());
+	fighters.push_back(make_unique<Sukuna>());
+
+	size_t index = 1;
+	for (const auto& fighter : fighters) {
+		println("fighter #{}: {}", index, fighter->GetName());
+		index++;
+	}
 	println("unfinished");
 	println("press enter to end the game...");
 	cin.ignore();
