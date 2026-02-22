@@ -120,8 +120,7 @@ protected:
 	};
 	ReverseCT rct_state = ReverseCT::Disabled;
 public:
-	Sorcerer(double hp, double ce) 
-		: Character(hp, ce) {}
+	Sorcerer(double hp, double ce) : Character(hp, ce) {}
 	
 	bool DomainActive() const {
 		return domain_active;
@@ -180,9 +179,9 @@ public:
 };
 
 class Shikigami : public Character {
-public:
-	int active_turn_amount = 0;
 protected:
+	int active_turn_amount = 0;
+
 	enum class ShikigamiStatus {
 		Shadow,
 		PartialManifestation,
@@ -271,7 +270,6 @@ public:
 		if (this->IsActive()) {
 			user->Regen(passive_heal_amount);
 			user->SpendCE(summon_amount);
-			ActiveTimeIncrementor();
 		}
 	}
 	virtual void OnTurn() override { // forgot to add for agito
