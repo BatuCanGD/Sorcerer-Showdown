@@ -18,7 +18,11 @@ protected:
 	bool is_heavenly_restricted = false;
 public:
 	virtual ~Character() = default;
-	Character(double hp, double ce) : health(hp), cursed_energy(ce) {}
+	Character(double hp, double ce) :
+		health(hp), 
+		cursed_energy(ce), 
+		is_heavenly_restricted(cursed_energy <= 0.0) {
+	}
 	
 	void Damage(double h) {
 		health -= h;
