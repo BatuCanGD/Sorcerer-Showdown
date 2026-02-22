@@ -20,7 +20,7 @@ public:
 	virtual ~Character() = default;
 	Character(double hp, double ce) :
 		health(hp), 
-		cursed_energy(ce), 
+		cursed_energy(ce),
 		is_heavenly_restricted(cursed_energy <= 0.0) {
 	}
 	
@@ -47,8 +47,12 @@ public:
 	double GetCharacterHealth() const {
 		return health;
 	}
+
 	bool IsCharacterStunned() const {
 		return is_stunned;
+	}
+	bool IsHeavenlyRestricted() const {
+		return is_heavenly_restricted;
 	}
 };
 
@@ -166,8 +170,8 @@ class InfiniteVoid : public Domain { // domains
 protected:
 	static constexpr double surehit_braindamage = 30.0;
 public:
-	void OnSureHit(Character& target) {
-		if (clashing) return;
+	void OnSureHit(Character& target) override {
+		if (clashing || target.IsHeavenlyRestricted()) return;
 		target.Damage(surehit_braindamage * DomainRangeMult());
 		target.SetStunState(true);
 	}
@@ -176,7 +180,7 @@ class MalevolentShrine : public Domain {
 protected:
 	static constexpr double surehit_slashdamage = 75.0;
 public:
-	void OnSureHit(Character& target) {
+	void OnSureHit(Character& target) override {
 		if (clashing) return;
 		target.Damage(surehit_slashdamage * DomainRangeMult());
 	}
@@ -256,7 +260,7 @@ public:
 		return InfStage == InfinityAdaptation::FourthSpin;
 	}
 
-	virtual void OnTurn() override {
+	void OnTurn() override {
 		ActiveTimeIncrementor();
 		Adapt();
 	}
@@ -276,18 +280,18 @@ public:
 			user->SpendCE(summon_amount);
 		}
 	}
-	virtual void OnTurn() override { // forgot to add for agito
+	void OnTurn() override { // forgot to add for agito
 		ActiveTimeIncrementor(); // reminder; dont forget to add the virtual functions
 	}
 };
 
 class Gojo : public Sorcerer { // fighters
 public:
-	Gojo() : Sorcerer(400.0, 4000.0) {
+	Gojo() : Sorcerer(800.0, 4000.0) {
 		domain = make_unique<InfiniteVoid>();
 		technique = make_unique<Limitless>();
 	}
-	virtual string GetName() const override {
+	string GetName() const override {
 		return "Gojo";
 	}
 };
@@ -307,7 +311,7 @@ public:
 		shikigami.push_back(make_unique<Mahoraga>());
 		shikigami.push_back(make_unique<Agito>());
 	}
-	virtual string GetName() const override {
+	string GetName() const override {
 		return "Sukuna";
 	}
 };
@@ -341,6 +345,7 @@ int main() { // main
 		println("fighter #{}: {}", index, fighter->GetName());
 		index++;
 	}
+	
 	println("unfinished");
 	println("press enter to end the game...");
 	cin.ignore();
