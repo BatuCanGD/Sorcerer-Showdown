@@ -1,1 +1,1 @@
-turn based console fighting game, extremely unfinished but will be modding compatible
+Planned to be a Moddable Turn-Based Jujutsu Kaisen console game
