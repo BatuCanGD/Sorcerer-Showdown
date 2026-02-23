@@ -15,6 +15,7 @@ protected:
 	double health;
 	double cursed_energy;
 	bool is_stunned = false;
+	int stun_duration = 2;
 	bool is_heavenly_restricted = false;
 public:
 	virtual ~Character() = default;
@@ -53,6 +54,16 @@ public:
 	}
 	bool IsHeavenlyRestricted() const {
 		return is_heavenly_restricted;
+	}
+
+	void ClearStunTime() {
+		if (stun_duration <= 0) {
+			is_stunned = false;
+			stun_duration = 2;
+		}
+		else {
+			stun_duration--;
+		}
 	}
 };
 
@@ -118,7 +129,8 @@ protected:
 	vector<unique_ptr<Shikigami>> shikigami;
 
 	bool domain_active = false;
-	int domain_limit = 5;
+	const int domain_limit = 5;
+	int total_domain_uses = 0;
 
 	bool domain_amplification_active = false;
 	enum class ReverseCT {
@@ -155,12 +167,28 @@ public:
 
 	void DeactivateDomain() {
 		domain_active = false;
+		if (technique) {
+			technique->Set(Technique::Status::BurntOut);
+		}
 	}
-	void ActivateDomain() {
+	void ActivateDomain(Character* user) {
+		if (total_domain_uses >= domain_limit) {
+			user->Damage(50.0);
+			user->SetStunState(true);
+			println("You have overused your domain! You take 50 damage and are stunned for the next turn.");
+			return;
+		}
 		domain_active = true;
+		if(technique) {
+			technique->Set(Technique::Status::DomainBoost);
+		}
+		total_domain_uses++;
 	}
 	virtual string GetName() const {
 		return "Sorcerer";
+	}
+	virtual void OnSorcererTurn() { // use for custom AI and interactions / not meant for the player themselves
+		println("override this");
 	}
 	virtual ~Sorcerer() = default;
 };
@@ -294,6 +322,9 @@ public:
 	string GetName() const override {
 		return "Gojo";
 	}
+	void OnSorcererTurn() override {
+		println("go/jo");
+	}
 };
 
 class Sukuna : public Sorcerer { 
@@ -313,6 +344,9 @@ public:
 	}
 	string GetName() const override {
 		return "Sukuna";
+	}
+	void OnSorcererTurn() override {
+		println("fraudkuna");
 	}
 };
 
@@ -336,18 +370,16 @@ struct CombatContext { // use for special interactions and checks
 
 
 int main() { // main
-	vector<unique_ptr<Sorcerer>> fighters;
-	fighters.push_back(make_unique<Gojo>());
-	fighters.push_back(make_unique<Sukuna>());
+	vector<unique_ptr<Sorcerer>> sorcerers;
+	sorcerers.push_back(make_unique<Gojo>());
+	sorcerers.push_back(make_unique<Sukuna>());
 
-	size_t index = 1;
-	for (const auto& fighter : fighters) {
-		println("fighter #{}: {}", index, fighter->GetName());
-		index++;
-	}
+	println("-------The battle between {} sorcerers begin!-------", sorcerers.size());
+	println("-----------------------------------------------------");
+
 	
-	println("unfinished");
 	println("press enter to end the game...");
 	cin.ignore();
+
 	return 0;
 }
