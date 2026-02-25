@@ -413,10 +413,11 @@ int main() { // main
 			println("You have been defeated! Game Over.");
 			break;
 		}
-		else if (battlefield.size() == 0) {
+		else if (battlefield.size() <= 1) {
 			println("You have defeated all the sorcerers! Victory!");
 			break;
 		}
 	}
 	return 0;
 }
+
