@@ -247,7 +247,7 @@ public:
 				shikigami_stats == ShikigamiStatus::Manifested;
 	}
 
-	virtual void OnTurn() = 0;
+	virtual void OnShikigamiTurn() = 0;
 };
 
 class Mahoraga : public Shikigami {
@@ -288,7 +288,7 @@ public:
 		return InfStage == InfinityAdaptation::FourthSpin;
 	}
 
-	void OnTurn() override {
+	void OnShikigamiTurn() override {
 		ActiveTimeIncrementor();
 		Adapt();
 	}
@@ -308,7 +308,7 @@ public:
 			user->SpendCE(summon_amount);
 		}
 	}
-	void OnTurn() override { // forgot to add for agito
+	void OnShikigamiTurn() override { // forgot to add for agito
 		ActiveTimeIncrementor(); // reminder; dont forget to add the virtual functions
 	}
 };
@@ -323,7 +323,10 @@ public:
 		return "Gojo";
 	}
 	void OnSorcererTurn() override {
-		println("go/jo");
+		
+
+
+
 	}
 };
 
@@ -351,17 +354,22 @@ public:
 };
 
 struct CombatContext { // use for special interactions and checks
-	void WorldCuttingSlashReady(Sorcerer* user) {
-		const auto& shikigami_list = user->GetShikigami(); // <- this keeps getting marked as an error but it works fine
+
+
+	void WorldCuttingSlashReady(Sorcerer* user) {	
+		Technique* currentTech = user->GetTechnique();
+		Shrine* shrinePtr = dynamic_cast<Shrine*>(currentTech);
+		
+		if (shrinePtr == nullptr) return;
+
+		const auto& shikigami_list = user->GetShikigami();
 		for (const auto& s : shikigami_list) {
-			Mahoraga* m = dynamic_cast<Mahoraga*>(s.get());
-			if (m != nullptr && m->FullyAdaptedToInfinity()) {
-				Shrine* shrinePtr = dynamic_cast<Shrine*>(user->GetTechnique());
-				if (shrinePtr != nullptr) {
+			if (Mahoraga* m = dynamic_cast<Mahoraga*>(s.get())) {
+				if (m->FullyAdaptedToInfinity()) {
 					shrinePtr->SetWCS(true);
 					println("The blueprint is complete. World Cutting Slash enabled!");
+					return;
 				}
-				return;
 			}
 		}
 	}
@@ -370,16 +378,45 @@ struct CombatContext { // use for special interactions and checks
 
 
 int main() { // main
-	vector<unique_ptr<Sorcerer>> sorcerers;
-	sorcerers.push_back(make_unique<Gojo>());
-	sorcerers.push_back(make_unique<Sukuna>());
+	vector<unique_ptr<Sorcerer>> battlefield;
+	battlefield.push_back(make_unique<Sukuna>()); 
+	battlefield.push_back(make_unique<Gojo>()); 
+	battlefield.push_back(make_unique<Sukuna>()); 
+	Sorcerer* player = battlefield[0].get();
 
-	println("-------The battle between {} sorcerers begin!-------", sorcerers.size());
+	if (battlefield.size() < 2) {
+		println("Not enough sorcerers to start the fight");
+		return 1;
+	}
+
+	println("-------The battle between {} sorcerers begin!-------", battlefield.size());
 	println("-----------------------------------------------------");
 
 	
-	println("press enter to end the game...");
-	cin.ignore();
+	while (true) {
 
+		for (const auto& s : battlefield) {
+			if (battlefield[0] == s) {
+				println("-------Player's Turn-------");
+			}
+			else {
+				println("-------{}'s Turn-------", s->GetName());
+				s->OnSorcererTurn();
+			}
+		}
+
+
+		println("press enter to Continue...");
+		cin.ignore();
+
+		if (battlefield[0]->GetCharacterHealth() <= 0.0) {
+			println("You have been defeated! Game Over.");
+			break;
+		}
+		else if (battlefield.size() == 0) {
+			println("You have defeated all the sorcerers! Victory!");
+			break;
+		}
+	}
 	return 0;
 }
