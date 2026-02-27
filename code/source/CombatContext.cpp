@@ -2,6 +2,9 @@
 #include "Character.h"
 #include "Sorcerer.h"
 
+#include <print>
+
+
 void CombatContext::WorldCuttingSlashReady(Sorcerer* user) {
 	Technique* currentTech = user->GetTechnique();
 	Shrine* shrinePtr = dynamic_cast<Shrine*>(currentTech);

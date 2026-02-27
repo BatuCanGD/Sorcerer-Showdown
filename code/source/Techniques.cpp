@@ -1,6 +1,7 @@
 #include "Technique.h"
 #include "Sorcerer.h"
 #include "Character.h"
+#include <print>
 
 void Technique::Set(Status s) {
     state = s;

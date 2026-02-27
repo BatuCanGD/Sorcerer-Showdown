@@ -1,3 +1,7 @@
+#include <string>
+#include <vector>
+#include <memory>
+
 #include "Character.h"
 #include "Sorcerer.h"
 #include "Technique.h"
@@ -84,4 +88,8 @@ void Character::ClearStunTime() {
 	else {
 		stun_duration--;
 	}
+}
+
+string Character::GetName()const {
+	return "Character";
 }

@@ -28,6 +28,10 @@ bool Shikigami::IsActive() const {
             shikigami_stats == ShikigamiStatus::Manifested;
 }
 
+string Shikigami::GetName() const {
+    return "Shikigami";
+}
+
 // ------------- Mahoraga --------------
 
 Mahoraga::Mahoraga() : Shikigami(300.0, 1000.0) {}
@@ -60,6 +64,9 @@ void Mahoraga::OnShikigamiTurn() {
     ActiveTimeIncrementor();
     Adapt();
 }
+string Mahoraga::GetName() const {
+    return "Mahoraga";
+}
 
 // ---------- Agito ----------
 
@@ -70,8 +77,11 @@ void Agito::PassiveSupport(Sorcerer* user) {
         user->Regen(passive_heal_amount);
         user->SpendCE(summon_amount);
     }
-}
 
+}
+string Agito::GetName() const {
+    return "Agito";
+}
 void Agito::OnShikigamiTurn() {
     ActiveTimeIncrementor();
 }

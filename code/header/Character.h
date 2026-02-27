@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+
+using namespace std;
 
 class Sorcerer;
 
@@ -53,4 +56,6 @@ public:
 
 	bool IsCharacterStunned() const;
 	bool IsHeavenlyRestricted() const;
+
+	virtual string GetName() const;
 };

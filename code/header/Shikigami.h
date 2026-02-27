@@ -1,6 +1,9 @@
 #pragma once
+#include <string>
 #include "Character.h"
 #include "Sorcerer.h"
+
+using namespace std;
 
 class Shikigami : public Character {
 protected:
@@ -18,7 +21,8 @@ public:
 	void Withdraw();
 	void ActiveTimeIncrementor();
 	bool IsActive() const;
-	virtual void OnShikigamiTurn() = 0;
+	virtual void OnShikigamiTurn() = 0;		
+	string GetName() const override;
 };
 
 class Mahoraga : public Shikigami {
@@ -37,6 +41,7 @@ public:
 	void Adapt();
 	bool FullyAdaptedToInfinity()const;
 	void OnShikigamiTurn() override;
+	string GetName() const override;
 };
 
 class Agito : public Shikigami {
@@ -48,4 +53,5 @@ protected:
 public:
 	void PassiveSupport(Sorcerer* user);
 	void OnShikigamiTurn() override;
+	string GetName() const override;
 };

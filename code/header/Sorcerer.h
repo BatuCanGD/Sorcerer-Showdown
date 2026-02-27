@@ -1,4 +1,9 @@
 #pragma once
+
+#include <memory>
+#include <vector>
+#include <string>
+
 #include "Character.h"
 #include "Technique.h"
 #include "Domain.h"
@@ -8,14 +13,13 @@ class Shikigami;
 class Technique;
 class Domain;
 
-import std;
 using namespace std;
 
 class Sorcerer : public Character {
 protected:
-	std::unique_ptr<Domain> domain = nullptr;
-	std::unique_ptr<Technique> technique = nullptr;
-	std::vector<std::unique_ptr<Shikigami>> shikigami;
+	unique_ptr<Domain> domain = nullptr;
+	unique_ptr<Technique> technique = nullptr;
+	vector<unique_ptr<Shikigami>> shikigami;
 
 	bool domain_active = false;
 	const int domain_limit = 5;
@@ -34,14 +38,14 @@ public:
 	bool DomainActive() const;
 	Domain* GetDomain();
 	Technique* GetTechnique();
-	const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
+	const vector<unique_ptr<Shikigami>>& GetShikigami() const;
 
 	void DisableRCT();
 	void EnableRCT();
 	void BoostRCT();
 	void DeactivateDomain();
 	void ActivateDomain(Character* user);
-	virtual string GetName() const;
+	string GetName() const override;
 	virtual void OnSorcererTurn();
 	virtual ~Sorcerer() = default;
 };
