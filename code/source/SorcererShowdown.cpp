@@ -1,24 +1,36 @@
 #include "Character.h"
 #include "Sorcerer.h"
 #include "CombatContext.h"
-
+#include "Fighting.h"
+#include <print>
 import std;
 using namespace std;
 
 int main() { // main
 	vector<unique_ptr<Sorcerer>> battlefield;
-	battlefield.push_back(make_unique<Sukuna>()); 
-	battlefield.push_back(make_unique<Gojo>()); 
-	battlefield.push_back(make_unique<Sukuna>()); 
+	battlefield.push_back(make_unique<Sukuna>());
+	battlefield.push_back(make_unique<Gojo>());
+	battlefield.push_back(make_unique<Sukuna>());
+	battlefield.push_back(make_unique<Sukuna>());
 	Sorcerer* player = battlefield[0].get();
 
-	CombatContext combat;
-
+	CombatContext context;
+	FightActions fighting;
+	
 	if (battlefield.size() < 2) {
 		println("Not enough sorcerers to start the fight");
 		return 1;
 	}
-
+	else if (battlefield.size() == 2) {
+		println("Its just you and {}. Defeat him and win", battlefield[1].get()->GetName());
+	}
+	else if (battlefield.size() > 9) {
+		println("You, {}, {} and {} more are in the area. Defeat all the sorcerers to win", battlefield[1].get()->GetName(), battlefield[2].get()->GetName(), battlefield.size() - 3);
+	}
+	else {
+		println("You, {} and {} more sorcerers are near you. Defeat them all to win", battlefield[1].get()->GetName(), battlefield.size() - 2);
+	}
+	
 	println("-------The battle between {} sorcerers begin!-------", battlefield.size());
 	println("-----------------------------------------------------");
 
@@ -53,5 +65,5 @@ int main() { // main
 	}
 	println("press enter to end the game...");
 	cin.ignore();
-	return 0;
+	return 1;
 }
