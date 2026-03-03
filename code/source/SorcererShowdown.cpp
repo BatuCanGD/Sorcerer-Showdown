@@ -12,7 +12,8 @@ int main() { // main
 	vector<unique_ptr<Sorcerer>> battlefield;
 	battlefield.push_back(make_unique<Sukuna>());
 	battlefield.push_back(make_unique<Gojo>());
-	battlefield.push_back(make_unique<Sukuna>());
+	battlefield.push_back(make_unique<test>());
+	
 	battlefield[0].get()->SetAsPlayer(true);
 
 	CombatContext context;
@@ -44,11 +45,17 @@ int main() { // main
 			if (s->IsThePlayer()) {
 				println("-------Player's ({}'s) Turn-------", s.get()->GetName());
 				println("Health: {}, Cursed Energy: {}", s.get()->GetCharacterHealth(), s.get()->GetCharacterCE());
-				println("Domain: {} [{}], Technique: {} [{}]", 
-					s->GetDomain()->GetDomainName(), 
-					s->IsDomainActive() ? "Active" : "Inactive", 
-					s->GetTechnique()->GetTechniqueName(), 
-					s->GetTechnique()->GetStringStatus());
+				if (s->GetDomain() != nullptr) {
+					println("Domain: {} [{}]",
+						s->GetDomain()->GetDomainName(),
+						s->IsDomainActive() ? "Active" : "Inactive");
+				}
+				if (s->GetTechnique() != nullptr) {
+					println("Technique: {} [{}]",
+						s->GetTechnique()->GetTechniqueName(),
+						s->GetTechnique()->GetStringStatus());
+				}
+				println(" ");
 
 				println("player is the biggest fraud");
 
@@ -57,13 +64,19 @@ int main() { // main
 			else {
 				println("-------{}'s Turn-------", s->GetName());
 				println("Health: {}, Cursed Energy: {}", s->GetCharacterHealth(), s->GetCharacterCE());
-				println("Domain: {} [{}], Technique: {} [{}]",
-					s->GetDomain()->GetDomainName(),
-					s->IsDomainActive() ? "Active" : "Inactive",
-					s->GetTechnique()->GetTechniqueName(),
-					s->GetTechnique()->GetStringStatus());
+				if (s->GetDomain() != nullptr) {
+					println("Domain: {} [{}]",
+						s->GetDomain()->GetDomainName(),
+						s->IsDomainActive() ? "Active" : "Inactive");
+				}
+				if (s->GetTechnique() != nullptr) {
+					println("Technique: {} [{}]",
+						s->GetTechnique()->GetTechniqueName(),
+						s->GetTechnique()->GetStringStatus());
+				}
+				println(" ");
 
-					s->OnSorcererTurn();
+				s->OnSorcererTurn();
 
 				for (int i = 0; i < 2; i++) println(" ");
 			}

@@ -74,3 +74,13 @@ public:
 	std::string GetName() const override;
 	void OnSorcererTurn() override;
 };
+
+
+
+
+class test : public Sorcerer {
+public:
+	test();
+	std::string GetName() const override;
+	void OnSorcererTurn() override;
+};

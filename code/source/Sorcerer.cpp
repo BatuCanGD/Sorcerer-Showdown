@@ -100,3 +100,15 @@ std::string Sukuna::GetName() const {
 void Sukuna::OnSorcererTurn() {
     std::println("fraudkuna");
 }
+
+/// for testing stuff, use this class
+
+test::test() : Sorcerer(500.0, 2000.0) {
+}
+
+void test::OnSorcererTurn() {
+    std::println("test");
+}
+std::string test::GetName() const {
+    return "test";
+}
