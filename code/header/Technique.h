@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class Sorcerer;
 class Character;
 
@@ -13,6 +15,8 @@ public:
 	virtual ~Technique() = default;
 	void Set(Status s);
 	Status GetStatus() const;
+	std::string GetStringStatus() const;
+	virtual std::string GetTechniqueName() const = 0;
 };
 
 class Limitless : public Technique { // LIMITLESS
@@ -32,6 +36,7 @@ public:
 	double PurpleTechniqueDamageTarget(Sorcerer* user, Character* target);
 	double GetTechniqueOutput() const;
 	void UseTheLimitlessTechnique(int choice, Sorcerer* s, Character* c);
+	std::string GetTechniqueName() const override;
 };
 
 
@@ -41,4 +46,5 @@ protected:
 	bool world_cutting_slash_allowed = false;
 public:
 	void SetWCS(bool s);
+	std::string GetTechniqueName() const override;
 };

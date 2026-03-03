@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 
 class Character;
 class Sorcerer;
@@ -15,6 +17,7 @@ public:
 	void SetClashState(bool a);
 	double DomainRangeMult()const;
 	virtual void OnSureHit(Character& target) = 0;
+	virtual std::string GetDomainName() const = 0;
 };
 
 
@@ -23,10 +26,12 @@ protected:
 	static constexpr double surehit_braindamage = 30.0;
 public:
 	void OnSureHit(Character& target) override;
+	std::string GetDomainName() const override;
 };
 class MalevolentShrine : public Domain {
 protected:
 	static constexpr double surehit_slashdamage = 75.0;
 public:
 	void OnSureHit(Character& target) override;
+	std::string GetDomainName() const override;
 };

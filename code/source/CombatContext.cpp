@@ -16,7 +16,7 @@ void CombatContext::WorldCuttingSlashReady(Sorcerer* user) {
 		if (Mahoraga* m = dynamic_cast<Mahoraga*>(s.get())) {
 			if (m->FullyAdaptedToInfinity()) {
 				shrinePtr->SetWCS(true);
-				println("The blueprint is complete. World Cutting Slash enabled!");
+				std::println("The blueprint is complete. World Cutting Slash enabled!");
 				return;
 			}
 		}

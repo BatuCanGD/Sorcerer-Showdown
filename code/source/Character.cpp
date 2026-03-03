@@ -90,6 +90,6 @@ void Character::ClearStunTime() {
 	}
 }
 
-string Character::GetName()const {
+std::string Character::GetName()const {
 	return "Character";
 }

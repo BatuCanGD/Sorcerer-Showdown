@@ -1,8 +1,6 @@
 #pragma once
 #include <string>
 
-using namespace std;
-
 class Sorcerer;
 
 class Character { 
@@ -57,5 +55,5 @@ public:
 	bool IsCharacterStunned() const;
 	bool IsHeavenlyRestricted() const;
 
-	virtual string GetName() const;
+	virtual std::string GetName() const;
 };

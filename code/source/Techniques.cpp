@@ -11,6 +11,19 @@ Technique::Status Technique::GetStatus() const {
     return state;
 }
 
+std::string Technique::GetTechniqueName() const {
+    return "Technique";
+}
+
+std::string Technique::GetStringStatus() const {
+    switch (state) {
+	case Status::Usable:      return "Usable";
+	case Status::DomainBoost: return "Output Boosted";
+	case Status::BurntOut:    return "Burnt Out";
+    default:                  return "Unknown State";
+    }
+}
+
 // ---------------- Limitless -------------------
 
 double Limitless::GetTechniqueOutput() const {
@@ -27,7 +40,7 @@ double Limitless::CalculateDamage(Sorcerer* user, double cost) {
     double currentCE = user->GetCharacterCE();
 
     if (currentCE < cost) {
-        println("Insufficient Cursed Energy! Output weakened.");
+        std::println("Insufficient Cursed Energy! Output weakened.");
         user->SpendCE(currentCE); 
         return currentCE * multiplier;
     }
@@ -68,12 +81,21 @@ void Limitless::UseTheLimitlessTechnique(int choice, Sorcerer* s, Character* c) 
 		Limitless::PurpleTechniqueDamageTarget(s, c);
         break;
     default:
-		println("Invalid input. No technique used.");
+        std::println("Invalid input. No technique used.");
     }
 }
+
+std::string Limitless::GetTechniqueName() const {
+    return "Limitless";
+}
+
 
 // ---------------- Shrine -------------------
 
 void Shrine::SetWCS(bool s) {
     world_cutting_slash_allowed = s;
+}
+
+std::string Shrine::GetTechniqueName() const {
+    return "Shrine";
 }

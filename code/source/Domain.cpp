@@ -15,6 +15,11 @@ double Domain::DomainRangeMult() const {
     return current_range / base_range;
 }
 
+std::string Domain::GetDomainName() const {
+	return "Domain";
+}
+
+
 // ---------------- Infinite Void ----------------
 
 void InfiniteVoid::OnSureHit(Character & target) {
@@ -22,10 +27,15 @@ void InfiniteVoid::OnSureHit(Character & target) {
     target.Damage(surehit_braindamage * DomainRangeMult());
     target.SetStunState(true);
 }
-
+std::string InfiniteVoid::GetDomainName() const {
+    return "Infinite Void";
+}
 // ---------------- Malevolent Shrine ----------------
 
 void MalevolentShrine::OnSureHit(Character & target) {
     if (clashing) return;
     target.Damage(surehit_slashdamage * DomainRangeMult());
+}
+std::string MalevolentShrine::GetDomainName() const {
+    return "Malevolent Shrine";
 }

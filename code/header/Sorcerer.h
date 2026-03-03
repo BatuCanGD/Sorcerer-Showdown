@@ -13,15 +13,14 @@ class Shikigami;
 class Technique;
 class Domain;
 
-using namespace std;
-
 class Sorcerer : public Character {
 protected:
-	unique_ptr<Domain> domain = nullptr;
-	unique_ptr<Technique> technique = nullptr;
-	vector<unique_ptr<Shikigami>> shikigami;
+	std::unique_ptr<Domain> domain = nullptr;
+	std::unique_ptr<Technique> technique = nullptr;
+	std::vector<std::unique_ptr<Shikigami>> shikigami;
 
 	bool domain_active = false;
+	bool is_player = false;
 	const int domain_limit = 5;
 	int total_domain_uses = 0;
 
@@ -38,14 +37,18 @@ public:
 	bool DomainActive() const;
 	Domain* GetDomain();
 	Technique* GetTechnique();
-	const vector<unique_ptr<Shikigami>>& GetShikigami() const;
+	const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
+	bool IsDomainActive() const;
+
+	bool IsThePlayer() const;
+	void SetAsPlayer(bool);
 
 	void DisableRCT();
 	void EnableRCT();
 	void BoostRCT();
 	void DeactivateDomain();
 	void ActivateDomain(Character* user);
-	string GetName() const override;
+	std::string GetName() const override;
 	virtual void OnSorcererTurn();
 	virtual ~Sorcerer() = default;
 };
@@ -54,7 +57,7 @@ public:
 class Gojo : public Sorcerer { // fighters
 public:
 	Gojo();
-	string GetName() const override;
+	std::string GetName() const override;
 	void OnSorcererTurn() override;
 };
 
@@ -68,6 +71,6 @@ protected:
 	Understanding techknow = Understanding::None;
 public:
 	Sukuna();
-	string GetName() const override;
+	std::string GetName() const override;
 	void OnSorcererTurn() override;
 };

@@ -7,7 +7,7 @@
 void FightActions::Attack(Character* user, Character* target) {
 	if (user->IsAttacking()) {
 		if (target->IsBlocking()) {
-			println("The attack was blocked!");
+			std::println("The attack was blocked!");
 			return;
 		}
 		target->Damage(basic_attack_damage);

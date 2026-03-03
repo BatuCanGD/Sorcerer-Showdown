@@ -14,7 +14,11 @@ Technique* Sorcerer::GetTechnique() {
     return technique.get();
 }
 
-const vector<unique_ptr<Shikigami>>& Sorcerer::GetShikigami() const {
+bool Sorcerer::IsDomainActive() const {
+    return domain_active;
+}
+
+const std::vector<std::unique_ptr<Shikigami>>& Sorcerer::GetShikigami() const {
     return shikigami;
 }
 
@@ -41,7 +45,7 @@ void Sorcerer::ActivateDomain(Character* user) {
     if (total_domain_uses >= domain_limit) {
         user->Damage(50.0);
         user->SetStunState(true);
-        println("You have overused your domain! You take 50 damage and are stunned for the next turn.");
+        std::println("You have overused your domain! You take 50 damage and are stunned for the next turn.");
         return;
     }
     domain_active = true;
@@ -51,42 +55,48 @@ void Sorcerer::ActivateDomain(Character* user) {
     total_domain_uses++;
 }
 
-string Sorcerer::GetName() const {
+std::string Sorcerer::GetName() const {
     return "Sorcerer";
 }
 
 void Sorcerer::OnSorcererTurn() {
-    println("override this");
+    std::println("override this");
 }
 
+bool Sorcerer::IsThePlayer() const {
+    return is_player;
+}
+void Sorcerer::SetAsPlayer(bool p) {
+    is_player = p;
+}
 // ---------------- Gojo -------------------
 
 Gojo::Gojo() : Sorcerer(800.0, 4000.0) {
-    domain = make_unique<InfiniteVoid>();
-    technique = make_unique<Limitless>();
+    domain = std::make_unique<InfiniteVoid>();
+    technique = std::make_unique<Limitless>();
 }
 
-string Gojo::GetName() const {
+std::string Gojo::GetName() const {
     return "Gojo";
 }
 
 void Gojo::OnSorcererTurn() {
-    println("go/jo");
+    std::println("go/jo");
 }
 
 // ---------------- Sukuna -------------------
 
 Sukuna::Sukuna() : Sorcerer(1000.0, 3000.0) {
-    domain = make_unique<MalevolentShrine>();
-    technique = make_unique<Shrine>();
-	shikigami.push_back(make_unique<Mahoraga>());
-	shikigami.push_back(make_unique<Agito>());
+    domain = std::make_unique<MalevolentShrine>();
+    technique = std::make_unique<Shrine>();
+	shikigami.push_back(std::make_unique<Mahoraga>());
+	shikigami.push_back(std::make_unique<Agito>());
 }
 
-string Sukuna::GetName() const {
+std::string Sukuna::GetName() const {
     return "Sukuna";
 }
 
 void Sukuna::OnSorcererTurn() {
-    println("fraudkuna");
+    std::println("fraudkuna");
 }

@@ -28,7 +28,7 @@ bool Shikigami::IsActive() const {
             shikigami_stats == ShikigamiStatus::Manifested;
 }
 
-string Shikigami::GetName() const {
+std::string Shikigami::GetName() const {
     return "Shikigami";
 }
 
@@ -64,7 +64,7 @@ void Mahoraga::OnShikigamiTurn() {
     ActiveTimeIncrementor();
     Adapt();
 }
-string Mahoraga::GetName() const {
+std::string Mahoraga::GetName() const {
     return "Mahoraga";
 }
 
@@ -79,7 +79,7 @@ void Agito::PassiveSupport(Sorcerer* user) {
     }
 
 }
-string Agito::GetName() const {
+std::string Agito::GetName() const {
     return "Agito";
 }
 void Agito::OnShikigamiTurn() {
