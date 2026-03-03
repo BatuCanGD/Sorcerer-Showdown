@@ -4,20 +4,20 @@
 #include "Fighting.h"
 
 #include <print>
+#include <vector>
 
 import std;
 using namespace std;
 
 int main() { // main
 	vector<unique_ptr<Sorcerer>> battlefield;
+	
+	
 	battlefield.push_back(make_unique<Sukuna>());
 	battlefield.push_back(make_unique<Gojo>());
-	battlefield.push_back(make_unique<test>());
+	battlefield.push_back(make_unique<Sukuna>());
 	
-	battlefield[0].get()->SetAsPlayer(true);
 
-	CombatContext context;
-	FightActions fighting;
 	if (battlefield.size() < 2) {
 		println("Not enough sorcerers to start the fight");
 		return 1;
@@ -26,11 +26,18 @@ int main() { // main
 		println("Its just you and {}. Defeat him and win", battlefield[1]->GetName());
 	}
 	else if (battlefield.size() > 9) {
-		println("You, {}, {} and {} more sorcerers are in the area. Defeat all of them to win", battlefield[1]->GetName(), battlefield[2]->GetName(), battlefield.size() - 3);
+		println("You, {}, and {} more sorcerers are in the area. Defeat all of them to win", battlefield[1]->GetName(), battlefield.size() - 2);
 	}
 	else {
-		println("You, {} and {} more sorcerers are near you. Defeat them all to win", battlefield[1]->GetName(), battlefield.size() - 2);
+		println("You and {} more sorcerers are near you. Defeat them all to win", battlefield.size() - 1);
 	}
+
+	battlefield[0].get()->SetAsPlayer(true); // set the first sorcerer inserted as the player
+
+	CombatContext context;
+	FightActions fighting;
+
+
 	
 	println("-------The battle between {} sorcerers begin!-------", battlefield.size());
 	println("-----------------------------------------------------");
