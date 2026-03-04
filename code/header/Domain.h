@@ -28,6 +28,7 @@ public:
 	void OnSureHit(Character& target) override;
 	std::string GetDomainName() const override;
 };
+
 class MalevolentShrine : public Domain {
 protected:
 	static constexpr double surehit_slashdamage = 75.0;

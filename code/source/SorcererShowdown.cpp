@@ -4,10 +4,12 @@
 #include "Fighting.h"
 
 #include <print>
-#include <vector>
 
 import std;
 using namespace std;
+
+void GetSorcererTechnique(Sorcerer*);
+void GetSorcererDomain(Sorcerer*);
 
 int main() { // main
 	vector<unique_ptr<Sorcerer>> battlefield;
@@ -15,7 +17,7 @@ int main() { // main
 	
 	battlefield.push_back(make_unique<Sukuna>());
 	battlefield.push_back(make_unique<Gojo>());
-	battlefield.push_back(make_unique<Sukuna>());
+	battlefield.push_back(make_unique<test>());
 	
 
 	if (battlefield.size() < 2) {
@@ -122,4 +124,27 @@ int main() { // main
 	println("press enter to end the game...");
 	cin.ignore();
 	return 0;
+}
+
+void GetSorcererTechnique(Sorcerer* user) {
+	if (user->GetTechnique() == nullptr) return;
+	
+	if (Limitless* limitless = dynamic_cast<Limitless*>(user->GetTechnique())) {
+
+	}
+	else if (Shrine* shrine = dynamic_cast<Shrine*>(user->GetTechnique())) {
+
+	}
+
+}
+void GetSorcererDomain(Sorcerer* user){
+	if (user->GetDomain() == nullptr) return;
+
+	if (InfiniteVoid* inf_void = dynamic_cast<InfiniteVoid*>(user->GetDomain())) {
+
+	}
+	else if (MalevolentShrine* mal_shr = dynamic_cast<MalevolentShrine*>(user->GetDomain())) {
+
+	}
+
 }

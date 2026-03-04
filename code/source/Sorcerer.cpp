@@ -103,7 +103,7 @@ void Sukuna::OnSorcererTurn() {
 
 /// for testing stuff, use this class
 
-test::test() : Sorcerer(500.0, 2000.0) {
+test::test() : Sorcerer(154.1, 154.1) {
 }
 
 void test::OnSorcererTurn() {
