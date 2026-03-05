@@ -66,7 +66,7 @@ int main() { // main
 				println("player is the biggest fraud");
 				println("1-use Blue, 2-use Red, 3-use Purple");
 				print("=> ");
-				GetSorcererTechnique(battlefield[0].get(), battlefield[1].get());
+				GetSorcererTechnique(s.get(), battlefield[1].get());
 
 
 
@@ -108,16 +108,13 @@ int main() { // main
 
 
 
-		for (const auto& c : battlefield) {
-			c->RegenCE();
-		}
 
 		bool player_found = false;
 		for (const auto& c : battlefield) {
 			if (c->IsThePlayer()) {
 				player_found = true;
-				break;
 			}
+			c->RegenCE();
 		}
 
 		

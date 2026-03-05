@@ -11,9 +11,8 @@ Character::Character(double hp, double ce, double regen)
 	: health(hp),
 	cursed_energy(ce),
 	max_cursed_energy(ce),
-	ce_regen_efficiency(regen)
-{
-    is_heavenly_restricted = (cursed_energy <= 0.0);
+	ce_regen_efficiency(regen),
+	is_heavenly_restricted(cursed_energy < 0.0) { // -1 or -0.01 or whatever you prefer to make a character heavenly restricted
 }
 
 
@@ -46,6 +45,7 @@ void Character::SpendCE(double c) {
 	cursed_energy -= c;
 }
 void Character::RegenCE() {
+	if (is_heavenly_restricted) return;
 	cursed_energy = std::min(cursed_energy + ce_regen_efficiency, max_cursed_energy);
 }
 double Character::GetMaxCharCE() const {
