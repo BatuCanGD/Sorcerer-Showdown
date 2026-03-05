@@ -71,7 +71,7 @@ void Sorcerer::SetAsPlayer(bool p) {
 }
 // ---------------- Gojo -------------------
 
-Gojo::Gojo() : Sorcerer(800.0, 4000.0) {
+Gojo::Gojo() : Sorcerer(800.0, 4000.0, 50.0) {
     domain = std::make_unique<InfiniteVoid>();
     technique = std::make_unique<Limitless>();
 }
@@ -86,7 +86,7 @@ void Gojo::OnSorcererTurn() {
 
 // ---------------- Sukuna -------------------
 
-Sukuna::Sukuna() : Sorcerer(1000.0, 3000.0) {
+Sukuna::Sukuna() : Sorcerer(1000.0, 12000.0, 100.0) {
     domain = std::make_unique<MalevolentShrine>();
     technique = std::make_unique<Shrine>();
 	shikigami.push_back(std::make_unique<Mahoraga>());
@@ -103,7 +103,7 @@ void Sukuna::OnSorcererTurn() {
 
 /// for testing stuff, use this class
 
-test::test() : Sorcerer(154.1, 154.1) {
+test::test() : Sorcerer(154.1, 154.1, 2.5) {
 }
 
 void test::OnSorcererTurn() {

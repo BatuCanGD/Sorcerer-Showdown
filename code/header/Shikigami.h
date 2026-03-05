@@ -13,7 +13,7 @@ protected:
 	};
 	ShikigamiStatus shikigami_stats = ShikigamiStatus::Shadow;
 public:
-	Shikigami(double hp, double ce);
+	Shikigami(double hp, double ce, double re);
 	void PartiallyManifest();
 	void Manifest();
 	void Withdraw();

@@ -7,11 +7,25 @@
 #include "Technique.h"
 
 
-Character::Character(double hp, double ce)
-    : health(hp), cursed_energy(ce)
+Character::Character(double hp, double ce, double regen)
+	: health(hp),
+	cursed_energy(ce),
+	max_cursed_energy(ce),
+	ce_regen_efficiency(regen)
 {
     is_heavenly_restricted = (cursed_energy <= 0.0);
 }
+
+
+void Character::SetHealth(double h) {
+	health = h;
+}
+
+void Character::SetCursedEnergy(double c) {
+	cursed_energy = c;
+}
+
+
 
 void Character::Damage(double h) {
     health -= h;
@@ -31,8 +45,11 @@ double Character::GetCharacterCE() const {
 void Character::SpendCE(double c) {
 	cursed_energy -= c;
 }
-void Character::RegenCE(double c) {
-	cursed_energy += c;
+void Character::RegenCE() {
+	cursed_energy = std::min(cursed_energy + ce_regen_efficiency, max_cursed_energy);
+}
+double Character::GetMaxCharCE() const {
+	return max_cursed_energy;
 }
 
 void Character::SetStunState(bool s) {

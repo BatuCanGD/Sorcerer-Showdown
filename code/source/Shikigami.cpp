@@ -3,7 +3,7 @@
 
 // --- Base Shikigami  ---
 
-Shikigami::Shikigami(double hp, double ce) : Character(hp, ce) {
+Shikigami::Shikigami(double hp, double ce, double re) : Character(hp, ce, re) {
 }
 
 void Shikigami::PartiallyManifest() {
@@ -34,7 +34,7 @@ std::string Shikigami::GetName() const {
 
 // ------------- Mahoraga --------------
 
-Mahoraga::Mahoraga() : Shikigami(300.0, 1000.0) {}
+Mahoraga::Mahoraga() : Shikigami(300.0, 1000.0, 50.0) {}
 
 void Mahoraga::Adapt() {
     if (!IsActive()) return;
@@ -70,7 +70,7 @@ std::string Mahoraga::GetName() const {
 
 // ---------- Agito ----------
 
-Agito::Agito() : Shikigami(200.0, 500.0) {}
+Agito::Agito() : Shikigami(200.0, 500.0, 20.0) {}
 
 void Agito::PassiveSupport(Sorcerer* user) {
     if (this->IsActive()) {

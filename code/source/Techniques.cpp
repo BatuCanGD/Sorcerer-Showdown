@@ -49,21 +49,21 @@ double Limitless::CalculateDamage(Sorcerer* user, double cost) {
 }
 
 double Limitless::BlueTechniqueDamageTarget(Sorcerer* user, Character* target) {
-    println("{} uses Blue!", user->GetName());
+    println("{} uses Blue on {}!", user->GetName(), target->GetName());
     double dmg = CalculateDamage(user, blue_output);
     target->Damage(dmg);
     return dmg;
 }
 
 double Limitless::RedTechniqueDamageTarget(Sorcerer* user, Character* target) {
-    println("{} uses Red!", user->GetName());
+    println("{} uses Red on {}!", user->GetName(), target->GetName());
     double dmg = CalculateDamage(user, red_output);
     target->Damage(dmg);
     return dmg;
 }
 
 double Limitless::PurpleTechniqueDamageTarget(Sorcerer* user, Character* target) {
-    println("{} hollows out the battlefield with Purple!", user->GetName());
+    println("{} hits {} with a Hollow Purple!", user->GetName(), target->GetName());
     double dmg = CalculateDamage(user, purple_output);
     target->Damage(dmg);
     return dmg;

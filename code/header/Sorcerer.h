@@ -32,7 +32,7 @@ protected:
 	};
 	ReverseCT rct_state = ReverseCT::Disabled;
 public:
-	Sorcerer(double hp, double ce) : Character(hp, ce) {}
+	Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {}
 
 	bool DomainActive() const;
 	Domain* GetDomain();

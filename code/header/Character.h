@@ -7,6 +7,8 @@ class Character {
 protected:
 	double health = 100.0;
 	double cursed_energy = 500.0;
+	const double max_cursed_energy;
+	double ce_regen_efficiency = 2.5;
 	bool is_stunned = false;
 	int stun_duration = 2;
 	bool is_heavenly_restricted = false;
@@ -25,13 +27,17 @@ protected:
 	BlockState block_state = BlockState::None;
 public:
 
-	Character(double hp, double ce);
+	Character(double hp, double ce, double regen);
 	virtual ~Character() = default;
 	
+
+	void SetHealth(double h);
+	void SetCursedEnergy(double c);
+	//////////////////////////////////////
 	void Damage(double h);
 	void Regen(double h);
 	void SpendCE(double c);
-	void RegenCE(double c);
+	void RegenCE();
 	void SetStunState(bool s);
 	void ClearStunTime();
 	//////////////////////////////////////
@@ -50,6 +56,7 @@ public:
 	//////////////////////////////////////
 
 	double GetCharacterCE() const;
+	double GetMaxCharCE() const;
 	double GetCharacterHealth() const;
 
 	bool IsCharacterStunned() const;

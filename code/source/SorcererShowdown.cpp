@@ -8,15 +8,15 @@
 import std;
 using namespace std;
 
-void GetSorcererTechnique(Sorcerer*);
+void GetSorcererTechnique(Sorcerer*, Character*);
 void GetSorcererDomain(Sorcerer*);
 
 int main() { // main
 	vector<unique_ptr<Sorcerer>> battlefield;
 	
 	
-	battlefield.push_back(make_unique<Sukuna>());
 	battlefield.push_back(make_unique<Gojo>());
+	battlefield.push_back(make_unique<Sukuna>());
 	battlefield.push_back(make_unique<test>());
 	
 
@@ -39,12 +39,9 @@ int main() { // main
 	CombatContext context;
 	FightActions fighting;
 
-
-	
 	println("-------The battle between {} sorcerers begin!-------", battlefield.size());
 	println("-----------------------------------------------------");
 
-	
 	while (true) {
 
 		for (const auto& s : battlefield) {
@@ -67,6 +64,12 @@ int main() { // main
 				println(" ");
 
 				println("player is the biggest fraud");
+				println("1-use Blue, 2-use Red, 3-use Purple");
+				print("=> ");
+				GetSorcererTechnique(battlefield[0].get(), battlefield[1].get());
+
+
+
 
 				for (int i = 0; i < 2; i++) println(" ");
 			}
@@ -103,14 +106,21 @@ int main() { // main
 		println("press enter to Continue...");
 		cin.ignore();
 
+
+
+		for (const auto& c : battlefield) {
+			c->RegenCE();
+		}
+
 		bool player_found = false;
 		for (const auto& c : battlefield) {
-			if (c.get()->IsThePlayer()) {
+			if (c->IsThePlayer()) {
 				player_found = true;
 				break;
 			}
 		}
 
+		
 		if (!player_found) {
 			println("You have been defeated! Game Over.");
 			break;
@@ -126,25 +136,39 @@ int main() { // main
 	return 0;
 }
 
-void GetSorcererTechnique(Sorcerer* user) {
+void GetSorcererTechnique(Sorcerer* user, Character* target) {
 	if (user->GetTechnique() == nullptr) return;
+	int choice = 0;
 	
 	if (Limitless* limitless = dynamic_cast<Limitless*>(user->GetTechnique())) {
+		cin >> choice;
+
+		switch (choice) {
+		case 1:
+		case 2:
+		case 3:
+			limitless->UseTheLimitlessTechnique(choice, user, target);
+			break;
+		default:
+			println("Invalid Choice");
+		}
+
 
 	}
 	else if (Shrine* shrine = dynamic_cast<Shrine*>(user->GetTechnique())) {
-
+		println("Incomplete Shrine");
 	}
-
+	cin.ignore();
 }
 void GetSorcererDomain(Sorcerer* user){
 	if (user->GetDomain() == nullptr) return;
+	int choice = 0;
 
 	if (InfiniteVoid* inf_void = dynamic_cast<InfiniteVoid*>(user->GetDomain())) {
-
+		
 	}
 	else if (MalevolentShrine* mal_shr = dynamic_cast<MalevolentShrine*>(user->GetDomain())) {
 
 	}
-
+	cin.ignore();
 }
