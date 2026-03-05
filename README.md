@@ -1,1 +1,1 @@
-Planned to be a Moddable Turn-Based Fighting Jujutsu Kaisen console game
+Planned to be a Turn-Based Fighting Jujutsu Kaisen console game with an extensible framework
