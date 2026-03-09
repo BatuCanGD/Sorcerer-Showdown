@@ -9,6 +9,7 @@
 
 Character::Character(double hp, double ce, double regen)
 	: health(hp),
+	max_health(hp),
 	cursed_energy(ce),
 	max_cursed_energy(ce),
 	ce_regen_efficiency(regen),
@@ -36,6 +37,9 @@ void Character::Regen(double h) {
 
 double Character::GetCharacterHealth() const {
     return health;
+}
+double Character::GetCharacterMaxHealth() const {
+	return max_health;
 }
 double Character::GetCharacterCE() const {
 	return cursed_energy;

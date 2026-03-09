@@ -6,6 +6,7 @@ class Sorcerer;
 class Character { 
 protected:
 	double health = 100.0;
+	double max_health;
 	double cursed_energy = 500.0;
 	const double max_cursed_energy;
 	double ce_regen_efficiency = 2.5;
@@ -57,7 +58,9 @@ public:
 
 	double GetCharacterCE() const;
 	double GetMaxCharCE() const;
+
 	double GetCharacterHealth() const;
+	double GetCharacterMaxHealth() const;
 
 	bool IsCharacterStunned() const;
 	bool IsHeavenlyRestricted() const;

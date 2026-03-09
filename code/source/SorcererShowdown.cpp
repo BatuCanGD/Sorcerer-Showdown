@@ -3,8 +3,6 @@
 #include "CombatContext.h"
 #include "Fighting.h"
 
-#include <print>
-
 import std;
 using namespace std;
 
@@ -13,7 +11,6 @@ void GetSorcererDomain(Sorcerer*);
 
 int main() { // main
 	vector<unique_ptr<Sorcerer>> battlefield;
-	
 	
 	battlefield.push_back(make_unique<Gojo>());
 	battlefield.push_back(make_unique<Sukuna>());
@@ -64,10 +61,31 @@ int main() { // main
 				println(" ");
 
 				println("player is the biggest fraud");
-				println("1-use Blue, 2-use Red, 3-use Purple");
+				println("Choose action:");
+				println("1-Use Technique, 2-Straight hands, 3-Use Special, 4-Taunt");
 				print("=> ");
-				GetSorcererTechnique(s.get(), battlefield[1].get());
+				int plrch = 0; cin >> plrch;
 
+				switch (plrch) {
+				case 1: {
+					GetSorcererTechnique(s.get(), battlefield[1].get());
+					break;
+				}
+				case 2: {
+
+					break;
+				}
+				case 3: {
+
+					break;
+				}
+				case 4: {
+					context.Taunt(s.get(), battlefield[1].get());
+					break;
+				}
+				default:
+					println("Invalid Choice");
+				}
 
 
 
@@ -92,6 +110,7 @@ int main() { // main
 
 				for (int i = 0; i < 2; i++) println(" ");
 			}
+			cin.ignore();
 		}
 
 		auto [removed_begin, removed_end] = ranges::remove_if(battlefield, [](const auto& s) {
@@ -106,9 +125,6 @@ int main() { // main
 		println("press enter to Continue...");
 		cin.ignore();
 
-
-
-
 		bool player_found = false;
 		for (const auto& c : battlefield) {
 			if (c->IsThePlayer()) {
@@ -116,7 +132,6 @@ int main() { // main
 			}
 			c->RegenCE();
 		}
-
 		
 		if (!player_found) {
 			println("You have been defeated! Game Over.");
@@ -135,11 +150,14 @@ int main() { // main
 
 void GetSorcererTechnique(Sorcerer* user, Character* target) {
 	if (user->GetTechnique() == nullptr) return;
+
 	int choice = 0;
 	
 	if (Limitless* limitless = dynamic_cast<Limitless*>(user->GetTechnique())) {
-		cin >> choice;
+		println("1-use Blue, 2-use Red, 3-use Purple");
+		print("=> ");
 
+		cin >> choice;
 		switch (choice) {
 		case 1:
 		case 2:
@@ -162,7 +180,7 @@ void GetSorcererDomain(Sorcerer* user){
 	int choice = 0;
 
 	if (InfiniteVoid* inf_void = dynamic_cast<InfiniteVoid*>(user->GetDomain())) {
-		
+
 	}
 	else if (MalevolentShrine* mal_shr = dynamic_cast<MalevolentShrine*>(user->GetDomain())) {
 

@@ -38,6 +38,8 @@ public:
 	Domain* GetDomain();
 	Technique* GetTechnique();
 	const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
+	void SetAmplification(bool);
+
 	bool IsDomainActive() const;
 
 	bool IsThePlayer() const;

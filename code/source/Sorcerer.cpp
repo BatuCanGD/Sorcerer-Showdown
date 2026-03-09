@@ -22,6 +22,11 @@ const std::vector<std::unique_ptr<Shikigami>>& Sorcerer::GetShikigami() const {
     return shikigami;
 }
 
+void Sorcerer::SetAmplification(bool t) {
+    domain_amplification_active = t;
+}
+
+
 void Sorcerer::DisableRCT() {
     rct_state = ReverseCT::Disabled;
 }
