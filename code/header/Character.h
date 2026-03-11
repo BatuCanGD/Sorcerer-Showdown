@@ -42,19 +42,19 @@ public:
 	void SetStunState(bool s);
 	void ClearStunTime();
 	//////////////////////////////////////
-	void SetAttack();
-	void SetUsingTechnique();
-	void SetUsingDomain();
-	void SetBlocking();
-
-	bool IsAttacking() const;
-	bool IsUsingTechnique() const;
-	bool IsUsingDomain() const;
-	bool IsBlocking() const;
-
-	void ResetAttackState();
-	void ResetBlockState();
-	//////////////////////////////////////
+	void SetAttack();                 ///
+	void SetUsingTechnique();		  ///
+	void SetUsingDomain();			  ///
+	void SetBlocking();				  ///
+									  ///
+	bool IsAttacking() const;		  ///
+	bool IsUsingTechnique() const;	  ///
+	bool IsUsingDomain() const;       ///
+	bool IsBlocking() const;		  ///
+									  ///
+	void ResetAttackState();		  ///
+	void ResetBlockState();			  ///
+	////////////////////////////////////
 
 	double GetCharacterCE() const;
 	double GetMaxCharCE() const;
@@ -66,4 +66,5 @@ public:
 	bool IsHeavenlyRestricted() const;
 
 	virtual std::string GetName() const;
+	virtual bool CanBeHit() const = 0;
 };

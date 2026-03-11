@@ -8,6 +8,12 @@ void FightActions::Attack(Character* user, Character* target) {
 	if (user->IsAttacking()) {
 		if (target->IsBlocking()) {
 			std::println("The attack was blocked!");
+			user->ResetAttackState();
+			return;
+		}
+		else if (!target->CanBeHit()) {
+			std::println("The attack was stopped!");
+			user->ResetAttackState();
 			return;
 		}
 		target->Damage(basic_attack_damage);

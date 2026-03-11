@@ -60,9 +60,8 @@ int main() { // main
 				}
 				println(" ");
 
-				println("player is the biggest fraud");
 				println("Choose action:");
-				println("1-Use Technique, 2-Straight hands, 3-Use Special, 4-Taunt");
+				println("1-Use Technique, 2-Straight hands, 3-Use Special, 4-Domain, 5-Taunt");
 				print("=> ");
 				int plrch = 0; cin >> plrch;
 
@@ -80,14 +79,29 @@ int main() { // main
 					break;
 				}
 				case 4: {
+					if (s.get()->GetDomain() == nullptr) break;
+
+					if (s.get()->IsDomainActive()) {
+
+						fighting.CheckDomain(s.get());
+						GetSorcererDomain(s.get());
+						break;
+					}
+
+					s.get()->ActivateDomain(s.get());
+					println("Domain Expansion: {}", s.get()->GetDomain()->GetDomainName());
+
+					break;
+				}
+				case 5: {
 					context.Taunt(s.get(), battlefield[1].get());
 					break;
 				}
 				default:
 					println("Invalid Choice");
 				}
-
-
+				
+				s->CheckSpecial(s.get());
 
 				for (int i = 0; i < 2; i++) println(" ");
 			}
@@ -107,6 +121,7 @@ int main() { // main
 				println(" ");
 
 				s->OnSorcererTurn();
+				s->CheckSpecial(s.get());
 
 				for (int i = 0; i < 2; i++) println(" ");
 			}

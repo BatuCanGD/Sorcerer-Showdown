@@ -28,8 +28,17 @@ bool Shikigami::IsActive() const {
             shikigami_stats == ShikigamiStatus::Manifested;
 }
 
+bool Shikigami::IsActivePhysically() const {
+    return shikigami_stats == ShikigamiStatus::Manifested;
+}
+
+
 std::string Shikigami::GetName() const {
     return "Shikigami";
+}
+
+bool Shikigami::CanBeHit() const {
+    return true;
 }
 
 // ------------- Mahoraga --------------
@@ -68,6 +77,14 @@ std::string Mahoraga::GetName() const {
     return "Mahoraga";
 }
 
+bool Mahoraga::CanBeHit() const {
+    if (this->IsActivePhysically()) {
+        return true;
+    }
+    return false;
+}
+
+
 // ---------- Agito ----------
 
 Agito::Agito() : Shikigami(200.0, 500.0, 20.0) {}
@@ -84,4 +101,11 @@ std::string Agito::GetName() const {
 }
 void Agito::OnShikigamiTurn() {
     ActiveTimeIncrementor();
+}
+
+bool Agito::CanBeHit() const {
+    if (this->IsActivePhysically()) {
+        return true;
+    }
+    return false;
 }

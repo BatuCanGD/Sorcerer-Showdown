@@ -19,8 +19,10 @@ public:
 	void Withdraw();
 	void ActiveTimeIncrementor();
 	bool IsActive() const;
+	bool IsActivePhysically() const;
 	virtual void OnShikigamiTurn() = 0;		
 	std::string GetName() const override;
+	bool CanBeHit() const override;
 };
 
 class Mahoraga : public Shikigami {
@@ -40,6 +42,7 @@ public:
 	bool FullyAdaptedToInfinity()const;
 	void OnShikigamiTurn() override;
 	std::string GetName() const override;
+	bool CanBeHit() const override;
 };
 
 class Agito : public Shikigami {
@@ -52,4 +55,5 @@ public:
 	void PassiveSupport(Sorcerer* user);
 	void OnShikigamiTurn() override;
 	std::string GetName() const override;
+	bool CanBeHit() const override;
 };

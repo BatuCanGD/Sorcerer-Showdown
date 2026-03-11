@@ -7,7 +7,7 @@
 #include <random>
 
 
-void CombatContext::WorldCuttingSlashReady(Sorcerer* user) {
+void WorldCuttingSlash::WorldCuttingSlashReady(Sorcerer* user) {
 	Technique* currentTech = user->GetTechnique();
 	Shrine* shrinePtr = dynamic_cast<Shrine*>(currentTech);
 

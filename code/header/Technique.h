@@ -21,6 +21,7 @@ public:
 
 class Limitless : public Technique { // LIMITLESS
 protected:
+	bool Infinity = false;
 	static constexpr double blue_output = 20.0 + base_output, red_output = 40.0 + base_output, purple_output = 90.0 + base_output;
 	enum class TechniqueChants {
 		None,
@@ -30,6 +31,10 @@ protected:
 		FourthChant
 	};
 public:
+	void SetInfinity(bool s);
+	void InfinityNerf(); // drain CE
+	bool CheckInfinity() const;
+
 	double CalculateDamage(Sorcerer* user, double cost);
 	double BlueTechniqueDamageTarget(Sorcerer* user, Character* target);
 	double RedTechniqueDamageTarget(Sorcerer* user, Character* target);
@@ -42,9 +47,15 @@ public:
 
 class Shrine : public Technique { // SHRINE
 protected:
-	static constexpr double slash_output = 75.0, cleave_output = 1000.0, wcs_output = 350.0;
+	static constexpr double slash_output = 45.0, cleave_output = 300.0, wcs_output = 1000.0;
 	bool world_cutting_slash_allowed = false;
 public:
 	void SetWCS(bool s);
 	std::string GetTechniqueName() const override;
+
+	double CalculateDamage(Sorcerer* user, double cost);
+	double CleaveTechniqueDamageTarget(Sorcerer* user, Character* target);
+	double SlashTechniqueDamageTarget(Sorcerer* user, Character* target);
+	double GetTechniqueOutput() const;
+	void UseShrineTechnique(int choice, Sorcerer* s, Character* c);
 };

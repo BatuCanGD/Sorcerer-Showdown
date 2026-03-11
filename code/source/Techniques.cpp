@@ -89,6 +89,17 @@ std::string Limitless::GetTechniqueName() const {
     return "Limitless";
 }
 
+void Limitless::SetInfinity(bool s) {
+    Infinity = s;
+}
+
+bool Limitless::CheckInfinity() const {
+    return Infinity;
+}
+
+void Limitless::InfinityNerf() {
+	// do later
+}
 
 // ---------------- Shrine -------------------
 

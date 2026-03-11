@@ -1,7 +1,13 @@
 #pragma once
 #include "Sorcerer.h"
-struct CombatContext { 
+class CombatContext {
+public:
+	virtual ~CombatContext() = default;
 	void Taunt(Sorcerer* user, Character* target);
-	void WorldCuttingSlashReady(Sorcerer* user);
 	int GetRandomNumber(int min, int max);
+};
+
+class WorldCuttingSlash : public CombatContext {
+public:	
+	void WorldCuttingSlashReady(Sorcerer* user);
 };

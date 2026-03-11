@@ -1,4 +1,5 @@
 #include "Sorcerer.h"
+#include "Technique.h"
 #include <print>
 
 
@@ -14,6 +15,10 @@ Technique* Sorcerer::GetTechnique() {
     return technique.get();
 }
 
+CombatContext* Sorcerer::GetSpecial() {
+    return special.get();
+}
+
 bool Sorcerer::IsDomainActive() const {
     return domain_active;
 }
@@ -26,6 +31,21 @@ void Sorcerer::SetAmplification(bool t) {
     domain_amplification_active = t;
 }
 
+void Sorcerer::CheckSpecial(Sorcerer* sorcerer) {
+    if (GetSpecial() == nullptr) return;
+
+    auto wcs = dynamic_cast<WorldCuttingSlash*>(special.get());
+
+
+    if (auto* limitless = dynamic_cast<Limitless*>(technique.get())) {
+        std::println("no limitless special yet");
+    }
+    else if (auto* shrine = dynamic_cast<Shrine*>(technique.get())) {
+        if (wcs) {
+            wcs->WorldCuttingSlashReady(sorcerer);
+        }
+    }
+}
 
 void Sorcerer::DisableRCT() {
     rct_state = ReverseCT::Disabled;
@@ -74,6 +94,11 @@ bool Sorcerer::IsThePlayer() const {
 void Sorcerer::SetAsPlayer(bool p) {
     is_player = p;
 }
+
+bool Sorcerer::CanBeHit() const {
+    return true;
+}
+
 // ---------------- Gojo -------------------
 
 Gojo::Gojo() : Sorcerer(800.0, 4000.0, 50.0) {
@@ -89,6 +114,14 @@ void Gojo::OnSorcererTurn() {
     std::println("go/jo");
 }
 
+bool Gojo::CanBeHit() const {
+    auto* limitless = dynamic_cast<Limitless*>(technique.get());
+    if (limitless->CheckInfinity()) {
+        return false;
+    }
+    return true;
+}
+
 // ---------------- Sukuna -------------------
 
 Sukuna::Sukuna() : Sorcerer(1000.0, 12000.0, 100.0) {
@@ -96,6 +129,7 @@ Sukuna::Sukuna() : Sorcerer(1000.0, 12000.0, 100.0) {
     technique = std::make_unique<Shrine>();
 	shikigami.push_back(std::make_unique<Mahoraga>());
 	shikigami.push_back(std::make_unique<Agito>());
+	special = std::make_unique<WorldCuttingSlash>();
 }
 
 std::string Sukuna::GetName() const {
@@ -104,6 +138,10 @@ std::string Sukuna::GetName() const {
 
 void Sukuna::OnSorcererTurn() {
     std::println("fraudkuna");
+}
+
+bool Sukuna::CanBeHit() const {
+    return true;
 }
 
 /// for testing stuff, use this class
@@ -116,4 +154,8 @@ void test::OnSorcererTurn() {
 }
 std::string test::GetName() const {
     return "test";
+}
+
+bool test::CanBeHit() const {
+    return true;
 }
