@@ -21,6 +21,9 @@ void WorldCuttingSlash::WorldCuttingSlashReady(Sorcerer* user) {
 				std::println("The blueprint is complete. World Cutting Slash enabled!");
 				return;
 			}
+			else {
+				std::println("The blueprint is incomplete. World Cutting Slash cannot be used yet.");
+			}
 		}
 	}
 }

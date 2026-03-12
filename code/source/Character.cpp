@@ -25,10 +25,10 @@ void Character::SetCursedEnergy(double c) {
 	cursed_energy = c;
 }
 
-
-
 void Character::Damage(double h) {
-    health -= h;
+	if (CanBeHit()) {
+		health -= h;
+	}
 }
 
 void Character::Regen(double h) {

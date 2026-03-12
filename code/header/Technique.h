@@ -15,15 +15,17 @@ public:
 	virtual ~Technique() = default;
 	void Set(Status s);
 	Status GetStatus() const;
+	double GetTechniqueOutput() const;
+	double CalculateDamage(Sorcerer* user, double cost);
 	std::string GetStringStatus() const;
 	virtual std::string GetTechniqueName() const = 0;
 };
 
 class Limitless : public Technique { // LIMITLESS
 protected:
-	bool Infinity = false;
+	bool Infinity = true;
 	static constexpr double blue_output = 20.0 + base_output, red_output = 40.0 + base_output, purple_output = 90.0 + base_output;
-	enum class TechniqueChants {
+	enum class TechniqueChants { 
 		None,
 		FirstChant,
 		SecondChant,
@@ -31,16 +33,16 @@ protected:
 		FourthChant
 	};
 public:
+	enum class LimitlessType { Blue = 1, Red = 2, Purple = 3 };
+
 	void SetInfinity(bool s);
 	void InfinityNerf(); // drain CE
 	bool CheckInfinity() const;
 
-	double CalculateDamage(Sorcerer* user, double cost);
 	double BlueTechniqueDamageTarget(Sorcerer* user, Character* target);
 	double RedTechniqueDamageTarget(Sorcerer* user, Character* target);
 	double PurpleTechniqueDamageTarget(Sorcerer* user, Character* target);
-	double GetTechniqueOutput() const;
-	void UseTheLimitlessTechnique(int choice, Sorcerer* s, Character* c);
+	void UseTheLimitlessTechnique(LimitlessType choice, Sorcerer* s, Character* c);
 	std::string GetTechniqueName() const override;
 };
 
@@ -50,12 +52,12 @@ protected:
 	static constexpr double slash_output = 45.0, cleave_output = 300.0, wcs_output = 1000.0;
 	bool world_cutting_slash_allowed = false;
 public:
+	enum class ShrineType { Dismantle = 1, Cleave = 2 };
+
 	void SetWCS(bool s);
 	std::string GetTechniqueName() const override;
 
-	double CalculateDamage(Sorcerer* user, double cost);
 	double CleaveTechniqueDamageTarget(Sorcerer* user, Character* target);
-	double SlashTechniqueDamageTarget(Sorcerer* user, Character* target);
-	double GetTechniqueOutput() const;
-	void UseShrineTechnique(int choice, Sorcerer* s, Character* c);
+	double DismantleTechniqueDamageTarget(Sorcerer* user, Character* target);
+	void UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c);
 };

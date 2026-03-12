@@ -38,6 +38,7 @@ void Sorcerer::CheckSpecial(Sorcerer* sorcerer) {
 
 
     if (auto* limitless = dynamic_cast<Limitless*>(technique.get())) {
+        
         std::println("no limitless special yet");
     }
     else if (auto* shrine = dynamic_cast<Shrine*>(technique.get())) {

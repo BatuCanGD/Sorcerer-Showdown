@@ -15,6 +15,16 @@ std::string Technique::GetTechniqueName() const {
     return "Technique";
 }
 
+double Technique::GetTechniqueOutput() const {
+    switch (state) {
+    case Status::Usable:      return 1.0;
+    case Status::DomainBoost: return 1.5;
+    case Status::BurntOut:    return 0.0;
+    default:                  return 1.0;
+    }
+}
+
+
 std::string Technique::GetStringStatus() const {
     switch (state) {
 	case Status::Usable:      return "Usable";
@@ -24,18 +34,7 @@ std::string Technique::GetStringStatus() const {
     }
 }
 
-// ---------------- Limitless -------------------
-
-double Limitless::GetTechniqueOutput() const {
-    switch (state) {
-    case Status::Usable:      return 1.0;
-    case Status::DomainBoost: return 2.5;
-    case Status::BurntOut:    return 0.0;
-    default:                  return 1.0;
-    }
-}
-
-double Limitless::CalculateDamage(Sorcerer* user, double cost) {
+double Technique::CalculateDamage(Sorcerer* user, double cost) {
     double multiplier = GetTechniqueOutput();
     double currentCE = user->GetCharacterCE();
 
@@ -47,6 +46,10 @@ double Limitless::CalculateDamage(Sorcerer* user, double cost) {
     user->SpendCE(cost);
     return cost * multiplier;
 }
+// ---------------- Limitless -------------------
+
+
+
 
 double Limitless::BlueTechniqueDamageTarget(Sorcerer* user, Character* target) {
     println("{} uses Blue on {}!", user->GetName(), target->GetName());
@@ -69,15 +72,15 @@ double Limitless::PurpleTechniqueDamageTarget(Sorcerer* user, Character* target)
     return dmg;
 }
 
-void Limitless::UseTheLimitlessTechnique(int choice, Sorcerer* s, Character* c) {
+void Limitless::UseTheLimitlessTechnique(LimitlessType choice, Sorcerer* s, Character* c) {
     switch (choice) {
-    case 1:
+    case LimitlessType::Blue:
 		Limitless::BlueTechniqueDamageTarget(s, c);
         break;
-    case 2:
+    case LimitlessType::Red:
 		Limitless::RedTechniqueDamageTarget(s, c);
         break;
-    case 3:
+    case LimitlessType::Purple:
 		Limitless::PurpleTechniqueDamageTarget(s, c);
         break;
     default:
@@ -105,6 +108,32 @@ void Limitless::InfinityNerf() {
 
 void Shrine::SetWCS(bool s) {
     world_cutting_slash_allowed = s;
+}
+
+double Shrine::CleaveTechniqueDamageTarget(Sorcerer* user, Character* target) {
+    println("{} uses Cleave on {}!", user->GetName(), target->GetName());
+    double dmg = CalculateDamage(user, cleave_output);
+    target->Damage(dmg);
+    return dmg;
+}
+double Shrine::DismantleTechniqueDamageTarget(Sorcerer* user, Character* target) {
+    println("{} uses Slash on {}!", user->GetName(), target->GetName());
+    double dmg = CalculateDamage(user, slash_output);
+    target->Damage(dmg);
+    return dmg;
+}
+
+void Shrine::UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c) {
+    switch (choice) {
+    case ShrineType::Dismantle:
+        Shrine::DismantleTechniqueDamageTarget(s, c);
+        break;
+    case ShrineType::Cleave:
+        Shrine::CleaveTechniqueDamageTarget(s, c);
+        break;
+    default:
+        std::println("Invalid input. No technique used.");
+    }
 }
 
 std::string Shrine::GetTechniqueName() const {
