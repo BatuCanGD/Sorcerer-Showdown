@@ -23,6 +23,8 @@ protected:
 
 	std::vector<std::unique_ptr<Shikigami>> shikigami;
 	
+	bool six_eyes = false;
+
 	bool domain_active = false;
 	bool is_player = false;
 	const int domain_limit = 5;
@@ -46,18 +48,20 @@ public:
 
 	const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
 	void SetAmplification(bool);
-
-	bool IsDomainActive() const;
+	void SetSixEyes(bool);
+	bool HasSixEyes() const;
 
 	bool IsThePlayer() const;
 	void SetAsPlayer(bool);
 
+	void SpendCE(double ce) override;
 	void CheckSpecial(Sorcerer*);
 	void DisableRCT();
 	void EnableRCT();
 	void BoostRCT();
 	void DeactivateDomain();
 	void ActivateDomain(Character* user);
+	void DomainDrain();
 	std::string GetName() const override;
 	virtual void OnSorcererTurn();
 	virtual ~Sorcerer() = default;

@@ -7,7 +7,6 @@ import std;
 using namespace std;
 
 void GetSorcererTechnique(Sorcerer*, Character*);
-void GetSorcererDomain(Sorcerer*);
 
 int main() { // main
 	vector<unique_ptr<Sorcerer>> battlefield;
@@ -51,7 +50,7 @@ int main() { // main
 				if (s->GetDomain() != nullptr) {
 					std::println("Domain: {} [{}]",
 						s->GetDomain()->GetDomainName(),
-						s->IsDomainActive() ? "Active" : "Inactive");
+						s->DomainActive() ? "Active" : "Inactive");
 				}
 				if (s->GetTechnique() != nullptr) {
 					std::println("Technique: {} [{}]",
@@ -82,10 +81,9 @@ int main() { // main
 				case 4: {
 					if (s.get()->GetDomain() == nullptr) break;
 
-					if (s.get()->IsDomainActive()) {
+					if (s.get()->DomainActive()) {
 
 						fighting.CheckDomain(s.get());
-						GetSorcererDomain(s.get());
 						break;
 					}
 
@@ -112,7 +110,7 @@ int main() { // main
 				if (s->GetDomain() != nullptr) {
 					std::println("Domain: {} [{}]",
 						s->GetDomain()->GetDomainName(),
-						s->IsDomainActive() ? "Active" : "Inactive");
+						s->DomainActive() ? "Active" : "Inactive");
 				}
 				if (s->GetTechnique() != nullptr) {
 					std::println("Technique: {} [{}]",
@@ -129,6 +127,7 @@ int main() { // main
 			std::cin.ignore();
 		}
 
+		//// DEFEATED CHARACTER REMOVAL ////
 		auto [removed_begin, removed_end] = std::ranges::remove_if(battlefield, [](const auto& s) {
 			if (s->GetCharacterHealth() <= 0.0) {
 				std::println("{} has been defeated and is removed from the battlefield!", s->GetName());
@@ -138,9 +137,59 @@ int main() { // main
 		});
 		battlefield.erase(removed_begin, removed_end);
 
+
+		//// DOMAIN EXPANSION CLASH TRIGGER AND CHECK ////
+		vector<Sorcerer*> active_domains;
+		for (const auto& s : battlefield) {
+			if (s->GetDomain() == nullptr) continue;
+			if (s->DomainActive()) {
+				active_domains.push_back(s.get());
+			}
+		}
+		for (auto s : active_domains) {
+			s->DomainDrain();
+		}
+
+
+		if (active_domains.size() > 2) {
+			for (const auto& s : active_domains) {
+				s->DeactivateDomain(); // dont forget / domain deactivation burns out the technique too
+				s->GetDomain()->SetClashState(false);
+			}
+		}
+		else if (active_domains.size() == 2) {
+			for (const auto& s : active_domains) {
+				s->GetDomain()->SetClashState(true);
+			}
+		}
+		else {
+			for (const auto& s : active_domains) {
+				if (s->GetDomain()->Clashing()) {
+					s->GetDomain()->SetClashState(false);
+				}
+			}
+		}
+		///// DOMAIN EFFECTS, WITHOUT CLASH /////
+
+		if (active_domains.size() == 1) {
+			Sorcerer* domain_user = active_domains[0];
+		
+			for (const auto& s : battlefield) {
+				if (s.get() == domain_user || s == nullptr) continue;
+				std::println("{}'s domain; {} has hit {}", 
+					domain_user->GetName(), 
+					domain_user->GetDomain()->GetDomainName(), 
+					s->GetName());
+
+				domain_user->GetDomain()->OnSureHit(*s);
+			}
+		}
+
 		std::println("press enter to Continue...");
 		std::cin.ignore();
 
+
+		/// CHECK IF PLAYER IS DEAD OR NOT /// DO OTHER STUFF ON THE SIDE
 		bool player_found = false;
 		for (const auto& c : battlefield) {
 			if (c->IsThePlayer()) {
@@ -148,7 +197,7 @@ int main() { // main
 			}
 			c->RegenCE();
 		}
-		
+		//////// GAME ENDED // PLAYER DEAD // ALL SORCERERS DEAD //
 		if (!player_found) {
 			std::println("You have been defeated! Game Over.");
 			break;
@@ -198,18 +247,6 @@ void GetSorcererTechnique(Sorcerer* user, Character* target) {
 		default:
 			std::println("Invalid Choice");
 		}
-	}
-	std::cin.ignore();
-}
-void GetSorcererDomain(Sorcerer* user){
-	if (user->GetDomain() == nullptr) return;
-	int choice = 0;
-
-	if (InfiniteVoid* inf_void = dynamic_cast<InfiniteVoid*>(user->GetDomain())) {
-
-	}
-	else if (MalevolentShrine* mal_shr = dynamic_cast<MalevolentShrine*>(user->GetDomain())) {
-
 	}
 	std::cin.ignore();
 }

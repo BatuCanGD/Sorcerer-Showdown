@@ -19,10 +19,6 @@ CombatContext* Sorcerer::GetSpecial() {
     return special.get();
 }
 
-bool Sorcerer::IsDomainActive() const {
-    return domain_active;
-}
-
 const std::vector<std::unique_ptr<Shikigami>>& Sorcerer::GetShikigami() const {
     return shikigami;
 }
@@ -45,6 +41,23 @@ void Sorcerer::CheckSpecial(Sorcerer* sorcerer) {
         if (wcs) {
             wcs->WorldCuttingSlashReady(sorcerer);
         }
+    }
+}
+
+void Sorcerer::SetSixEyes(bool t) {
+    six_eyes = t;
+}
+
+bool Sorcerer::HasSixEyes() const {
+    return six_eyes;
+}
+
+void Sorcerer::SpendCE(double ce) {
+    if (HasSixEyes()) {
+        cursed_energy -= ce * 0.10;
+    }
+    else {
+        cursed_energy -= ce;
     }
 }
 
@@ -92,8 +105,26 @@ void Sorcerer::OnSorcererTurn() {
 bool Sorcerer::IsThePlayer() const {
     return is_player;
 }
+
 void Sorcerer::SetAsPlayer(bool p) {
     is_player = p;
+}
+
+void Sorcerer::DomainDrain() {
+    if (DomainActive()) {
+        double shrinecost = 350.0;
+        double limitlesscost = 500.0;
+
+        Domain* currentDomain = GetDomain();
+
+        if (dynamic_cast<InfiniteVoid*>(currentDomain)) {
+            SpendCE(limitlesscost);
+        }
+        else if (dynamic_cast<MalevolentShrine*>(currentDomain)) {
+            SpendCE(shrinecost);
+        }
+
+    }
 }
 
 bool Sorcerer::CanBeHit() const {
@@ -123,9 +154,10 @@ bool Gojo::CanBeHit() const {
     return true;
 }
 
+
 // ---------------- Sukuna -------------------
 
-Sukuna::Sukuna() : Sorcerer(1000.0, 12000.0, 100.0) {
+Sukuna::Sukuna() : Sorcerer(1000.0, 12000.0, 25.0) {
     domain = std::make_unique<MalevolentShrine>();
     technique = std::make_unique<Shrine>();
 	shikigami.push_back(std::make_unique<Mahoraga>());

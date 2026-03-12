@@ -24,7 +24,6 @@ double Technique::GetTechniqueOutput() const {
     }
 }
 
-
 std::string Technique::GetStringStatus() const {
     switch (state) {
 	case Status::Usable:      return "Usable";

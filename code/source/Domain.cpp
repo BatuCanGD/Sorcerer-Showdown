@@ -24,7 +24,7 @@ std::string Domain::GetDomainName() const {
 
 void InfiniteVoid::OnSureHit(Character & target) {
     if (clashing || target.IsHeavenlyRestricted()) return;
-    target.Damage(surehit_braindamage * DomainRangeMult());
+    target.DamageBypass(surehit_braindamage * DomainRangeMult());
     target.SetStunState(true);
 }
 std::string InfiniteVoid::GetDomainName() const {
@@ -34,7 +34,7 @@ std::string InfiniteVoid::GetDomainName() const {
 
 void MalevolentShrine::OnSureHit(Character & target) {
     if (clashing) return;
-    target.Damage(surehit_slashdamage * DomainRangeMult());
+    target.DamageBypass(surehit_slashdamage * DomainRangeMult());
 }
 std::string MalevolentShrine::GetDomainName() const {
     return "Malevolent Shrine";
