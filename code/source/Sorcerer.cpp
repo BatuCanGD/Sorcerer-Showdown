@@ -136,6 +136,7 @@ bool Sorcerer::CanBeHit() const {
 Gojo::Gojo() : Sorcerer(800.0, 4000.0, 50.0) {
     domain = std::make_unique<InfiniteVoid>();
     technique = std::make_unique<Limitless>();
+    SetSixEyes(true);
 }
 
 std::string Gojo::GetName() const {
@@ -179,14 +180,14 @@ bool Sukuna::CanBeHit() const {
 
 /// for testing stuff, use this class
 
-test::test() : Sorcerer(154.1, 154.1, 2.5) {
+test::test() : Sorcerer(9999999.9, 999999.9, 1000.0) {
 }
 
 void test::OnSorcererTurn() {
-    std::println("test");
+    std::println("I'm the strongest dude");
 }
 std::string test::GetName() const {
-    return "test";
+    return "John Zenin";
 }
 
 bool test::CanBeHit() const {

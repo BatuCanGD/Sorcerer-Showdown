@@ -1,14 +1,14 @@
 #pragma once
 
+#include "Character.h"
+#include "CombatContext.h"
+#include "Shikigami.h"
+#include "Domain.h"
+#include "Technique.h"
+
 #include <memory>
 #include <vector>
 #include <string>
-
-#include "Character.h"
-#include "Technique.h"
-#include "Domain.h"
-#include "Shikigami.h"
-#include "CombatContext.h"
 
 class Shikigami;
 class Technique;

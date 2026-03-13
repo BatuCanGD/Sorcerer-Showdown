@@ -16,10 +16,12 @@ void FightActions::Attack(Character* user, Character* target) {
 			user->ResetAttackState();
 			return;
 		}
+		std::println("{} strikes at {}!", user->GetName(), target->GetName());
 		target->Damage(basic_attack_damage);
 		user->ResetAttackState();
 	}
 	else {
+		std::println("{} prepares to strike at {}!", user->GetName(), target->GetName());
 		user->SetAttack();
 	}
 

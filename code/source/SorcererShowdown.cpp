@@ -4,17 +4,61 @@
 #include "Fighting.h"
 
 import std;
-using namespace std;
 
 void GetSorcererTechnique(Sorcerer*, Character*);
 
 int main() { // main
-	vector<unique_ptr<Sorcerer>> battlefield;
+	std::vector<std::unique_ptr<Sorcerer>> battlefield;
 	
-	battlefield.push_back(make_unique<Sukuna>());
-	battlefield.push_back(make_unique<Gojo>());
-	battlefield.push_back(make_unique<test>());
-	
+	bool choosing = true;
+	int gojo_count = 0, sukuna_count = 0, test_count = 0;
+	int c = -1;
+
+	std::println("Choose your sorcerer and the amount of opponents you want to fight!");
+	while (choosing) {
+		std::println("1-Gojo, 2-Sukuna, 0-Done");
+		std::println("Player: {}, Gojo count: {}, Sukuna count: {}, Sorcerer count: {}",
+			battlefield.empty() ? "None" : battlefield[0]->GetName(),
+			gojo_count, 
+			sukuna_count, 
+			battlefield.size());
+
+		std::cin >> c;
+		switch (c) {
+		case 1: {
+			battlefield.push_back(std::make_unique<Gojo>());
+			gojo_count++;
+			break;
+		}
+		case 2: {
+			battlefield.push_back(std::make_unique<Sukuna>());
+			sukuna_count++;
+			break;
+		}
+		case 151: {
+			battlefield.push_back(std::make_unique<test>());
+			test_count++;
+			break;
+		}
+		case 0: {
+			if (battlefield.size() < 2) {
+				std::println("You need at least 2 sorcerer (yourself and an opponent) to play!");
+			}
+			else {
+				choosing = false;
+			}
+			break;
+		}
+		case -1: {
+			return 0;
+		}
+		default:
+			std::println("Enter 0 if you want to fight or -1 to quit the program");
+		}
+		system("cls");
+	}
+
+
 
 	if (battlefield.size() < 2) {
 		std::println("Not enough sorcerers to start the fight");
@@ -45,7 +89,7 @@ int main() { // main
 			if (s->GetCharacterHealth() <= 0.0) continue;
 
 			if (s->IsThePlayer()) {
-				std::println("-------Player's ({}'s) Turn-------", s.get()->GetName());
+				std::println("-------Player's ({}'s) Turn------- {}", s.get()->GetName(), s.get()->IsCharacterStunned() ? "(Stunned)" : "");
 				std::println("Health: {}, Cursed Energy: {}", s.get()->GetCharacterHealth(), s.get()->GetCharacterCE());
 				if (s->GetDomain() != nullptr) {
 					std::println("Domain: {} [{}]",
@@ -61,7 +105,7 @@ int main() { // main
 
 				std::println("Choose action:");
 				std::println("1-Use Technique, 2-Straight hands, 3-Use Special, 4-Domain, 5-Taunt");
-				print("=> ");
+				std::print("=> ");
 				size_t plrch = 0; std::cin >> plrch;
 				
 
@@ -71,7 +115,7 @@ int main() { // main
 					break;
 				}
 				case 2: {
-
+					fighting.Attack(s.get(), battlefield[1].get());
 					break;
 				}
 				case 3: {
@@ -105,7 +149,7 @@ int main() { // main
 				for (int i = 0; i < 2; i++) std::println(" ");
 			}
 			else {
-				std::println("-------{}'s Turn-------", s->GetName());
+				std::println("-------{}'s Turn------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
 				std::println("Health: {}, Cursed Energy: {}", s->GetCharacterHealth(), s->GetCharacterCE());
 				if (s->GetDomain() != nullptr) {
 					std::println("Domain: {} [{}]",
@@ -139,7 +183,7 @@ int main() { // main
 
 
 		//// DOMAIN EXPANSION CLASH TRIGGER AND CHECK ////
-		vector<Sorcerer*> active_domains;
+		std::vector<Sorcerer*> active_domains;
 		for (const auto& s : battlefield) {
 			if (s->GetDomain() == nullptr) continue;
 			if (s->DomainActive()) {
@@ -220,7 +264,7 @@ void GetSorcererTechnique(Sorcerer* user, Character* target) {
 	
 	if (Limitless* limitless = dynamic_cast<Limitless*>(user->GetTechnique())) {
 		std::println("1-use Blue, 2-use Red, 3-use Purple");
-		print("=> ");
+		std::print("=> ");
 
 		std::cin >> choice;
 		switch (choice) {
