@@ -60,7 +60,7 @@ public:
 	void EnableRCT();
 	void BoostRCT();
 	void DeactivateDomain();
-	void ActivateDomain(Character* user);
+	void ActivateDomain(Sorcerer* user);
 	void DomainDrain();
 	std::string GetName() const override;
 	virtual void OnSorcererTurn();

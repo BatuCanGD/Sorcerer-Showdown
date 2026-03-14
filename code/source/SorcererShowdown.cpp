@@ -5,8 +5,11 @@
 
 import std;
 
+void ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>& battlefield);
 void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts);
+void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield, FightActions& fighting, CombatContext& context);
 Sorcerer* TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>&, Sorcerer*);
+bool CleanupSorcerers(std::vector<std::unique_ptr<Sorcerer>>&);
 void DisplaySorcererStatus(Sorcerer* s);
 void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield);
 
@@ -16,94 +19,21 @@ int main() { // main
 	std::map <std::string, int> sorcerer_counts;
 
 	SetupBattlefield(battlefield, sorcerer_counts);
-
-	if (battlefield.size() < 2) {
-		std::println("Not enough sorcerers to start the fight");
-		return 1;
-	}
-	else if (battlefield.size() == 2) {
-		std::println("Its just you and {}. Defeat him and win", battlefield[1]->GetName());
-	}
-	else if (battlefield.size() > 9) {
-		std::println("You, {}, and {} more sorcerers are in the area. Defeat all of them to win", battlefield[1]->GetName(), battlefield.size() - 2);
-	}
-	else {
-		std::println("You and {} more sorcerers are near you. Defeat them all to win", battlefield.size() - 1);
-	}
-
+	ShowBattleEntry(battlefield);
+	
 	battlefield[0].get()->SetAsPlayer(true); // set the first sorcerer inserted as the player
 
 	CombatContext context;
 	FightActions fighting;
 
-	std::println("-------The battle between {} sorcerers begin!-------", battlefield.size());
-	std::println("-----------------------------------------------------");
-
 	while (true) {
-
 		for (const auto& s : battlefield) {
-
 			if (s->GetCharacterHealth() <= 0.0) continue;
 
 			if (s->IsThePlayer()) {
-				
 				DisplaySorcererStatus(s.get());
+				OnPlayerTurn(*s, battlefield, fighting, context);
 				
-				std::println("Choose action:");
-				std::println("1-Use Technique, 2-Straight hands, 3-Use Special, 4-Domain, 5-Taunt");
-				std::print("=> ");
-				size_t plrch = 0; std::cin >> plrch;
-
-				switch (plrch) {
-				case 1: {
-					if (s->GetTechnique() == nullptr) {
-						std::println("You don't have a technique to use!");
-						break;
-					}
-					Sorcerer* target = TargetSelector(battlefield, s.get());
-
-					if (target) {
-						s->GetTechnique()->TechniqueMenu(s.get(), target);
-					}
-					break;
-				}
-				case 2: {
-					if (Sorcerer* target = TargetSelector(battlefield, s.get())) {
-						fighting.Attack(s.get(), target);
-					}	
-					break;
-				}
-				case 3: {
-					s->CheckSpecial(s.get());
-					break;
-				}
-				case 4: {
-					if (s->GetDomain() == nullptr) {
-						std::println("You dont have a domain to use!");
-						break;
-					}
-					if (s->DomainActive()) {
-						fighting.CheckDomain(s.get());
-						break;
-					}
-
-					s->ActivateDomain(s.get());
-					std::println("*****Domain Expansion*****\n""**{}**", s->GetDomain()->GetDomainName());
-
-					break;
-				}
-				case 5: {
-					if (Sorcerer* target = TargetSelector(battlefield, s.get())) {
-						context.Taunt(s.get(), target);
-					}
-					break;
-				}
-				default:
-					std::println("Invalid Choice");
-				}
-				
-
-
 				for (int i = 0; i < 2; i++) std::println(" ");
 			}
 			else {
@@ -116,29 +46,10 @@ int main() { // main
 			}
 			std::cin.ignore();
 		}
-		//// DEFEATED CHARACTER REMOVAL ////
-		auto [removed_begin, removed_end] = std::ranges::remove_if(battlefield, [](const auto& s) {
-			if (s->GetCharacterHealth() <= 0.0) {
-				std::println("{} has been defeated and is removed from the battlefield!", s->GetName());
-				return true;
-			}
-			return false;
-		});
-		battlefield.erase(removed_begin, removed_end);
 
+		bool player_found = CleanupSorcerers(battlefield);
 		DomainCheckAndPerform(battlefield);
 
-		std::println("press enter to Continue...");
-		std::cin.ignore();
-		/// CHECK IF PLAYER IS DEAD OR NOT /// DO OTHER STUFF ON THE SIDE
-		bool player_found = false;
-		for (const auto& c : battlefield) {
-			if (c->IsThePlayer()) {
-				player_found = true;
-			}
-			c->RegenCE();
-		}
-		//////// GAME ENDED // PLAYER DEAD // ALL SORCERERS DEAD //
 		if (!player_found) {
 			std::println("You have been defeated! Game Over.");
 			break;
@@ -152,6 +63,69 @@ int main() { // main
 	std::println("press enter to end the game...");
 	std::cin.ignore();
 	return 0;
+}
+
+void ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+	if (battlefield.size() == 2) {
+		std::println("Its just you and {}. Defeat them and win", battlefield[1]->GetName());
+	}
+	else if (battlefield.size() > 9) {
+		std::println("You, {}, and {} more sorcerers are in the area. Defeat all of them to win", battlefield[1]->GetName(), battlefield.size() - 2);
+	}
+	else {
+		std::println("You and {} more sorcerers are near you. Defeat them all to win", battlefield.size() - 1);
+	}
+
+	std::println("-------Let the battle between {} sorcerers begin!-------", battlefield.size());
+	std::println("--------------------------------------------------------");
+}
+
+void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield,FightActions& fighting,CombatContext& context){
+	size_t plrch = 0; std::cin >> plrch;
+	switch (plrch) {
+	case 1: {
+		if (s.GetTechnique() == nullptr) {
+			std::println("You don't have a technique to use!");
+			break;
+		}
+		Sorcerer* target = TargetSelector(battlefield, &s);
+
+		if (target) {
+			s.GetTechnique()->TechniqueMenu(&s, target);
+		}
+		break;
+	}
+	case 2: {
+		if (Sorcerer* target = TargetSelector(battlefield, &s)) {
+			fighting.Attack(&s, target);
+		}	
+		break;
+	}
+	case 3: {
+		s.CheckSpecial(&s);
+		break;
+	}
+	case 4: {
+		if (s.GetDomain() == nullptr) {
+			std::println("You dont have a domain to use!");
+			break;
+		}
+		if (s.DomainActive()) {
+			fighting.CheckDomain(&s);
+			break;
+		}
+		s.ActivateDomain(&s);
+		break;
+	}
+	case 5: {
+		if (Sorcerer* target = TargetSelector(battlefield, &s)) {
+			context.Taunt(&s, target);
+		}
+		break;
+	}
+	default:
+		std::println("Invalid Choice");
+	}
 }
 
 void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts) {
@@ -224,6 +198,31 @@ void DisplaySorcererStatus(Sorcerer* s) {
 			s->GetTechnique()->GetTechniqueName(),
 			s->GetTechnique()->GetStringStatus());
 	}
+	if (s->IsThePlayer()) {
+		std::println("Choose action:");
+		std::println("1-Use Technique, 2-Straight hands, 3-Use Special, 4-Domain, 5-Taunt");
+		std::print("=> ");
+	}
+}
+
+bool CleanupSorcerers(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+	auto [removed_begin, removed_end] = std::ranges::remove_if(battlefield, [](const auto& s) {
+		if (s->GetCharacterHealth() <= 0.0) {
+			std::println("{} has been defeated and is removed from the battlefield!", s->GetName());
+			return true;
+		}
+		return false;
+	});
+	battlefield.erase(removed_begin, removed_end);
+
+	bool player_alive = false;
+	for (const auto& c : battlefield) {
+		if (c->IsThePlayer()) {
+			player_alive = true;
+		}
+		c->RegenCE();
+	}
+	return player_alive;
 }
 
 void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {

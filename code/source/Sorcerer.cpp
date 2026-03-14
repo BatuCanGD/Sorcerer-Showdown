@@ -82,7 +82,7 @@ void Sorcerer::DeactivateDomain() {
     }
 }
 
-void Sorcerer::ActivateDomain(Character* user) {
+void Sorcerer::ActivateDomain(Sorcerer* user) {
     if (total_domain_uses >= domain_limit) {
         user->Damage(50.0);
         user->SetStunState(true);
@@ -90,6 +90,7 @@ void Sorcerer::ActivateDomain(Character* user) {
         return;
     }
     domain_active = true;
+    std::println("*****Domain Expansion*****\n""**{}**", user->GetDomain()->GetDomainName());
     if (technique) {
         technique->Set(Technique::Status::DomainBoost);
     }
