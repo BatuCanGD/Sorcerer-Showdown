@@ -5,13 +5,15 @@
 
 import std;
 
-void ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>& battlefield);
-void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts);
 void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield, FightActions& fighting, CombatContext& context);
+void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts);
 Sorcerer* TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>&, Sorcerer*);
+void ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>& battlefield);
+void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield);
 bool CleanupSorcerers(std::vector<std::unique_ptr<Sorcerer>>&);
 void DisplaySorcererStatus(Sorcerer* s);
-void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield);
+void ClearScreen();
+
 
 
 int main() { // main
@@ -21,7 +23,7 @@ int main() { // main
 	SetupBattlefield(battlefield, sorcerer_counts);
 	ShowBattleEntry(battlefield);
 	
-	battlefield[0].get()->SetAsPlayer(true); // set the first sorcerer inserted as the player
+	battlefield[0]->SetAsPlayer(true); // set the first sorcerer inserted as the player
 
 	CombatContext context;
 	FightActions fighting;
@@ -42,9 +44,9 @@ int main() { // main
 				s->OnSorcererTurn();
 				s->CheckSpecial(s.get());
 
-				for (int i = 0; i < 2; i++) std::println(" ");
+				std::println("\n");
 			}
-			std::cin.ignore();
+			std::cin.get();
 		}
 
 		bool player_found = CleanupSorcerers(battlefield);
@@ -58,10 +60,10 @@ int main() { // main
 			std::println("Congratulations! You have defeated all other sorcerers and won the battle!");
 			break;
 		}
-		for (int i = 0; i < 20; i++) std::println(" ");
+		ClearScreen();
 	}
 	std::println("press enter to end the game...");
-	std::cin.ignore();
+	std::cin.get();
 	return 0;
 }
 
@@ -110,11 +112,8 @@ void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& bat
 			std::println("You dont have a domain to use!");
 			break;
 		}
-		if (s.DomainActive()) {
-			fighting.CheckDomain(&s);
-			break;
-		}
 		s.ActivateDomain(&s);
+		fighting.CheckDomain(&s);
 		break;
 	}
 	case 5: {
@@ -175,7 +174,7 @@ void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::
 				battlefield.push_back(std::move(s));
 			}
 		}
-		system("cls");
+		ClearScreen();
 	}
 }
 
@@ -298,4 +297,8 @@ Sorcerer* TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>& battlefie
 		return nullptr;
 	}
 	return battlefield[t].get();
+}
+
+void ClearScreen() {
+	std::print("\033[2J\033[H");
 }
