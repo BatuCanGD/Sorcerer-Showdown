@@ -224,21 +224,6 @@ void DisplaySorcererStatus(Sorcerer* s) {
 			s->GetTechnique()->GetTechniqueName(),
 			s->GetTechnique()->GetStringStatus());
 	}
-
-	/* reference
-		std::println("-------{}'s Turn------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
-		std::println("Health: {}, Cursed Energy: {}", s->GetCharacterHealth(), s->GetCharacterCE());
-		if (s->GetDomain() != nullptr) {
-			std::println("Domain: {} [{}]",
-				s->GetDomain()->GetDomainName(),
-				s->DomainActive() ? "Active" : "Inactive");
-		}
-		if (s->GetTechnique() != nullptr) {
-			std::println("Technique: {} [{}]",
-				s->GetTechnique()->GetTechniqueName(),
-				s->GetTechnique()->GetStringStatus());
-		}
-	*/
 }
 
 void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
