@@ -5,9 +5,9 @@
 
 import std;
 
-void GetSorcererTechnique(Sorcerer*, Character*);
 void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts);
 Sorcerer* TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>&, Sorcerer*);
+void DisplaySorcererStatus(Sorcerer* s);
 void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield);
 
 
@@ -46,20 +46,9 @@ int main() { // main
 			if (s->GetCharacterHealth() <= 0.0) continue;
 
 			if (s->IsThePlayer()) {
-				std::println("-------Player's ({}'s) Turn------- {}", s.get()->GetName(), s.get()->IsCharacterStunned() ? "(Stunned)" : "");
-				std::println("Health: {}, Cursed Energy: {}", s.get()->GetCharacterHealth(), s.get()->GetCharacterCE());
-				if (s->GetDomain() != nullptr) {
-					std::println("Domain: {} [{}]",
-						s->GetDomain()->GetDomainName(),
-						s->DomainActive() ? "Active" : "Inactive");
-				}
-				if (s->GetTechnique() != nullptr) {
-					std::println("Technique: {} [{}]",
-						s->GetTechnique()->GetTechniqueName(),
-						s->GetTechnique()->GetStringStatus());
-				}
-				std::println(" ");
-
+				
+				DisplaySorcererStatus(s.get());
+				
 				std::println("Choose action:");
 				std::println("1-Use Technique, 2-Straight hands, 3-Use Special, 4-Domain, 5-Taunt");
 				std::print("=> ");
@@ -74,7 +63,7 @@ int main() { // main
 					Sorcerer* target = TargetSelector(battlefield, s.get());
 
 					if (target) {
-						GetSorcererTechnique(s.get(), target);
+						s->GetTechnique()->TechniqueMenu(s.get(), target);
 					}
 					break;
 				}
@@ -94,13 +83,12 @@ int main() { // main
 						break;
 					}
 					if (s->DomainActive()) {
-
 						fighting.CheckDomain(s.get());
 						break;
 					}
 
 					s->ActivateDomain(s.get());
-					std::println("Domain Expansion: {}", s->GetDomain()->GetDomainName());
+					std::println("*****Domain Expansion*****\n""**{}**", s->GetDomain()->GetDomainName());
 
 					break;
 				}
@@ -119,19 +107,7 @@ int main() { // main
 				for (int i = 0; i < 2; i++) std::println(" ");
 			}
 			else {
-				std::println("-------{}'s Turn------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
-				std::println("Health: {}, Cursed Energy: {}", s->GetCharacterHealth(), s->GetCharacterCE());
-				if (s->GetDomain() != nullptr) {
-					std::println("Domain: {} [{}]",
-						s->GetDomain()->GetDomainName(),
-						s->DomainActive() ? "Active" : "Inactive");
-				}
-				if (s->GetTechnique() != nullptr) {
-					std::println("Technique: {} [{}]",
-						s->GetTechnique()->GetTechniqueName(),
-						s->GetTechnique()->GetStringStatus());
-				}
-				std::println(" ");
+				DisplaySorcererStatus(s.get());
 
 				s->OnSorcererTurn();
 				s->CheckSpecial(s.get());
@@ -140,7 +116,6 @@ int main() { // main
 			}
 			std::cin.ignore();
 		}
-
 		//// DEFEATED CHARACTER REMOVAL ////
 		auto [removed_begin, removed_end] = std::ranges::remove_if(battlefield, [](const auto& s) {
 			if (s->GetCharacterHealth() <= 0.0) {
@@ -177,44 +152,6 @@ int main() { // main
 	std::println("press enter to end the game...");
 	std::cin.ignore();
 	return 0;
-}
-
-void GetSorcererTechnique(Sorcerer* user, Character* target) {
-	if (user->GetTechnique() == nullptr) return;
-
-	int choice = 0;
-	
-	if (Limitless* limitless = dynamic_cast<Limitless*>(user->GetTechnique())) {
-		std::println("1-use Blue, 2-use Red, 3-use Purple");
-		std::print("=> ");
-
-		std::cin >> choice;
-		switch (choice) {
-		case 1:
-		case 2:
-		case 3:
-			limitless->UseTheLimitlessTechnique(static_cast<Limitless::LimitlessType>(choice), user, target);
-			break;
-		default:
-			std::println("Invalid Choice");
-		}
-
-
-	}
-	else if (Shrine* shrine = dynamic_cast<Shrine*>(user->GetTechnique())) {
-		std::println("1-use Dismantle, 2-use Cleave");
-		std::cin >> choice;
-
-		switch (choice) {
-		case 1:
-		case 2:
-			shrine->UseShrineTechnique(static_cast<Shrine::ShrineType>(choice), user, target);
-			break;
-		default:
-			std::println("Invalid Choice");
-		}
-	}
-	std::cin.ignore();
 }
 
 void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts) {
@@ -256,7 +193,7 @@ void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::
 			switch (c) {
 			case 1:   s = std::make_unique<Gojo>(); break;
 			case 2:   s = std::make_unique<Sukuna>(); break;
-			case 151: s = std::make_unique<test>(); break;
+			case 151: s = std::make_unique<test_sorcerer>(); break;
 			}
 
 			if (s) {
@@ -266,6 +203,42 @@ void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::
 		}
 		system("cls");
 	}
+}
+
+void DisplaySorcererStatus(Sorcerer* s) {
+	if (s->IsThePlayer()) {
+		std::println("-------Player's ({}'s) Turn------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
+	}
+	else {
+		std::println("-------{}'s Turn------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
+	}
+
+	std::println("Health: {}, Cursed Energy: {}", s->GetCharacterHealth(), s->GetCharacterCE());
+	if (s->GetDomain() != nullptr) {
+		std::println("Domain: {} [{}]",
+			s->GetDomain()->GetDomainName(),
+			s->DomainActive() ? "Active" : "Inactive");
+	}
+	if (s->GetTechnique() != nullptr) {
+		std::println("Technique: {} [{}]",
+			s->GetTechnique()->GetTechniqueName(),
+			s->GetTechnique()->GetStringStatus());
+	}
+
+	/* reference
+		std::println("-------{}'s Turn------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
+		std::println("Health: {}, Cursed Energy: {}", s->GetCharacterHealth(), s->GetCharacterCE());
+		if (s->GetDomain() != nullptr) {
+			std::println("Domain: {} [{}]",
+				s->GetDomain()->GetDomainName(),
+				s->DomainActive() ? "Active" : "Inactive");
+		}
+		if (s->GetTechnique() != nullptr) {
+			std::println("Technique: {} [{}]",
+				s->GetTechnique()->GetTechniqueName(),
+				s->GetTechnique()->GetStringStatus());
+		}
+	*/
 }
 
 void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {

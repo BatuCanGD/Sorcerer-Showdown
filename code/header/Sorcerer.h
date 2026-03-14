@@ -95,9 +95,9 @@ public:
 
 
 
-class test : public Sorcerer {
+class test_sorcerer : public Sorcerer {
 public:
-	test();
+	test_sorcerer();
 	std::string GetName() const override;
 	void OnSorcererTurn() override;
 	bool CanBeHit() const override;

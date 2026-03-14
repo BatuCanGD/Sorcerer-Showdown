@@ -157,7 +157,6 @@ bool Gojo::CanBeHit() const {
     return true;
 }
 
-
 // ---------------- Sukuna -------------------
 
 Sukuna::Sukuna() : Sorcerer(1000.0, 12000.0, 25.0) {
@@ -182,17 +181,17 @@ bool Sukuna::CanBeHit() const {
 
 /// for testing stuff, use this class
 
-test::test() : Sorcerer(30000000.0, 30000000.0, 1000.0) {
+test_sorcerer::test_sorcerer() : Sorcerer(30000000.0, 30000000.0, 1000.0) {
 	domain = std::make_unique<KillEveryoneDomain>();
 }
 
-void test::OnSorcererTurn() {
+void test_sorcerer::OnSorcererTurn() {
     std::println("I'm the strongest dude");
 }
-std::string test::GetName() const {
+std::string test_sorcerer::GetName() const {
     return "John Zenin";
 }
 
-bool test::CanBeHit() const {
+bool test_sorcerer::CanBeHit() const {
     return true;
 }

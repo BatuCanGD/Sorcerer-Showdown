@@ -19,6 +19,7 @@ public:
 	double CalculateDamage(Sorcerer* user, double cost);
 	std::string GetStringStatus() const;
 	virtual std::string GetTechniqueName() const = 0;
+	virtual void TechniqueMenu(Sorcerer* user, Character* target) = 0;
 };
 
 class Limitless : public Technique { // LIMITLESS
@@ -44,6 +45,7 @@ public:
 	double PurpleTechniqueDamageTarget(Sorcerer* user, Character* target);
 	void UseTheLimitlessTechnique(LimitlessType choice, Sorcerer* s, Character* c);
 	std::string GetTechniqueName() const override;
+	void TechniqueMenu(Sorcerer* user, Character* target) override;
 };
 
 
@@ -60,5 +62,6 @@ public:
 	double CleaveTechniqueDamageTarget(Sorcerer* user, Character* target);
 	double DismantleTechniqueDamageTarget(Sorcerer* user, Character* target);
 	void UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c);
+	void TechniqueMenu(Sorcerer* user, Character* target) override;
 };
 

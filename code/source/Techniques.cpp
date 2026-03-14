@@ -2,6 +2,7 @@
 #include "Sorcerer.h"
 #include "Character.h"
 #include <print>
+#include <iostream>
 
 void Technique::Set(Status s) {
     state = s;
@@ -103,6 +104,14 @@ void Limitless::InfinityNerf() {
 	// do later
 }
 
+void Limitless::TechniqueMenu(Sorcerer* user, Character* target) {
+    std::println("1-use Blue, 2-use Red, 3-use Purple");
+    std::print("=> ");
+    size_t choice = 0;
+    std::cin >> choice;
+    UseTheLimitlessTechnique(static_cast<LimitlessType>(choice), user, target);
+}
+
 // ---------------- Shrine -------------------
 
 void Shrine::SetWCS(bool s) {
@@ -137,4 +146,12 @@ void Shrine::UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c) {
 
 std::string Shrine::GetTechniqueName() const {
     return "Shrine";
+}
+
+void Shrine::TechniqueMenu(Sorcerer* user, Character* target) {
+    std::println("1-use Dismantle, 2-use Cleave");
+    std::print("=> ");
+    size_t choice = 0;
+    std::cin >> choice;
+    UseShrineTechnique(static_cast<ShrineType>(choice), user, target);
 }
