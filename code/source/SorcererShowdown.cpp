@@ -6,59 +6,16 @@
 import std;
 
 void GetSorcererTechnique(Sorcerer*, Character*);
+void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts);
+Sorcerer* TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>&, Sorcerer*);
+void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield);
+
 
 int main() { // main
 	std::vector<std::unique_ptr<Sorcerer>> battlefield;
-	
-	bool choosing = true;
-	int gojo_count = 0, sukuna_count = 0, test_count = 0;
-	int c = -1;
+	std::map <std::string, int> sorcerer_counts;
 
-	std::println("Choose your sorcerer and the amount of opponents you want to fight!");
-	while (choosing) {
-		std::println("1-Gojo, 2-Sukuna, 0-Done");
-		std::println("Player: {}, Gojo count: {}, Sukuna count: {}, Sorcerer count: {}",
-			battlefield.empty() ? "None" : battlefield[0]->GetName(),
-			gojo_count, 
-			sukuna_count, 
-			battlefield.size());
-
-		std::cin >> c;
-		switch (c) {
-		case 1: {
-			battlefield.push_back(std::make_unique<Gojo>());
-			gojo_count++;
-			break;
-		}
-		case 2: {
-			battlefield.push_back(std::make_unique<Sukuna>());
-			sukuna_count++;
-			break;
-		}
-		case 151: {
-			battlefield.push_back(std::make_unique<test>());
-			test_count++;
-			break;
-		}
-		case 0: {
-			if (battlefield.size() < 2) {
-				std::println("You need at least 2 sorcerer (yourself and an opponent) to play!");
-			}
-			else {
-				choosing = false;
-			}
-			break;
-		}
-		case -1: {
-			return 0;
-		}
-		default:
-			std::println("Enter 0 if you want to fight or -1 to quit the program");
-		}
-		system("cls");
-	}
-
-
+	SetupBattlefield(battlefield, sorcerer_counts);
 
 	if (battlefield.size() < 2) {
 		std::println("Not enough sorcerers to start the fight");
@@ -107,15 +64,24 @@ int main() { // main
 				std::println("1-Use Technique, 2-Straight hands, 3-Use Special, 4-Domain, 5-Taunt");
 				std::print("=> ");
 				size_t plrch = 0; std::cin >> plrch;
-				
 
 				switch (plrch) {
 				case 1: {
-					GetSorcererTechnique(s.get(), battlefield[1].get());
+					if (s->GetTechnique() == nullptr) {
+						std::println("You don't have a technique to use!");
+						break;
+					}
+					Sorcerer* target = TargetSelector(battlefield, s.get());
+
+					if (target) {
+						GetSorcererTechnique(s.get(), target);
+					}
 					break;
 				}
 				case 2: {
-					fighting.Attack(s.get(), battlefield[1].get());
+					if (Sorcerer* target = TargetSelector(battlefield, s.get())) {
+						fighting.Attack(s.get(), target);
+					}	
 					break;
 				}
 				case 3: {
@@ -123,21 +89,25 @@ int main() { // main
 					break;
 				}
 				case 4: {
-					if (s.get()->GetDomain() == nullptr) break;
-
-					if (s.get()->DomainActive()) {
+					if (s->GetDomain() == nullptr) {
+						std::println("You dont have a domain to use!");
+						break;
+					}
+					if (s->DomainActive()) {
 
 						fighting.CheckDomain(s.get());
 						break;
 					}
 
-					s.get()->ActivateDomain(s.get());
-					std::println("Domain Expansion: {}", s.get()->GetDomain()->GetDomainName());
+					s->ActivateDomain(s.get());
+					std::println("Domain Expansion: {}", s->GetDomain()->GetDomainName());
 
 					break;
 				}
 				case 5: {
-					context.Taunt(s.get(), battlefield[1].get());
+					if (Sorcerer* target = TargetSelector(battlefield, s.get())) {
+						context.Taunt(s.get(), target);
+					}
 					break;
 				}
 				default:
@@ -181,58 +151,10 @@ int main() { // main
 		});
 		battlefield.erase(removed_begin, removed_end);
 
-
-		//// DOMAIN EXPANSION CLASH TRIGGER AND CHECK ////
-		std::vector<Sorcerer*> active_domains;
-		for (const auto& s : battlefield) {
-			if (s->GetDomain() == nullptr) continue;
-			if (s->DomainActive()) {
-				active_domains.push_back(s.get());
-			}
-		}
-		for (auto s : active_domains) {
-			s->DomainDrain();
-		}
-
-
-		if (active_domains.size() > 2) {
-			for (const auto& s : active_domains) {
-				s->DeactivateDomain(); // dont forget / domain deactivation burns out the technique too
-				s->GetDomain()->SetClashState(false);
-			}
-		}
-		else if (active_domains.size() == 2) {
-			for (const auto& s : active_domains) {
-				s->GetDomain()->SetClashState(true);
-			}
-		}
-		else {
-			for (const auto& s : active_domains) {
-				if (s->GetDomain()->Clashing()) {
-					s->GetDomain()->SetClashState(false);
-				}
-			}
-		}
-		///// DOMAIN EFFECTS, WITHOUT CLASH /////
-
-		if (active_domains.size() == 1) {
-			Sorcerer* domain_user = active_domains[0];
-		
-			for (const auto& s : battlefield) {
-				if (s.get() == domain_user || s == nullptr) continue;
-				std::println("{}'s domain; {} has hit {}", 
-					domain_user->GetName(), 
-					domain_user->GetDomain()->GetDomainName(), 
-					s->GetName());
-
-				domain_user->GetDomain()->OnSureHit(*s);
-			}
-		}
+		DomainCheckAndPerform(battlefield);
 
 		std::println("press enter to Continue...");
 		std::cin.ignore();
-
-
 		/// CHECK IF PLAYER IS DEAD OR NOT /// DO OTHER STUFF ON THE SIDE
 		bool player_found = false;
 		for (const auto& c : battlefield) {
@@ -293,4 +215,130 @@ void GetSorcererTechnique(Sorcerer* user, Character* target) {
 		}
 	}
 	std::cin.ignore();
+}
+
+void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts) {
+	bool choosing = true;
+	int c = 0;
+
+	while (choosing) {
+		std::println("Choose your sorcerer and the amount of opponents you want to fight!");
+		std::println("===> Player: {}", battlefield.empty() ? "None" : battlefield[0]->GetName());
+
+		for (auto const& [name, count] : sorcerer_counts) {
+			if (count > 0) std::println("{} x{}", name, count);
+		}
+
+		std::println("\n1 - Gojo / 2 - Sukuna / -1 - Undo / 0 - Finish");
+
+		if (!(std::cin >> c)) {
+			std::cin.clear();
+			std::cin.ignore(1000, '\n');
+			continue;
+		}
+
+		if (c == 0) {
+			if (battlefield.size() < 2) {
+				std::println("You need 2 or more sorcerers to start the fight!");
+				std::cin.ignore();
+				std::cin.get();
+			}
+			else {
+				choosing = false;
+			}
+		}
+		else if (c == -1 && !battlefield.empty()) {
+			sorcerer_counts[battlefield.back()->GetName()]--;
+			battlefield.pop_back();
+		}
+		else {
+			std::unique_ptr<Sorcerer> s = nullptr;
+			switch (c) {
+			case 1:   s = std::make_unique<Gojo>(); break;
+			case 2:   s = std::make_unique<Sukuna>(); break;
+			case 151: s = std::make_unique<test>(); break;
+			}
+
+			if (s) {
+				sorcerer_counts[s->GetName()]++;
+				battlefield.push_back(std::move(s));
+			}
+		}
+		system("cls");
+	}
+}
+
+void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+		std::vector<Sorcerer*> active_domains;
+		for (const auto& s : battlefield) {
+			if (s->GetDomain() == nullptr) continue;
+			if (s->DomainActive()) {
+				active_domains.push_back(s.get());
+			}
+		}
+		for (auto s : active_domains) {
+			s->DomainDrain();
+		}
+
+
+		if (active_domains.size() > 2) {
+			for (const auto& s : active_domains) {
+				s->DeactivateDomain(); // dont forget / domain deactivation burns out the technique too
+				s->GetDomain()->SetClashState(false);
+			}
+		}
+		else if (active_domains.size() == 2) {
+			for (const auto& s : active_domains) {
+				s->GetDomain()->SetClashState(true);
+			}
+		}
+		else {
+			for (const auto& s : active_domains) {
+				if (s->GetDomain()->Clashing()) {
+					s->GetDomain()->SetClashState(false);
+				}
+			}
+		}
+		///// DOMAIN EFFECTS, WITHOUT CLASH /////
+
+		if (active_domains.size() == 1) {
+			Sorcerer* domain_user = active_domains[0];
+		
+			for (const auto& s : battlefield) {
+				if (s.get() == domain_user || s == nullptr) continue;
+				std::println("{}'s domain; {} has hit {}", 
+					domain_user->GetName(), 
+					domain_user->GetDomain()->GetDomainName(), 
+					s->GetName());
+
+				domain_user->GetDomain()->OnSureHit(*s);
+			}
+		}
+}
+
+Sorcerer* TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>& battlefield, Sorcerer* player) {
+	std::println("Choose your target:");
+	for (size_t i = 0; i < battlefield.size(); ++i) {
+		if (battlefield[i]->GetCharacterHealth() <= 0) continue;
+
+		if (battlefield[i].get() == player) {
+			std::println("{}: {} (You){}", i, 
+				battlefield[i]->GetName(), 
+				player->IsCharacterStunned() ? " (Stunned)" : "");
+		}
+		else {
+			std::println("{}: {}{}", i, 
+				battlefield[i]->GetName(), 
+				battlefield[i]->IsCharacterStunned() ? " (Stunned)" : "");
+		}
+	}
+
+	std::print("=> ");
+	size_t t;
+	if (!(std::cin >> t) || t >= battlefield.size() || battlefield[t].get() == player) {
+		if (std::cin.fail()) { std::cin.clear(); std::cin.ignore(1000, '\n'); }
+		std::println("Target missed or invalid!");
+		return nullptr;
+	}
+	return battlefield[t].get();
 }

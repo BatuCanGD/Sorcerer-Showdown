@@ -36,3 +36,11 @@ public:
 	void OnSureHit(Character& target) override;
 	std::string GetDomainName() const override;
 };
+
+class KillEveryoneDomain : public Domain {
+protected:
+	static constexpr double surehit_killdamage = INT32_MAX;
+public:
+	void OnSureHit(Character& target) override;
+	std::string GetDomainName() const override;
+};

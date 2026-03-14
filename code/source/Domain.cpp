@@ -39,3 +39,13 @@ void MalevolentShrine::OnSureHit(Character & target) {
 std::string MalevolentShrine::GetDomainName() const {
     return "Malevolent Shrine";
 }
+
+// test domain for testing and fun purposes, use it to kill everyone in the game
+
+void KillEveryoneDomain::OnSureHit(Character & target) {
+    if (clashing) return;
+    target.DamageBypass(surehit_killdamage);
+}
+std::string KillEveryoneDomain::GetDomainName() const {
+    return "KillEveryone Domain 3000";
+}

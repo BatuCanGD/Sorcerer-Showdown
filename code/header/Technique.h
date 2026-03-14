@@ -61,3 +61,4 @@ public:
 	double DismantleTechniqueDamageTarget(Sorcerer* user, Character* target);
 	void UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c);
 };
+

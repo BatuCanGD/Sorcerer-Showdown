@@ -53,12 +53,14 @@ bool Sorcerer::HasSixEyes() const {
 }
 
 void Sorcerer::SpendCE(double ce) {
+    double efficiency = 1.0;
     if (HasSixEyes()) {
-        cursed_energy -= ce * 0.10;
+        efficiency = 0.05;
+        if (technique && technique->GetStatus() == Technique::Status::BurntOut) {
+            efficiency = 0.50; 
+        }
     }
-    else {
-        cursed_energy -= ce;
-    }
+    cursed_energy -= (ce * efficiency);
 }
 
 void Sorcerer::DisableRCT() {
@@ -180,7 +182,8 @@ bool Sukuna::CanBeHit() const {
 
 /// for testing stuff, use this class
 
-test::test() : Sorcerer(9999999.9, 999999.9, 1000.0) {
+test::test() : Sorcerer(30000000.0, 30000000.0, 1000.0) {
+	domain = std::make_unique<KillEveryoneDomain>();
 }
 
 void test::OnSorcererTurn() {
