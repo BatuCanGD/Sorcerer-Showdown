@@ -5,13 +5,14 @@
 
 class Shikigami : public Character {
 protected:
+	static constexpr double shadow_health_regen = 30.0;
 	int active_turn_amount = 0;
-	enum class ShikigamiStatus {
+	enum class State {
 		Shadow,
-		PartialManifestation,
-		Manifested
+		Partial,
+		Full
 	};
-	ShikigamiStatus shikigami_stats = ShikigamiStatus::Shadow;
+	State shikigami_state = State::Shadow;
 public:
 	Shikigami(double hp, double ce, double re);
 	void PartiallyManifest();
@@ -20,7 +21,7 @@ public:
 	void ActiveTimeIncrementor();
 	bool IsActive() const;
 	bool IsActivePhysically() const;
-	virtual void OnShikigamiTurn() = 0;		
+	virtual void OnShikigamiTurn(Sorcerer*) = 0;		
 	std::string GetName() const override;
 	bool CanBeHit() const override;
 };
@@ -29,6 +30,7 @@ class Mahoraga : public Shikigami {
 public:
 	Mahoraga();
 protected:
+	const double keep_active_cost = 200.0;
 	enum class InfinityAdaptation {
 		None,
 		FirstSpin,
@@ -40,7 +42,7 @@ protected:
 public:
 	void Adapt();
 	bool FullyAdaptedToInfinity()const;
-	void OnShikigamiTurn() override;
+	void OnShikigamiTurn(Sorcerer*) override;
 	std::string GetName() const override;
 	bool CanBeHit() const override;
 };
@@ -49,11 +51,11 @@ class Agito : public Shikigami {
 public:
 	Agito();
 protected:
-	const double passive_heal_amount = 10.0;
-	const double summon_amount = 20.0;
+	const double passive_heal_amount = 35.0;
+	const double summon_amount = 150.0;
 public:
 	void PassiveSupport(Sorcerer* user);
-	void OnShikigamiTurn() override;
+	void OnShikigamiTurn(Sorcerer*) override;
 	std::string GetName() const override;
 	bool CanBeHit() const override;
 };

@@ -36,9 +36,8 @@ void FightActions::UseTechnique(Sorcerer* user, Character* target) {
 	else {
 		user->SetUsingTechnique();
 	}
-
-
 }
+
 void FightActions::CheckDomain(Sorcerer* user) {
 	if (user->DomainActive()) {
 		user->SetUsingDomain();

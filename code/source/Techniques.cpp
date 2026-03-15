@@ -19,8 +19,8 @@ std::string Technique::GetTechniqueName() const {
 double Technique::GetTechniqueOutput() const {
     switch (state) {
     case Status::Usable:      return 1.0;
-    case Status::DomainBoost: return 1.5;
-    case Status::BurntOut:    return 0.0;
+    case Status::DomainBoost: return 2.0;
+    case Status::BurntOut:    return 0.35;
     default:                  return 1.0;
     }
 }

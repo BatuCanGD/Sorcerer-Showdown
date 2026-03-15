@@ -10,6 +10,7 @@
 Character::Character(double hp, double ce, double regen)
 	: health(hp),
 	max_health(hp),
+	previous_health(hp),
 	cursed_energy(ce),
 	max_cursed_energy(ce),
 	ce_regen_efficiency(regen),
@@ -30,16 +31,16 @@ void Character::SetCursedEnergy(double c) {
 
 void Character::Damage(double h) {
 	if (CanBeHit() && !is_invulnerable) {
-		health -= h;
+		health = std::max(health - h, 0.0);
 	}
 }
 void Character::DamageBypass(double h) {
 	if (is_invulnerable) return;
-	health -= h;
+	health = std::max(health - h, 0.0);
 }
 
 void Character::Regen(double h) {
-    health += h;
+	health = std::min(health + h, max_health);
 }
 
 double Character::GetCharacterHealth() const {
@@ -53,7 +54,7 @@ double Character::GetCharacterCE() const {
 }
 
 void Character::SpendCE(double c) { 
-	cursed_energy -= c; 
+	cursed_energy = std::max(cursed_energy - c, 0.0);
 }
 
 void Character::RegenCE() {
@@ -63,9 +64,16 @@ void Character::RegenCE() {
 double Character::GetMaxCharCE() const {
 	return max_cursed_energy;
 }
+double Character::GetCharacterPreviousHealth() const {
+	return previous_health;
+}
 
 void Character::SetStunState(bool s) {
 	is_stunned = s;
+}
+
+void Character::UpdatePreviousHP() {
+	previous_health = health;
 }
 
 bool Character::IsAttacking() const {

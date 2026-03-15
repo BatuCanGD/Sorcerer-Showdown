@@ -1,21 +1,23 @@
 #include "Shikigami.h"
 #include "Sorcerer.h"
 
+#include <print>
+
 // --- Base Shikigami  ---
 
 Shikigami::Shikigami(double hp, double ce, double re) : Character(hp, ce, re) {
 }
 
 void Shikigami::PartiallyManifest() {
-    shikigami_stats = ShikigamiStatus::PartialManifestation;
+    shikigami_state = State::Partial;
 }
 
 void Shikigami::Manifest() {
-    shikigami_stats = ShikigamiStatus::Manifested;
+    shikigami_state = State::Full;
 }
 
 void Shikigami::Withdraw() {
-    shikigami_stats = ShikigamiStatus::Shadow;
+    shikigami_state = State::Shadow;
 }
 
 void Shikigami::ActiveTimeIncrementor() {
@@ -24,12 +26,12 @@ void Shikigami::ActiveTimeIncrementor() {
 }
 
 bool Shikigami::IsActive() const {
-    return shikigami_stats == ShikigamiStatus::PartialManifestation ||
-            shikigami_stats == ShikigamiStatus::Manifested;
+    return shikigami_state == State::Partial ||
+            shikigami_state == State::Full;
 }
 
 bool Shikigami::IsActivePhysically() const {
-    return shikigami_stats == ShikigamiStatus::Manifested;
+    return shikigami_state == State::Full;
 }
 
 
@@ -43,7 +45,7 @@ bool Shikigami::CanBeHit() const {
 
 // ------------- Mahoraga --------------
 
-Mahoraga::Mahoraga() : Shikigami(300.0, 1000.0, 50.0) {}
+Mahoraga::Mahoraga() : Shikigami(400.0, 1000.0, 50.0) {}
 
 void Mahoraga::Adapt() {
     if (!IsActive()) return;
@@ -69,16 +71,27 @@ bool Mahoraga::FullyAdaptedToInfinity() const {
     return InfStage == InfinityAdaptation::FourthSpin;
 }
 
-void Mahoraga::OnShikigamiTurn() {
-    ActiveTimeIncrementor();
-    Adapt();
+void Mahoraga::OnShikigamiTurn(Sorcerer* user) {
+    if (IsActive()) {
+        Regen(shadow_health_regen);
+    }
+    else {
+		if (user->GetCharacterCE() < keep_active_cost) {
+            std::println("Mahoraga cannot maintain its active state due to insufficient Cursed Energy! It withdraws back into the shadows");
+            Withdraw();
+            return;
+        }
+        ActiveTimeIncrementor();
+        Adapt();
+		user->SpendCE(keep_active_cost); 
+    }
 }
 std::string Mahoraga::GetName() const {
     return "Mahoraga";
 }
 
 bool Mahoraga::CanBeHit() const {
-    if (this->IsActivePhysically()) {
+    if (IsActivePhysically()) {
         return true;
     }
     return false;
@@ -87,24 +100,36 @@ bool Mahoraga::CanBeHit() const {
 
 // ---------- Agito ----------
 
-Agito::Agito() : Shikigami(200.0, 500.0, 20.0) {}
+Agito::Agito() : Shikigami(150.0, 500.0, 20.0) {}
 
-void Agito::PassiveSupport(Sorcerer* user) {
-    if (this->IsActive()) {
-        user->Regen(passive_heal_amount);
-        user->SpendCE(summon_amount);
-    }
-
-}
 std::string Agito::GetName() const {
     return "Agito";
 }
-void Agito::OnShikigamiTurn() {
-    ActiveTimeIncrementor();
+
+void Agito::PassiveSupport(Sorcerer* user) {
+    if (IsActive()) {
+        user->Regen(passive_heal_amount);
+        user->SpendCE(summon_amount);
+    }
+}
+
+void Agito::OnShikigamiTurn(Sorcerer* user) {
+    if (IsActive()) {
+        Regen(shadow_health_regen);
+    }
+    else {    
+		if (user->GetCharacterCE() < summon_amount) {
+            std::println("Agito cannot maintain its support due to insufficient Cursed Energy! It withdraws back into the shadows");
+            Withdraw();
+            return;
+        }
+        ActiveTimeIncrementor();
+		PassiveSupport(user);
+    }
 }
 
 bool Agito::CanBeHit() const {
-    if (this->IsActivePhysically()) {
+    if (IsActivePhysically()) {
         return true;
     }
     return false;

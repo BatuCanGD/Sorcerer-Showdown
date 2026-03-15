@@ -7,6 +7,7 @@ class Character {
 protected:
 	double health = 100.0;
 	double max_health;
+	double previous_health;
 	double cursed_energy = 500.0;
 	const double max_cursed_energy;
 	double ce_regen_efficiency = 2.5;
@@ -43,6 +44,7 @@ public:
 	void Regen(double h);
 	virtual void SpendCE(double c);
 	void RegenCE();
+	void UpdatePreviousHP();
 	void SetStunState(bool s);
 	void ClearStunTime();
 	//////////////////////////////////////
@@ -65,6 +67,7 @@ public:
 
 	double GetCharacterHealth() const;
 	double GetCharacterMaxHealth() const;
+	double GetCharacterPreviousHealth() const;
 
 	bool IsCharacterStunned() const;
 	bool IsHeavenlyRestricted() const;

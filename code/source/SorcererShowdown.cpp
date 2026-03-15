@@ -14,8 +14,6 @@ bool CleanupSorcerers(std::vector<std::unique_ptr<Sorcerer>>&);
 void DisplaySorcererStatus(Sorcerer* s);
 void ClearScreen();
 
-
-
 int main() { // main
 	std::vector<std::unique_ptr<Sorcerer>> battlefield;
 	std::map <std::string, int> sorcerer_counts;
@@ -33,6 +31,7 @@ int main() { // main
 			if (s->GetCharacterHealth() <= 0.0) continue;
 
 			if (s->IsThePlayer()) {
+
 				DisplaySorcererStatus(s.get());
 				OnPlayerTurn(*s, battlefield, fighting, context);
 				
@@ -41,7 +40,7 @@ int main() { // main
 			else {
 				DisplaySorcererStatus(s.get());
 
-				s->OnSorcererTurn();
+				s->OnSorcererTurn(battlefield);
 				s->CheckSpecial(s.get());
 
 				std::println("\n");
@@ -52,11 +51,13 @@ int main() { // main
 		bool player_found = CleanupSorcerers(battlefield);
 		DomainCheckAndPerform(battlefield);
 
+		std::cin.get();
+
 		if (!player_found) {
 			std::println("You have been defeated! Game Over.");
 			break;
 		}
-		else if (battlefield.size() <= 1) {
+		else if (battlefield.size() == 1) {
 			std::println("Congratulations! You have defeated all other sorcerers and won the battle!");
 			break;
 		}
@@ -79,7 +80,7 @@ void ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>& battlefield) 
 	}
 
 	std::println("-------Let the battle between {} sorcerers begin!-------", battlefield.size());
-	std::println("--------------------------------------------------------");
+	std::println("-------------------------------------------------------");
 }
 
 void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield,FightActions& fighting,CombatContext& context){
@@ -112,7 +113,7 @@ void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& bat
 			std::println("You dont have a domain to use!");
 			break;
 		}
-		s.ActivateDomain(&s);
+		s.ActivateDomain();
 		fighting.CheckDomain(&s);
 		break;
 	}
@@ -180,10 +181,10 @@ void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::
 
 void DisplaySorcererStatus(Sorcerer* s) {
 	if (s->IsThePlayer()) {
-		std::println("-------Player's ({}'s) Turn------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
+		std::println("-------------Player's ({}'s) Turn-------------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
 	}
 	else {
-		std::println("-------{}'s Turn------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
+		std::println("-------------{}'s Turn-------------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
 	}
 
 	std::println("Health: {}, Cursed Energy: {}", s->GetCharacterHealth(), s->GetCharacterCE());
@@ -220,6 +221,8 @@ bool CleanupSorcerers(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
 			player_alive = true;
 		}
 		c->RegenCE();
+		c->UpdatePreviousHP();
+		c->ClearStunTime();
 	}
 	return player_alive;
 }

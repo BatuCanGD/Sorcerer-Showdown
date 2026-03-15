@@ -60,10 +60,10 @@ public:
 	void EnableRCT();
 	void BoostRCT();
 	void DeactivateDomain();
-	void ActivateDomain(Sorcerer* user);
+	void ActivateDomain();
 	void DomainDrain();
 	std::string GetName() const override;
-	virtual void OnSorcererTurn();
+	virtual void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) = 0;
 	virtual ~Sorcerer() = default;
 	bool CanBeHit() const override;
 };
@@ -73,7 +73,7 @@ class Gojo : public Sorcerer { // fighters
 public:
 	Gojo();
 	std::string GetName() const override;
-	void OnSorcererTurn() override;
+	void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) override;
 	bool CanBeHit() const override;
 };
 
@@ -88,7 +88,7 @@ protected:
 public:
 	Sukuna();
 	std::string GetName() const override;
-	void OnSorcererTurn() override;
+	void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) override;
 	bool CanBeHit() const override;
 };
 
@@ -99,6 +99,6 @@ class test_sorcerer : public Sorcerer {
 public:
 	test_sorcerer();
 	std::string GetName() const override;
-	void OnSorcererTurn() override;
+	void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) override;
 	bool CanBeHit() const override;
 };

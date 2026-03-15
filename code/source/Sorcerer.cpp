@@ -82,27 +82,32 @@ void Sorcerer::DeactivateDomain() {
     }
 }
 
-void Sorcerer::ActivateDomain(Sorcerer* user) {
+void Sorcerer::ActivateDomain() {
+    if (!domain) {
+        std::println("You don't have a domain to activate!");
+        return;
+	}
+    if (domain_active) {
+        std::println("Your domain is already active!");
+        return;
+	}
     if (total_domain_uses >= domain_limit) {
-        user->Damage(50.0);
-        user->SetStunState(true);
+        this->Damage(50.0);
+        this->SetStunState(true);
         std::println("You have overused your domain! You take 50 damage and are stunned for the next turn.");
         return;
     }
+
     domain_active = true;
-    std::println("*****Domain Expansion*****\n""**{}**", user->GetDomain()->GetDomainName());
+    total_domain_uses++;
+    std::println("*****Domain Expansion*****\n**{}**", this->GetDomain()->GetDomainName());
     if (technique) {
         technique->Set(Technique::Status::DomainBoost);
     }
-    total_domain_uses++;
 }
 
 std::string Sorcerer::GetName() const {
     return "Sorcerer";
-}
-
-void Sorcerer::OnSorcererTurn() {
-    std::println("override this");
 }
 
 bool Sorcerer::IsThePlayer() const {
@@ -146,8 +151,28 @@ std::string Gojo::GetName() const {
     return "Gojo";
 }
 
-void Gojo::OnSorcererTurn() {
-    std::println("go/jo");
+void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+    for (const auto& target : battlefield) {
+        if (target.get() == this) {
+			Technique* tech = this->GetTechnique();
+            double max_rct_regen = 125.0;
+            if (this->GetCharacterHealth() <= (this->GetCharacterMaxHealth() * 0.65)) {
+                double mult = tech->GetTechniqueOutput();
+                this->Regen(max_rct_regen * mult);
+                this->SpendCE(max_rct_regen / mult);
+            }
+        }
+
+        if (target->IsUsingDomain()) {
+            if (this->IsUsingDomain()) continue;
+			this->ActivateDomain();
+            return;
+        }
+        if (target->IsUsingTechnique()) {
+            std::println("Gojo fights back with his own technique!");
+            
+        }
+    }
 }
 
 bool Gojo::CanBeHit() const {
@@ -172,7 +197,7 @@ std::string Sukuna::GetName() const {
     return "Sukuna";
 }
 
-void Sukuna::OnSorcererTurn() {
+void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     std::println("fraudkuna");
 }
 
@@ -186,7 +211,7 @@ test_sorcerer::test_sorcerer() : Sorcerer(30000000.0, 30000000.0, 1000.0) {
 	domain = std::make_unique<KillEveryoneDomain>();
 }
 
-void test_sorcerer::OnSorcererTurn() {
+void test_sorcerer::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     std::println("I'm the strongest dude");
 }
 std::string test_sorcerer::GetName() const {
