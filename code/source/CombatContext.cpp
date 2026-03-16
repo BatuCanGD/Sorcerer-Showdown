@@ -1,10 +1,8 @@
 #include "CombatContext.h"
 #include "Character.h"
 #include "Sorcerer.h"
-#include "Fighting.h"
 
-#include <print>
-#include <random>
+import std;
 
 
 void WorldCuttingSlash::WorldCuttingSlashReady(Sorcerer* user) {

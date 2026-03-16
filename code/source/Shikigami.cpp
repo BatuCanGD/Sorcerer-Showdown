@@ -1,7 +1,7 @@
 #include "Shikigami.h"
 #include "Sorcerer.h"
 
-#include <print>
+import std;
 
 // --- Base Shikigami  ---
 
@@ -72,19 +72,18 @@ bool Mahoraga::FullyAdaptedToInfinity() const {
 }
 
 void Mahoraga::OnShikigamiTurn(Sorcerer* user) {
-    if (IsActive()) {
+    if (!IsActive()) {
         Regen(shadow_health_regen);
+        return;
     }
-    else {
-		if (user->GetCharacterCE() < keep_active_cost) {
-            std::println("Mahoraga cannot maintain its active state due to insufficient Cursed Energy! It withdraws back into the shadows");
-            Withdraw();
-            return;
-        }
-        ActiveTimeIncrementor();
-        Adapt();
-		user->SpendCE(keep_active_cost); 
+	if (user->GetCharacterCE() < keep_active_cost) {
+        std::println("Mahoraga cannot maintain its active state due to insufficient Cursed Energy! It withdraws back into the shadows");
+        Withdraw();
+        return;
     }
+    ActiveTimeIncrementor();
+    Adapt();
+	user->SpendCE(keep_active_cost); 
 }
 std::string Mahoraga::GetName() const {
     return "Mahoraga";
@@ -114,18 +113,17 @@ void Agito::PassiveSupport(Sorcerer* user) {
 }
 
 void Agito::OnShikigamiTurn(Sorcerer* user) {
-    if (IsActive()) {
+    if (!IsActive()) {
         Regen(shadow_health_regen);
+        return;
     }
-    else {    
-		if (user->GetCharacterCE() < summon_amount) {
-            std::println("Agito cannot maintain its support due to insufficient Cursed Energy! It withdraws back into the shadows");
-            Withdraw();
-            return;
-        }
-        ActiveTimeIncrementor();
-		PassiveSupport(user);
+	if (user->GetCharacterCE() < summon_amount) {
+        std::println("Agito cannot maintain its support due to insufficient Cursed Energy! It withdraws back into the shadows");
+        Withdraw();
+        return;
     }
+    ActiveTimeIncrementor();
+	PassiveSupport(user);
 }
 
 bool Agito::CanBeHit() const {

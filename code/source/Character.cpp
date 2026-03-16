@@ -1,11 +1,8 @@
-#include <string>
-#include <vector>
-#include <memory>
-
 #include "Character.h"
 #include "Sorcerer.h"
 #include "Technique.h"
 
+import std;
 
 Character::Character(double hp, double ce, double regen)
 	: health(hp),
@@ -75,40 +72,6 @@ void Character::SetStunState(bool s) {
 void Character::UpdatePreviousHP() {
 	previous_health = health;
 }
-
-bool Character::IsAttacking() const {
-	return current_attack == AttackType::Basic;
-}
-bool Character::IsUsingTechnique() const {
-	return current_attack == AttackType::Technique;
-}
-bool Character::IsUsingDomain() const {
-	return current_attack == AttackType::Domain;
-}
-bool Character::IsBlocking() const {
-	return block_state == BlockState::Blocking;
-}
-
-void Character::SetAttack() {
-	current_attack = AttackType::Basic;
-}
-void Character::SetUsingTechnique() {
-	current_attack = AttackType::Technique;
-}
-void Character::SetUsingDomain() {
-	current_attack = AttackType::Domain;
-}
-void Character::SetBlocking() {
-	block_state = BlockState::Blocking;
-}
-
-void Character::ResetAttackState() {
-	current_attack = AttackType::None;
-}
-void Character::ResetBlockState() {
-	block_state = BlockState::None;
-}
-
 
 bool Character::IsCharacterStunned() const {
 	return is_stunned;

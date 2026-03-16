@@ -1,7 +1,7 @@
 #include "Sorcerer.h"
 #include "Technique.h"
-#include <print>
 
+import std;
 
 bool Sorcerer::DomainActive() const {
     return domain_active;
@@ -34,7 +34,6 @@ void Sorcerer::CheckSpecial(Sorcerer* sorcerer) {
 
 
     if (auto* limitless = dynamic_cast<Limitless*>(technique.get())) {
-        
         std::println("no limitless special yet");
     }
     else if (auto* shrine = dynamic_cast<Shrine*>(technique.get())) {
@@ -82,6 +81,11 @@ void Sorcerer::DeactivateDomain() {
     }
 }
 
+void Sorcerer::Attack(Character* target) {
+     target->Damage(base_attack_damage);
+}
+
+
 void Sorcerer::ActivateDomain() {
     if (!domain) {
         std::println("You don't have a domain to activate!");
@@ -92,15 +96,14 @@ void Sorcerer::ActivateDomain() {
         return;
 	}
     if (total_domain_uses >= domain_limit) {
-        this->Damage(50.0);
+        this->DamageBypass(50.0);
         this->SetStunState(true);
         std::println("You have overused your domain! You take 50 damage and are stunned for the next turn.");
         return;
     }
-
     domain_active = true;
     total_domain_uses++;
-    std::println("*****Domain Expansion*****\n**{}**", this->GetDomain()->GetDomainName());
+    std::println("\n*****Domain Expansion*****\n**{}**", this->GetDomain()->GetDomainName());
     if (technique) {
         technique->Set(Technique::Status::DomainBoost);
     }
@@ -152,26 +155,23 @@ std::string Gojo::GetName() const {
 }
 
 void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
-    for (const auto& target : battlefield) {
-        if (target.get() == this) {
-			Technique* tech = this->GetTechnique();
-            double max_rct_regen = 125.0;
-            if (this->GetCharacterHealth() <= (this->GetCharacterMaxHealth() * 0.65)) {
-                double mult = tech->GetTechniqueOutput();
-                this->Regen(max_rct_regen * mult);
-                this->SpendCE(max_rct_regen / mult);
-            }
-        }
+    if (this->GetCharacterHealth() <= (this->GetCharacterMaxHealth() * 0.65)) {
+        Technique* tech = this->GetTechnique();
+        double max_rct_regen = 125.0;
+        double mult = tech->GetTechniqueOutput();
+        this->Regen(max_rct_regen * mult);
+        this->SpendCE(max_rct_regen / mult);
+    }
 
-        if (target->IsUsingDomain()) {
-            if (this->IsUsingDomain()) continue;
-			this->ActivateDomain();
+    for (const auto& target : battlefield) {
+        if (target.get() == this) continue;
+
+        if (target->DomainActive() && !this->DomainActive()) {
+            this->ActivateDomain();
             return;
         }
-        if (target->IsUsingTechnique()) {
-            std::println("Gojo fights back with his own technique!");
-            
-        }
+
+        std::println("Gojo fights back with his own technique!");
     }
 }
 
@@ -198,7 +198,28 @@ std::string Sukuna::GetName() const {
 }
 
 void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
-    std::println("fraudkuna");
+    Technique* tech = this->GetTechnique();
+    double max_rct_regen = 125.0;
+
+    if (this->GetCharacterHealth() <= (this->GetCharacterMaxHealth() * 0.70)) {
+        double mult = tech->GetTechniqueOutput();
+        this->Regen(max_rct_regen * mult);
+        this->SpendCE(max_rct_regen / mult);
+    }
+
+    std::vector<Sorcerer*> domain_users;
+    for (const auto& target : battlefield) {
+        if (target.get() == this) continue;
+        if (target->DomainActive()) {
+            domain_users.push_back(target.get());
+        }
+    }
+    if (domain_users.size() > 2 || domain_users.size() == 2) return;
+
+    if (!this->GetTechnique()->BurntOut()) {
+        this->ActivateDomain();
+    }
+    
 }
 
 bool Sukuna::CanBeHit() const {

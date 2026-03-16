@@ -1,11 +1,10 @@
 #include "Character.h"
 #include "Sorcerer.h"
 #include "CombatContext.h"
-#include "Fighting.h"
 
 import std;
 
-void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield, FightActions& fighting, CombatContext& context);
+void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield, CombatContext& context);
 void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts);
 Sorcerer* TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>&, Sorcerer*);
 void ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>& battlefield);
@@ -24,7 +23,6 @@ int main() { // main
 	battlefield[0]->SetAsPlayer(true); // set the first sorcerer inserted as the player
 
 	CombatContext context;
-	FightActions fighting;
 
 	while (true) {
 		for (const auto& s : battlefield) {
@@ -33,7 +31,7 @@ int main() { // main
 			if (s->IsThePlayer()) {
 
 				DisplaySorcererStatus(s.get());
-				OnPlayerTurn(*s, battlefield, fighting, context);
+				OnPlayerTurn(*s, battlefield, context);
 				
 				for (int i = 0; i < 2; i++) std::println(" ");
 			}
@@ -83,7 +81,7 @@ void ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>& battlefield) 
 	std::println("-------------------------------------------------------");
 }
 
-void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield,FightActions& fighting,CombatContext& context){
+void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield,CombatContext& context){
 	size_t plrch = 0; std::cin >> plrch;
 	switch (plrch) {
 	case 1: {
@@ -100,7 +98,7 @@ void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& bat
 	}
 	case 2: {
 		if (Sorcerer* target = TargetSelector(battlefield, &s)) {
-			fighting.Attack(&s, target);
+			// fill here
 		}	
 		break;
 	}
@@ -114,7 +112,6 @@ void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& bat
 			break;
 		}
 		s.ActivateDomain();
-		fighting.CheckDomain(&s);
 		break;
 	}
 	case 5: {

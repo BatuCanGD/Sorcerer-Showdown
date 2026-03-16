@@ -16,19 +16,6 @@ protected:
 	bool is_heavenly_restricted = false;
 
 	bool is_invulnerable = false;
-
-	enum class AttackType {
-		None,
-		Basic,
-		Technique,
-		Domain
-	};
-	enum class BlockState {
-		None,
-		Blocking,
-	};
-	AttackType current_attack = AttackType::None;
-	BlockState block_state = BlockState::None;
 public:
 
 	Character(double hp, double ce, double regen);
@@ -47,20 +34,6 @@ public:
 	void UpdatePreviousHP();
 	void SetStunState(bool s);
 	void ClearStunTime();
-	//////////////////////////////////////
-	void SetAttack();                 ///
-	void SetUsingTechnique();		  ///
-	void SetUsingDomain();			  ///
-	void SetBlocking();				  ///
-									  ///
-	bool IsAttacking() const;		  ///
-	bool IsUsingTechnique() const;	  ///
-	bool IsUsingDomain() const;       ///
-	bool IsBlocking() const;		  ///
-									  ///
-	void ResetAttackState();		  ///
-	void ResetBlockState();			  ///
-	////////////////////////////////////
 
 	double GetCharacterCE() const;
 	double GetMaxCharCE() const;

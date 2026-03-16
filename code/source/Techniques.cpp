@@ -1,8 +1,8 @@
 #include "Technique.h"
 #include "Sorcerer.h"
 #include "Character.h"
-#include <print>
-#include <iostream>
+
+import std;
 
 void Technique::Set(Status s) {
     state = s;
@@ -32,6 +32,16 @@ std::string Technique::GetStringStatus() const {
 	case Status::BurntOut:    return "Burnt Out";
     default:                  return "Unknown State";
     }
+}
+
+bool Technique::Boosted() const {
+    return state == Status::DomainBoost;
+}
+bool Technique::Usable() const {
+    return state == Status::Usable;
+}
+bool Technique::BurntOut() const {
+    return state == Status::BurntOut;
 }
 
 double Technique::CalculateDamage(Sorcerer* user, double cost) {

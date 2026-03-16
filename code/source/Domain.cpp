@@ -1,6 +1,8 @@
 #include "Domain.h"
 #include "Character.h"
 
+import std;
+
 // --- Base Domain  ---
 
 Domain::Domain(double hp, double as, double rn) : 
@@ -31,6 +33,23 @@ double Domain::GetDomainStrength() const {
 }
 double Domain::GetDomainRange() const {
     return current_range;
+}
+
+void Domain::DamageDomain(double damage) {
+    domain_health = std::max(domain_health - damage, 0.0);
+}
+
+void Domain::ClashDomains(Domain& user1, Domain& user2) {
+    if (user1.GetDomainRange() > user2.GetDomainRange()) {
+        user2.DamageDomain(user1.GetDomainStrength());
+    }
+    else if (user2.GetDomainRange() > user1.GetDomainRange()) {
+        user1.DamageDomain(user2.GetDomainStrength());
+    }
+    else {
+        user1.DamageDomain(user2.GetDomainStrength() * 0.5);
+        user2.DamageDomain(user1.GetDomainStrength() * 0.5);
+    }
 }
 
 // ---------------- Infinite Void ----------------

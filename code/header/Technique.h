@@ -20,6 +20,10 @@ public:
 	std::string GetStringStatus() const;
 	virtual std::string GetTechniqueName() const = 0;
 	virtual void TechniqueMenu(Sorcerer* user, Character* target) = 0;
+
+	bool Boosted() const;
+	bool BurntOut() const;
+	bool Usable() const;
 };
 
 class Limitless : public Technique { // LIMITLESS

@@ -25,6 +25,8 @@ protected:
 	
 	bool six_eyes = false;
 
+	double base_attack_damage = 20.0;
+
 	bool domain_active = false;
 	bool is_player = false;
 	const int domain_limit = 5;
@@ -61,6 +63,7 @@ public:
 	void BoostRCT();
 	void DeactivateDomain();
 	void ActivateDomain();
+	void Attack(Character*);
 	void DomainDrain();
 	std::string GetName() const override;
 	virtual void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) = 0;

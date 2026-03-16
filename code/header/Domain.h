@@ -24,6 +24,10 @@ public:
 	double GetDomainHealth() const;
 	double GetDomainStrength() const;
 	double GetDomainRange() const;
+
+	void DamageDomain(double);
+	void ClashDomains(Domain&,Domain&);
+	void DestroyDomain(Domain*);
 };
 
 
