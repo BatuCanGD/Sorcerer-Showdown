@@ -82,7 +82,7 @@ void ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>& battlefield) 
 }
 
 void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield,CombatContext& context){
-	size_t plrch = 0; std::cin >> plrch;
+	size_t plrch = 0, rctch = 0; std::cin >> plrch;
 	switch (plrch) {
 	case 1: {
 		if (s.GetTechnique() == nullptr) {
@@ -121,6 +121,26 @@ void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& bat
 		}
 		break;
 	}
+	case 6:
+		std::println("1-Enable RCT, 2-Boost RCT, 3-Disable RCT");
+		std::cin >> rctch;
+		switch (rctch) {
+		case 1:
+			s.EnableRCT();
+			std::println("You have started using RCT");
+			break;
+		case 2:
+			s.BoostRCT();
+			std::println("You have started pumping RCT at maximum output");
+			break;
+		case 3:
+			s.DisableRCT();
+			std::println("You have disabled RCT");
+			break;
+		default:
+			std::println("Invalid RCT Choice");
+		}
+		break;
 	default:
 		std::println("Invalid Choice");
 	}
@@ -198,7 +218,7 @@ void DisplaySorcererStatus(Sorcerer* s) {
 	}
 	if (s->IsThePlayer()) {
 		std::println("Choose action:");
-		std::println("1-Use Technique, 2-Straight hands, 3-Use Special, 4-Domain, 5-Taunt");
+		std::println("1-Use Technique, 2-Straight hands, 3-Use Special, 4-Domain, 5-Taunt, 6-RCT Usage");
 		std::print("=> ");
 	}
 }
@@ -214,13 +234,19 @@ bool CleanupSorcerers(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
 	battlefield.erase(removed_begin, removed_end);
 
 	bool player_alive = false;
+	
 	for (const auto& c : battlefield) {
+		auto limitless = dynamic_cast<Limitless*>(c->GetTechnique());
+		if (limitless) {
+			limitless->InfinityNerf(c.get());
+		}
 		if (c->IsThePlayer()) {
 			player_alive = true;
 		}
+
 		c->CleanupShikigami();
-		c->RegenCE();
 		c->UseRCT();
+		c->RegenCE();
 		c->UpdatePreviousHP();
 		c->ClearStunTime();
 		c->RecoverBurnout(c->GetTechnique());

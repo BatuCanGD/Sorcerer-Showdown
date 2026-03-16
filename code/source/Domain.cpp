@@ -60,7 +60,7 @@ void Domain::ClashDomains(Sorcerer& user1, Sorcerer& user2) {
     else {
         d1->DamageDomain(d2->GetDomainStrength() * 0.5);
         d2->DamageDomain(d1->GetDomainStrength() * 0.5);
-        std::println("The domains of {} and {} are locked in an even struggle!", d1->GetDomainName(), d2->GetDomainName());
+        std::println("The domains of {} and {} are locked in an even struggle!", user1.GetName(), user2.GetName());
     }
 
     if (d1->IsDestroyed()) {
