@@ -220,8 +220,10 @@ bool CleanupSorcerers(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
 		}
 		c->CleanupShikigami();
 		c->RegenCE();
+		c->UseRCT();
 		c->UpdatePreviousHP();
 		c->ClearStunTime();
+		c->RecoverBurnout(c->GetTechnique());
 	}
 	return player_alive;
 }
@@ -234,21 +236,22 @@ void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield) 
 				active_domains.push_back(s.get());
 			}
 		}
+
 		for (auto s : active_domains) {
 			s->DomainDrain();
 		}
 
-
 		if (active_domains.size() > 2) {
 			for (const auto& s : active_domains) {
 				s->DeactivateDomain(); // dont forget / domain deactivation burns out the technique too
-				s->GetDomain()->SetClashState(false);
+				s->GetDomain()->CollapseDomain();
 			}
 		}
 		else if (active_domains.size() == 2) {
-			for (const auto& s : active_domains) {
+			for (const auto& s : battlefield) {
 				s->GetDomain()->SetClashState(true);
 			}
+			active_domains[0]->GetDomain()->ClashDomains(*active_domains[0], *active_domains[1]);
 		}
 		else {
 			for (const auto& s : active_domains) {

@@ -26,7 +26,7 @@ void WorldCuttingSlash::WorldCuttingSlashReady(Sorcerer* user) {
 	}
 }
 
-void CombatContext::Taunt(Sorcerer* taunter, Character* taunted) {
+void CombatContext::Taunt(Sorcerer* taunter, Character* taunted) { // pure aura
 	if (!taunter || !taunted) return;
 	const double healthy_threshold = 0.70;
 	const double injured_threshold = 0.40;

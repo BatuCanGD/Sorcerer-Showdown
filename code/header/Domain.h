@@ -8,6 +8,7 @@ class Sorcerer;
 class Domain {
 protected:
 	double domain_health;
+	const double base_health;
 	double domain_overwhelm_strength;
 	const double base_range;
 	double current_range;
@@ -26,8 +27,10 @@ public:
 	double GetDomainRange() const;
 
 	void DamageDomain(double);
-	void ClashDomains(Domain&,Domain&);
-	void DestroyDomain(Domain*);
+	void ClashDomains(Sorcerer&,Sorcerer&);
+	void CollapseDomain();
+
+	bool IsDestroyed() const;
 };
 
 

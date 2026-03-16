@@ -74,6 +74,17 @@ void Sorcerer::BoostRCT() {
     rct_state = ReverseCT::Overdrive;
 }
 
+void Sorcerer::UseRCT() {
+    const double default_regen = 25.0;
+    const double overdrive_regen = 75.0;
+    if (rct_state == ReverseCT::Active) {
+        this->Regen(default_regen);
+    }
+    else if (rct_state == ReverseCT::Overdrive) {
+        this->Regen(overdrive_regen);
+    }
+}
+
 void Sorcerer::DeactivateDomain() {
     domain_active = false;
     if (technique) {
@@ -153,6 +164,19 @@ void Sorcerer::CleanupShikigami() {
     shikigami.erase(removed_begin, removed_end);
 }
 
+void Sorcerer::RecoverBurnout(Technique* t) {
+    if (t == nullptr) return;
+    
+    if (t->BurntOut()) {
+        burnout_time++;
+        if (burnout_time >= max_burnout_time) {
+            t->Set(Technique::Status::Usable);
+            burnout_time = 0;
+            std::println("{}'s cursed technique has recovered from burnout!", this->GetName());
+        }
+    }
+}
+
 // ---------------- Gojo -------------------
 
 Gojo::Gojo() : Sorcerer(800.0, 4000.0, 50.0) {
@@ -166,11 +190,11 @@ std::string Gojo::GetName() const {
 }
 
 void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
-    if (this->GetCharacterHealth() <= (this->GetCharacterMaxHealth() * 0.65)) {
-        double max_rct_regen = 35.0;
-        double mult = this->GetTechnique()->GetTechniqueOutput();
-        this->Regen(max_rct_regen * mult);
-        this->SpendCE(max_rct_regen / mult);
+    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.60) {
+        this->EnableRCT();
+    }
+    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25) {
+        this->BoostRCT();
     }
 
     for (const auto& target : battlefield) {
@@ -220,13 +244,11 @@ std::string Sukuna::GetName() const {
 }
 
 void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
-    Technique* tech = this->GetTechnique();
-    double max_rct_regen = 35.0;
-
-    if (this->GetCharacterHealth() <= (this->GetCharacterMaxHealth() * 0.70)) {
-        double mult = tech->GetTechniqueOutput();
-        this->Regen(max_rct_regen * mult);
-        this->SpendCE(max_rct_regen / mult);
+    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.55) {
+        this->EnableRCT();
+    }
+    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.35) {
+        this->BoostRCT();
     }
 
     std::vector<Sorcerer*> domain_users;

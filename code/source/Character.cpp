@@ -58,6 +58,7 @@ void Character::RegenCE() {
 	if (is_heavenly_restricted) return;
 	cursed_energy = std::min(cursed_energy + ce_regen_efficiency, max_cursed_energy);
 }
+
 double Character::GetMaxCharCE() const {
 	return max_cursed_energy;
 }

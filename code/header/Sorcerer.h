@@ -31,6 +31,8 @@ protected:
 	bool is_player = false;
 	const int domain_limit = 5;
 	int total_domain_uses = 0;
+	const int max_burnout_time = 2;
+	int burnout_time = 0;
 
 	bool domain_amplification_active = false;
 	enum class ReverseCT {
@@ -63,6 +65,7 @@ public:
 	void DisableRCT();
 	void EnableRCT();
 	void BoostRCT();
+	void UseRCT();
 
 	void DeactivateDomain();
 	void ActivateDomain();
@@ -75,6 +78,7 @@ public:
 	std::string GetName() const override;
 
 	virtual void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) = 0;
+	void RecoverBurnout(Technique*);
 	virtual ~Sorcerer() = default;
 	bool CanBeHit() const override;
 };

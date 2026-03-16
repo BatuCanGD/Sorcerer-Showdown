@@ -114,12 +114,11 @@ void Limitless::InfinityNerf(Sorcerer* user) {
     if (Infinity) {
         double maintain_cost = 100.0;
         if (user->GetCharacterCE() < maintain_cost) {
-            std::println("Gojo's concentration wavers due to low CE! Infinity is deactivated.");
+            std::println("{}'s concentration wavers due to low CE! Infinity is deactivated.", user->GetName());
             SetInfinity(false);
         }
         else {
-            // Using a custom spend that ignores the 0.05x multiplier for "Mental Strain"
-            user->SetCursedEnergy(user->GetCharacterCE() - 5.0);
+            user->SetCursedEnergy(user->GetCharacterCE() - 50.0);
         }
     }
 }
@@ -145,7 +144,7 @@ double Shrine::CleaveTechniqueDamageTarget(Sorcerer* user, Character* target) {
     return dmg;
 }
 double Shrine::DismantleTechniqueDamageTarget(Sorcerer* user, Character* target) {
-    println("{} uses Slash on {}!", user->GetName(), target->GetName());
+    println("{} uses Dismantle on {}!", user->GetName(), target->GetName());
     double dmg = CalculateDamage(user, slash_output);
     target->Damage(dmg);
     return dmg;
