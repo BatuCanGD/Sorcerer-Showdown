@@ -93,3 +93,10 @@ void Character::ClearStunTime() {
 std::string Character::GetName()const {
 	return "Character";
 }
+
+int Character::GetRandomNumber(int min, int max) {
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(min, max);
+	return dis(gen);
+}

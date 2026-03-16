@@ -16,6 +16,8 @@ protected:
 	bool is_heavenly_restricted = false;
 
 	bool is_invulnerable = false;
+
+	int GetRandomNumber(int min, int max);
 public:
 
 	Character(double hp, double ce, double regen);

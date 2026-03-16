@@ -110,8 +110,18 @@ bool Limitless::CheckInfinity() const {
     return Infinity;
 }
 
-void Limitless::InfinityNerf() {
-	// do later
+void Limitless::InfinityNerf(Sorcerer* user) {
+    if (Infinity) {
+        double maintain_cost = 100.0;
+        if (user->GetCharacterCE() < maintain_cost) {
+            std::println("Gojo's concentration wavers due to low CE! Infinity is deactivated.");
+            SetInfinity(false);
+        }
+        else {
+            // Using a custom spend that ignores the 0.05x multiplier for "Mental Strain"
+            user->SetCursedEnergy(user->GetCharacterCE() - 5.0);
+        }
+    }
 }
 
 void Limitless::TechniqueMenu(Sorcerer* user, Character* target) {
@@ -140,6 +150,12 @@ double Shrine::DismantleTechniqueDamageTarget(Sorcerer* user, Character* target)
     target->Damage(dmg);
     return dmg;
 }
+double Shrine::WorldCuttingSlashToTarget(Sorcerer* user, Character* target) {
+    println("{} uses the World Cutting Slash on {}!", user->GetName(), target->GetName());
+    double dmg = CalculateDamage(user, wcs_output);
+    target->DamageBypass(dmg);
+    return dmg;
+}
 
 void Shrine::UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c) {
     switch (choice) {
@@ -148,6 +164,10 @@ void Shrine::UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c) {
         break;
     case ShrineType::Cleave:
         Shrine::CleaveTechniqueDamageTarget(s, c);
+        break;
+    case ShrineType::WCS:
+        if (!world_cutting_slash_allowed) return;
+        Shrine::WorldCuttingSlashToTarget(s, c);
         break;
     default:
         std::println("Invalid input. No technique used.");
@@ -158,8 +178,18 @@ std::string Shrine::GetTechniqueName() const {
     return "Shrine";
 }
 
+bool Shrine::WorldCuttingSlashUnlocked() const {
+    return world_cutting_slash_allowed;
+}
+
 void Shrine::TechniqueMenu(Sorcerer* user, Character* target) {
-    std::println("1-use Dismantle, 2-use Cleave");
+    if (world_cutting_slash_allowed) {
+        std::println("1-use Dismantle, 2-use Cleave, 3-use WCS");
+    }
+    else {
+        std::println("1-use Dismantle, 2-use Cleave");
+    }
+
     std::print("=> ");
     size_t choice = 0;
     std::cin >> choice;

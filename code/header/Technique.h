@@ -41,7 +41,7 @@ public:
 	enum class LimitlessType { Blue = 1, Red = 2, Purple = 3 };
 
 	void SetInfinity(bool s);
-	void InfinityNerf(); // drain CE
+	void InfinityNerf(Sorcerer*); // drain CE
 	bool CheckInfinity() const;
 
 	double BlueTechniqueDamageTarget(Sorcerer* user, Character* target);
@@ -55,16 +55,18 @@ public:
 
 class Shrine : public Technique { // SHRINE
 protected:
-	static constexpr double slash_output = 45.0, cleave_output = 300.0, wcs_output = 1000.0;
+	static constexpr double slash_output = 45.0, cleave_output = 300.0, wcs_output = 2500.0;
 	bool world_cutting_slash_allowed = false;
 public:
-	enum class ShrineType { Dismantle = 1, Cleave = 2 };
+	enum class ShrineType { Dismantle = 1, Cleave = 2, WCS = 3 };
 
 	void SetWCS(bool s);
+	bool WorldCuttingSlashUnlocked() const;
 	std::string GetTechniqueName() const override;
 
 	double CleaveTechniqueDamageTarget(Sorcerer* user, Character* target);
 	double DismantleTechniqueDamageTarget(Sorcerer* user, Character* target);
+	double WorldCuttingSlashToTarget(Sorcerer* user, Character* target);
 	void UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c);
 	void TechniqueMenu(Sorcerer* user, Character* target) override;
 };

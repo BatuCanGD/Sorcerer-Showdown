@@ -98,8 +98,9 @@ void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& bat
 	}
 	case 2: {
 		if (Sorcerer* target = TargetSelector(battlefield, &s)) {
-			// fill here
-		}	
+			std::println("{} engages in close combat with {}!", s.GetName(), target->GetName());
+			s.Attack(target);
+		}
 		break;
 	}
 	case 3: {
@@ -217,6 +218,7 @@ bool CleanupSorcerers(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
 		if (c->IsThePlayer()) {
 			player_alive = true;
 		}
+		c->CleanupShikigami();
 		c->RegenCE();
 		c->UpdatePreviousHP();
 		c->ClearStunTime();
@@ -256,7 +258,6 @@ void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield) 
 			}
 		}
 		///// DOMAIN EFFECTS, WITHOUT CLASH /////
-
 		if (active_domains.size() == 1) {
 			Sorcerer* domain_user = active_domains[0];
 		

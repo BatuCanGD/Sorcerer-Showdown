@@ -57,15 +57,23 @@ public:
 	void SetAsPlayer(bool);
 
 	void SpendCE(double ce) override;
+
 	void CheckSpecial(Sorcerer*);
+
 	void DisableRCT();
 	void EnableRCT();
 	void BoostRCT();
+
 	void DeactivateDomain();
 	void ActivateDomain();
-	void Attack(Character*);
 	void DomainDrain();
+
+	void Attack(Character*);
+	
+	void CleanupShikigami();
+	
 	std::string GetName() const override;
+
 	virtual void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) = 0;
 	virtual ~Sorcerer() = default;
 	bool CanBeHit() const override;

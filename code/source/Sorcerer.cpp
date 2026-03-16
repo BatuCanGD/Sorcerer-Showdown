@@ -82,7 +82,7 @@ void Sorcerer::DeactivateDomain() {
 }
 
 void Sorcerer::Attack(Character* target) {
-     target->Damage(base_attack_damage);
+    target->Damage(base_attack_damage);
 }
 
 
@@ -103,7 +103,7 @@ void Sorcerer::ActivateDomain() {
     }
     domain_active = true;
     total_domain_uses++;
-    std::println("\n*****Domain Expansion*****\n**{}**", this->GetDomain()->GetDomainName());
+    std::println("\n*****Domain Expansion*****\n**{}**\n", this->GetDomain()->GetDomainName());
     if (technique) {
         technique->Set(Technique::Status::DomainBoost);
     }
@@ -142,6 +142,17 @@ bool Sorcerer::CanBeHit() const {
     return true;
 }
 
+void Sorcerer::CleanupShikigami() {
+    auto [removed_begin, removed_end] = std::ranges::remove_if(shikigami, [](const auto& s) {
+        if (s->GetCharacterHealth() <= 0.0) {
+            std::println("{} has been destroyed!", s->GetName());
+            return true;
+        }
+        return false;
+        });
+    shikigami.erase(removed_begin, removed_end);
+}
+
 // ---------------- Gojo -------------------
 
 Gojo::Gojo() : Sorcerer(800.0, 4000.0, 50.0) {
@@ -156,9 +167,8 @@ std::string Gojo::GetName() const {
 
 void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     if (this->GetCharacterHealth() <= (this->GetCharacterMaxHealth() * 0.65)) {
-        Technique* tech = this->GetTechnique();
-        double max_rct_regen = 125.0;
-        double mult = tech->GetTechniqueOutput();
+        double max_rct_regen = 35.0;
+        double mult = this->GetTechnique()->GetTechniqueOutput();
         this->Regen(max_rct_regen * mult);
         this->SpendCE(max_rct_regen / mult);
     }
@@ -166,12 +176,24 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
 
-        if (target->DomainActive() && !this->DomainActive()) {
+        if (target->DomainActive() && !this->DomainActive() && !this->GetTechnique()->BurntOut()) {
             this->ActivateDomain();
             return;
         }
 
-        std::println("Gojo fights back with his own technique!");
+        auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
+        if (limitless && (limitless->Usable() || limitless->Boosted())) {
+            int roll = GetRandomNumber(1, 100);
+            if (roll <= 15 && this->GetCharacterCE() > 3000) {
+                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Purple, this, target.get());
+            }
+            else if(roll <= 60){
+                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Blue, this, target.get());
+            }
+            else {
+                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Red, this, target.get());
+            }
+        }
     }
 }
 
@@ -199,7 +221,7 @@ std::string Sukuna::GetName() const {
 
 void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     Technique* tech = this->GetTechnique();
-    double max_rct_regen = 125.0;
+    double max_rct_regen = 35.0;
 
     if (this->GetCharacterHealth() <= (this->GetCharacterMaxHealth() * 0.70)) {
         double mult = tech->GetTechniqueOutput();
@@ -214,12 +236,60 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
             domain_users.push_back(target.get());
         }
     }
-    if (domain_users.size() > 2 || domain_users.size() == 2) return;
 
-    if (!this->GetTechnique()->BurntOut()) {
+    Mahoraga* makora = nullptr;
+    Agito* agito = nullptr;
+
+    for (const auto& s : shikigami) {
+        if (s->GetName() == "Mahoraga") {
+            makora = dynamic_cast<Mahoraga*>(s.get());
+        }
+        else if (s->GetName() == "Agito") {
+            agito = dynamic_cast<Agito*>(s.get());
+        }
+    }
+
+    if (makora) {
+        if (this->GetCharacterHealth() < GetCharacterMaxHealth() * 0.40) {
+            makora->Manifest();
+        }
+        else if (!makora->IsActive()) {
+            makora->PartiallyManifest();
+        }
+    }
+
+    if (agito && this->GetCharacterHealth() < 500) {
+        if (!agito->IsActive()) {
+            agito->Manifest();
+        }
+    }
+
+    for (const auto& s : shikigami) {
+        s->OnShikigamiTurn(this);
+    }
+
+    auto shrine = dynamic_cast<Shrine*> (this->GetTechnique());
+    int roll = GetRandomNumber(1, 100);
+    for (const auto& target : battlefield) {
+        if (target.get() == this) continue;
+
+        if (shrine->WorldCuttingSlashUnlocked()) {
+            shrine->WorldCuttingSlashToTarget(this, target.get());
+            return;
+        }
+
+        if (target->GetCharacterHealth() < GetCharacterMaxHealth() * 0.25 && roll <= 15) {
+            shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, target.get());
+        }
+        else if (target->CanBeHit()) {
+            shrine->UseShrineTechnique(Shrine::ShrineType::Dismantle, this, target.get());
+        }
+    }
+
+
+    if (domain_users.size() < 2 && !this->DomainActive() && !this->GetTechnique()->BurntOut()) {
         this->ActivateDomain();
     }
-    
 }
 
 bool Sukuna::CanBeHit() const {
@@ -233,7 +303,7 @@ test_sorcerer::test_sorcerer() : Sorcerer(30000000.0, 30000000.0, 1000.0) {
 }
 
 void test_sorcerer::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
-    std::println("I'm the strongest dude");
+    std::println("John Zenin just stands there... menacingly.");
 }
 std::string test_sorcerer::GetName() const {
     return "John Zenin";
