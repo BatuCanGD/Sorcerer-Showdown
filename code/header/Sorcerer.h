@@ -65,6 +65,9 @@ public:
 	void DisableRCT();
 	void EnableRCT();
 	void BoostRCT();
+
+	std::string GetRCTstatus() const;
+
 	void UseRCT();
 
 	void DeactivateDomain();

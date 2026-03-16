@@ -74,14 +74,24 @@ void Sorcerer::BoostRCT() {
     rct_state = ReverseCT::Overdrive;
 }
 
+std::string Sorcerer::GetRCTstatus() const {
+    switch (rct_state) {
+    case ReverseCT::Disabled: return "Disabled";
+    case ReverseCT::Active: return "Active";
+    case ReverseCT::Overdrive: return "Overdrive";
+    }
+}
+
 void Sorcerer::UseRCT() {
     const double default_regen = 25.0;
     const double overdrive_regen = 75.0;
     if (rct_state == ReverseCT::Active) {
         this->Regen(default_regen);
+        this->SpendCE(default_regen * 2);
     }
     else if (rct_state == ReverseCT::Overdrive) {
         this->Regen(overdrive_regen);
+        this->SpendCE(overdrive_regen * 2);
     }
 }
 

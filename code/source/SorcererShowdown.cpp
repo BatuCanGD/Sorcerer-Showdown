@@ -11,6 +11,7 @@ void ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>& battlefield);
 void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield);
 bool CleanupSorcerers(std::vector<std::unique_ptr<Sorcerer>>&);
 void DisplaySorcererStatus(Sorcerer* s);
+void PlayerRCTusage(Sorcerer& s);
 void ClearScreen();
 
 int main() { // main
@@ -82,7 +83,7 @@ void ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>& battlefield) 
 }
 
 void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield,CombatContext& context){
-	size_t plrch = 0, rctch = 0; std::cin >> plrch;
+	size_t plrch = 0; std::cin >> plrch;
 	switch (plrch) {
 	case 1: {
 		if (s.GetTechnique() == nullptr) {
@@ -122,27 +123,32 @@ void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& bat
 		break;
 	}
 	case 6:
-		std::println("1-Enable RCT, 2-Boost RCT, 3-Disable RCT");
-		std::cin >> rctch;
-		switch (rctch) {
-		case 1:
-			s.EnableRCT();
-			std::println("You have started using RCT");
-			break;
-		case 2:
-			s.BoostRCT();
-			std::println("You have started pumping RCT at maximum output");
-			break;
-		case 3:
-			s.DisableRCT();
-			std::println("You have disabled RCT");
-			break;
-		default:
-			std::println("Invalid RCT Choice");
-		}
+		PlayerRCTusage(s);
 		break;
 	default:
 		std::println("Invalid Choice");
+	}
+}
+
+void PlayerRCTusage(Sorcerer& s) {
+	int choice = 0;
+	std::println("1-Enable RCT, 2-Boost RCT, 3-Disable RCT");
+	std::cin >> choice;
+	switch (choice) {
+	case 1:
+		s.EnableRCT();
+		std::println("You have started using RCT");
+		break;
+	case 2:
+		s.BoostRCT();
+		std::println("You have started pumping RCT at maximum output");
+		break;
+	case 3:
+		s.DisableRCT();
+		std::println("You have disabled RCT");
+		break;
+	default:
+		std::println("Invalid RCT Choice");
 	}
 }
 
@@ -205,7 +211,7 @@ void DisplaySorcererStatus(Sorcerer* s) {
 		std::println("-------------{}'s Turn-------------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
 	}
 
-	std::println("Health: {}, Cursed Energy: {}", s->GetCharacterHealth(), s->GetCharacterCE());
+	std::println("Health: {}, Cursed Energy: {} | RCT: [{}]", s->GetCharacterHealth(), s->GetCharacterCE(), s->GetRCTstatus());
 	if (s->GetDomain() != nullptr) {
 		std::println("Domain: {} [{}]",
 			s->GetDomain()->GetDomainName(),
