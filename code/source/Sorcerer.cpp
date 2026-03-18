@@ -254,12 +254,15 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
             int roll = GetRandomNumber(1, 100);
             if (roll <= 15 && this->GetCharacterCE() > 3000) {
                 limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Purple, this, target.get());
+                return;
             }
             else if(roll <= 60){
                 limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Blue, this, target.get());
+                return;
             }
             else {
                 limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Red, this, target.get());
+                return;
             }
         }
     }
@@ -297,7 +300,7 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     else {
         this->DisableRCT();
     }
-
+    
     std::vector<Sorcerer*> domain_users;
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
@@ -352,12 +355,13 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
 
         if (target->GetCharacterHealth() < GetCharacterMaxHealth() * 0.25 && roll <= 15) {
             shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, target.get());
+            return;
         }
         else if (target->CanBeHit()) {
             shrine->UseShrineTechnique(Shrine::ShrineType::Dismantle, this, target.get());
+            return;
         }
     }
-
 
     if (domain_users.size() < 2 && !this->DomainActive() && !this->GetTechnique()->BurntOut()) {
         this->ActivateDomain();
