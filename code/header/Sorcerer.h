@@ -5,6 +5,7 @@
 #include "Shikigami.h"
 #include "Domain.h"
 #include "Technique.h"
+#include "CursedTool.h"
 
 #include <memory>
 #include <vector>
@@ -20,7 +21,8 @@ protected:
 	std::unique_ptr<Domain> domain = nullptr;
 	std::unique_ptr<Technique> technique = nullptr;
 	std::unique_ptr<CombatContext> special = nullptr;
-
+	std::unique_ptr<CursedTool> cursed_tool = nullptr;
+	
 	std::vector<std::unique_ptr<Shikigami>> shikigami;
 	
 	bool six_eyes = false;
@@ -29,10 +31,16 @@ protected:
 
 	bool domain_active = false;
 	bool is_player = false;
-	const int domain_limit = 5;
+
 	int total_domain_uses = 0;
-	const int max_burnout_time = 2;
 	int burnout_time = 0;
+	int active_domain_time = 0;
+
+	const int domain_limit = 5;
+	const int max_domain_time = 5;
+	const int max_burnout_time = 2;
+
+
 
 	bool domain_amplification_active = false;
 	enum class ReverseCT {
@@ -51,6 +59,7 @@ public:
 	CombatContext* GetSpecial();
 
 	const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
+
 	void SetAmplification(bool);
 	void SetSixEyes(bool);
 	bool HasSixEyes() const;
@@ -67,11 +76,13 @@ public:
 	void BoostRCT();
 
 	std::string GetRCTstatus() const;
+	std::string GetDAstatus() const;
 
 	void UseRCT();
 
 	void DeactivateDomain();
 	void ActivateDomain();
+	void TickDomain(Sorcerer*);
 	void DomainDrain();
 
 	void Attack(Character*);
@@ -96,18 +107,16 @@ public:
 };
 
 class Sukuna : public Sorcerer {
-protected:
-	enum class Understanding {
-		None,
-		DomainAmplification,
-		DomainAmpAndMahoraga
-	};
-	Understanding techknow = Understanding::None;
 public:
 	Sukuna();
 	std::string GetName() const override;
 	void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) override;
 	bool CanBeHit() const override;
+};
+
+class Toji : public Sorcerer {
+public:
+	Toji();
 };
 
 

@@ -12,6 +12,7 @@ void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield);
 bool CleanupSorcerers(std::vector<std::unique_ptr<Sorcerer>>&);
 void DisplaySorcererStatus(Sorcerer* s);
 void PlayerRCTusage(Sorcerer& s);
+void PlayerDAusage(Sorcerer& s);
 void ClearScreen();
 
 int main() { // main
@@ -40,15 +41,14 @@ int main() { // main
 				DisplaySorcererStatus(s.get());
 
 				s->OnSorcererTurn(battlefield);
-				s->CheckSpecial(s.get());
 
 				std::println("\n");
 			}
 			std::cin.get();
 		}
 
-		bool player_found = CleanupSorcerers(battlefield);
 		DomainCheckAndPerform(battlefield);
+		bool player_found = CleanupSorcerers(battlefield);
 
 		std::cin.get();
 
@@ -90,6 +90,10 @@ void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& bat
 			std::println("You don't have a technique to use!");
 			break;
 		}
+		else if (s.GetTechnique()->BurntOut()) {
+			std::println("Your technique is burnt out, you cant use it yet!");
+			break;
+		}
 		Sorcerer* target = TargetSelector(battlefield, &s);
 
 		if (target) {
@@ -125,6 +129,9 @@ void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& bat
 	case 6:
 		PlayerRCTusage(s);
 		break;
+	case 7:
+		PlayerDAusage(s);
+		break;
 	default:
 		std::println("Invalid Choice");
 	}
@@ -149,6 +156,20 @@ void PlayerRCTusage(Sorcerer& s) {
 		break;
 	default:
 		std::println("Invalid RCT Choice");
+	}
+}
+
+void PlayerDAusage(Sorcerer& s) {
+	int choice = 0; std::cin >> choice;
+	std::println("1-On, 2-Off\n=>");
+
+	switch (choice) {
+	case 1:
+		s.SetAmplification(true);
+		break;
+	case 2:
+		s.SetAmplification(false);
+		break;
 	}
 }
 
@@ -211,9 +232,18 @@ void DisplaySorcererStatus(Sorcerer* s) {
 		std::println("-------------{}'s Turn-------------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
 	}
 
-	std::println("Health: {}, Cursed Energy: {} | RCT: [{}]", s->GetCharacterHealth(), s->GetCharacterCE(), s->GetRCTstatus());
+	std::print("Health: {} | ", s->GetCharacterHealth());
+
+	if (!s->IsHeavenlyRestricted()) {
+		std::print("Cursed Energy: {} | RCT: [{}] | DA: [{}]",
+			s->GetCharacterCE(),
+			s->GetRCTstatus(),
+			s->GetDAstatus());
+	}
+	std::println("");
+
 	if (s->GetDomain() != nullptr) {
-		std::println("Domain: {} [{}]",
+		std::print("Domain: {} [{}]   ",
 			s->GetDomain()->GetDomainName(),
 			s->DomainActive() ? "Active" : "Inactive");
 	}
@@ -222,10 +252,21 @@ void DisplaySorcererStatus(Sorcerer* s) {
 			s->GetTechnique()->GetTechniqueName(),
 			s->GetTechnique()->GetStringStatus());
 	}
+
 	if (s->IsThePlayer()) {
-		std::println("Choose action:");
-		std::println("1-Use Technique, 2-Straight hands, 3-Use Special, 4-Domain, 5-Taunt, 6-RCT Usage");
-		std::print("=> ");
+		std::println("\nChoose action:");
+		std::print("1-Technique | 2-Fight");
+
+		if (s->GetSpecial() != nullptr)  std::print(" | 3-Special");
+		if (s->GetDomain() != nullptr)   std::print(" | 4-Domain");
+
+		std::print(" | 5-Taunt");
+
+		if (!s->IsHeavenlyRestricted()) {
+			std::print(" | 6-RCT Usage | 7-Domain Amplification");
+		}
+
+		std::print("\n=> ");
 	}
 }
 
@@ -251,9 +292,25 @@ bool CleanupSorcerers(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
 		}
 
 		c->CleanupShikigami();
-		c->UseRCT();
-		c->RegenCE();
+
+		double damage_taken = c->GetCharacterPreviousHealth() - c->GetCharacterHealth();
+		if (damage_taken > 0) {
+			std::println("{} took {} damage this turn", c->GetName(), damage_taken);
+			c->UseRCT();
+			if (c->GetCharacterHealth() >= c->GetCharacterPreviousHealth()) {
+				std::println("{} healed the damage back!", c->GetName());
+			}
+			else if (c->GetCharacterHealth() > (c->GetCharacterPreviousHealth() - damage_taken)) {
+				std::println("{} partially healed their wounds.", c->GetName());
+			}
+		}
+		else {
+			c->UseRCT();
+		}
+
 		c->UpdatePreviousHP();
+
+		c->RegenCE();
 		c->ClearStunTime();
 		c->RecoverBurnout(c->GetTechnique());
 	}
@@ -305,6 +362,9 @@ void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield) 
 
 				domain_user->GetDomain()->OnSureHit(*s);
 			}
+		}
+		for (const auto& s : battlefield) {
+			s->TickDomain(s.get());
 		}
 }
 

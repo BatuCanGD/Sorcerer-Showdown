@@ -79,10 +79,19 @@ std::string Sorcerer::GetRCTstatus() const {
     case ReverseCT::Disabled: return "Disabled";
     case ReverseCT::Active: return "Active";
     case ReverseCT::Overdrive: return "Overdrive";
+    default: return "Active";
     }
 }
 
+std::string Sorcerer::GetDAstatus() const {
+    if (domain_amplification_active) return "Active";
+    else return "Inactive";
+}
+
 void Sorcerer::UseRCT() {
+    if (this->GetCharacterHealth() >= this->GetCharacterMaxHealth()) {
+        return;
+    }
     const double default_regen = 25.0;
     const double overdrive_regen = 75.0;
     if (rct_state == ReverseCT::Active) {
@@ -103,7 +112,31 @@ void Sorcerer::DeactivateDomain() {
 }
 
 void Sorcerer::Attack(Character* target) {
-    target->Damage(base_attack_damage);
+    if (cursed_tool) {
+        cursed_tool->UseTool(this, target);
+    }
+    else {
+        target->Damage(base_attack_damage);
+        std::println("{} landed a heavy strike on {} for {} damage!", this->GetName(), target->GetName(), base_attack_damage);
+    }
+}
+
+void Sorcerer::TickDomain(Sorcerer* user) {
+    if (user == nullptr) return;
+
+    if (user->DomainActive()) {
+        active_domain_time++;
+
+        if (active_domain_time == max_domain_time) {
+            std::println("{}'s domain will end soon", user->GetName());
+        }
+        else if (active_domain_time > max_domain_time) {
+            std::println("{}'s domain has been deactivated after reaching its timed limit!", user->GetName());
+            user->DeactivateDomain();
+            user->GetDomain()->CollapseDomain();
+            active_domain_time = 0;
+        }
+    }
 }
 
 
@@ -124,7 +157,7 @@ void Sorcerer::ActivateDomain() {
     }
     domain_active = true;
     total_domain_uses++;
-    std::println("\n*****Domain Expansion*****\n**{}**\n", this->GetDomain()->GetDomainName());
+    std::println("\n********Domain Expansion********\n*******{}*******\n", this->GetDomain()->GetDomainName());
     if (technique) {
         technique->Set(Technique::Status::DomainBoost);
     }
@@ -206,6 +239,9 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25) {
         this->BoostRCT();
     }
+    else {
+        this->DisableRCT();
+    }
 
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
@@ -260,6 +296,9 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.35) {
         this->BoostRCT();
     }
+    else {
+        this->DisableRCT();
+    }
 
     std::vector<Sorcerer*> domain_users;
     for (const auto& target : battlefield) {
@@ -302,6 +341,9 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
 
     auto shrine = dynamic_cast<Shrine*> (this->GetTechnique());
     int roll = GetRandomNumber(1, 100);
+
+    this->CheckSpecial(this);
+
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
 
