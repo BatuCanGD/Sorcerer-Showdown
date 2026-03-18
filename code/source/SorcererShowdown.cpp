@@ -46,15 +46,7 @@ int main() { // main
 		manager.DomainCheckAndPerform(battlefield);
 		bool player_found = manager.ManageEndOfTurn(battlefield);
 
-		std::cin.get();
-		if (!player_found) {
-			std::println("\nYou have been defeated! Game Over.");
-			break;
-		}
-		else if (battlefield.size() == 1 || game_over) {
-			std::println("\nCongratulations! You have defeated all other sorcerers and won the battle!");
-			break;
-		}
+		if (manager.IsBattleOver(game_over, player_found, battlefield)) break;
 		manager.ClearScreen();
 	}
 	std::println("press enter to end the game...");

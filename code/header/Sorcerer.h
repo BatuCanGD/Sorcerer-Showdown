@@ -21,9 +21,9 @@ protected:
 	std::unique_ptr<Domain> domain = nullptr;
 	std::unique_ptr<Technique> technique = nullptr;
 	std::unique_ptr<CombatContext> special = nullptr;
-	std::unique_ptr<CursedTool> cursed_tool = nullptr; // thinking about turning this into a pointer/vector duo
+	std::unique_ptr<CursedTool> cursed_tool = nullptr;
 	
-	std::vector<std::unique_ptr<CursedTool>> inventory_curse; // just incase
+	std::vector<std::unique_ptr<CursedTool>> inventory_curse; 
 	std::vector<std::unique_ptr<Shikigami>> shikigami;
 	
 	bool six_eyes = false;
@@ -49,10 +49,8 @@ protected:
 	};
 	ReverseCT rct_state = ReverseCT::Disabled;
 public:
-	enum class CurrentWeapon { None = 0, ISOH = 1, PlyCld = 2 };
+	enum class CurrentWeapon { None = 0, ISOH = 1, PLCLD = 2 };
 	Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {}
-
-	bool DomainActive() const;
 
 	Domain* GetDomain();
 	Technique* GetTechnique();
@@ -82,6 +80,7 @@ public:
 
 	void UseRCT();
 
+	bool DomainActive() const;
 	void DeactivateDomain();
 	void ActivateDomain();
 	void DomainDrain();

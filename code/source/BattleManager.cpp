@@ -251,7 +251,8 @@ void BattleManager::DisplaySorcererStatus(Sorcerer* s) {
 
 	if (s->IsThePlayer()) {
 		std::println("\nChoose action:");
-		std::print("1-Technique | 2-Fight");
+		if (s->GetTechnique() != nullptr) std::print("1-Technique | ");
+		std::print("2-Fight");
 
 		if (s->GetSpecial() != nullptr)  std::print(" | 3-Special");
 		if (s->GetDomain() != nullptr)   std::print(" | 4-Domain");
@@ -390,6 +391,21 @@ Sorcerer* BattleManager::TargetSelector(const std::vector<std::unique_ptr<Sorcer
 		return nullptr;
 	}
 	return battlefield[t].get();
+}
+
+bool BattleManager::IsBattleOver(bool game_over ,bool player_found, std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+	if (!player_found && battlefield.size() == 1) {
+		std::println("\nYou have been defeated by {}! Game Over.", battlefield[0]->GetName());
+		return true;
+	}
+	else if (!player_found) {
+		std::println("\nYou have been defeated! Game Over.");
+		return true;
+	}
+	else if (battlefield.size() == 1 || game_over) {
+		std::println("\nCongratulations! You have defeated all other sorcerers and won the battle!");
+		return true;
+	}
 }
 
 void BattleManager::ClearScreen() {

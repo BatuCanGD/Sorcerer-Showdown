@@ -247,7 +247,7 @@ void Sorcerer::ChangeCursedTool(CurrentWeapon wep) {
         bool match = false;
 
         if (wep == CurrentWeapon::ISOH && dynamic_cast<InvertedSpearofHeaven*>(it->get())) match = true;
-        else if (wep == CurrentWeapon::PlyCld && dynamic_cast<PlayfulCloud*>(it->get())) match = true;
+        else if (wep == CurrentWeapon::PLCLD && dynamic_cast<PlayfulCloud*>(it->get())) match = true;
 
         if (match) {
             if (cursed_tool != nullptr) {
@@ -284,6 +284,16 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     else {
         this->DisableRCT();
     }
+    double strongesthealth = -1.0;
+    Sorcerer* strongest = nullptr;
+
+    for (const auto& target : battlefield) {
+        if (target.get() == this) continue;
+        if (target->GetCharacterHealth() > strongesthealth) {
+            strongesthealth = target->GetCharacterHealth();
+            strongest = target.get();
+        }
+    }
 
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
@@ -297,15 +307,15 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         if (limitless && (limitless->Usable() || limitless->Boosted())) {
             int roll = GetRandomNumber(1, 100);
             if (roll <= 15 && this->GetCharacterCE() > 3000) {
-                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Purple, this, target.get());
+                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Purple, this, strongest);
                 return;
             }
             else if(roll <= 60){
-                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Blue, this, target.get());
+                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Blue, this, strongest);
                 return;
             }
             else {
-                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Red, this, target.get());
+                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Red, this, strongest);
                 return;
             }
         }
@@ -345,12 +355,19 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         this->DisableRCT();
     }
     
+    double weakesthealth = INT32_MAX;
+    Sorcerer* weakest = nullptr;
     std::vector<Sorcerer*> domain_users;
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
         if (target->DomainActive()) {
             domain_users.push_back(target.get());
         }
+        if (target->GetCharacterHealth() < weakesthealth) {
+            weakesthealth = target->GetCharacterHealth();
+            weakest = target.get();
+        }
+
     }
 
     Mahoraga* makora = nullptr;
@@ -393,16 +410,16 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         if (target.get() == this) continue;
 
         if (shrine->WorldCuttingSlashUnlocked()) {
-            shrine->WorldCuttingSlashToTarget(this, target.get());
+            shrine->WorldCuttingSlashToTarget(this, weakest);
             return;
         }
 
         if (target->GetCharacterHealth() < GetCharacterMaxHealth() * 0.25 && roll <= 15) {
-            shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, target.get());
+            shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, weakest);
             return;
         }
         else if (target->CanBeHit()) {
-            shrine->UseShrineTechnique(Shrine::ShrineType::Dismantle, this, target.get());
+            shrine->UseShrineTechnique(Shrine::ShrineType::Dismantle, this, weakest);
             return;
         }
     }

@@ -21,5 +21,6 @@ public:
 	bool ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield);
 	void DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield);
 	Sorcerer* TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>& battlefield, Sorcerer* player);
+	bool IsBattleOver(bool,bool, std::vector<std::unique_ptr<Sorcerer>>&);
 	void ClearScreen();
 };
