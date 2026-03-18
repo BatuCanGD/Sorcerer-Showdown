@@ -121,19 +121,17 @@ void Sorcerer::Attack(Character* target) {
     }
 }
 
-void Sorcerer::TickDomain(Sorcerer* user) {
-    if (user == nullptr) return;
-
-    if (user->DomainActive()) {
+void Sorcerer::TickDomain() {
+    if (this->DomainActive()) {
         active_domain_time++;
 
         if (active_domain_time == max_domain_time) {
-            std::println("{}'s domain will end soon", user->GetName());
+            std::println("{}'s domain will end soon", this->GetName());
         }
         else if (active_domain_time > max_domain_time) {
-            std::println("{}'s domain has been deactivated after reaching its timed limit!", user->GetName());
-            user->DeactivateDomain();
-            user->GetDomain()->CollapseDomain();
+            std::println("{}'s domain has been deactivated after reaching its timed limit!", this->GetName());
+            this->DeactivateDomain();
+            this->GetDomain()->CollapseDomain();
             active_domain_time = 0;
         }
     }

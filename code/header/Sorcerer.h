@@ -82,8 +82,8 @@ public:
 
 	void DeactivateDomain();
 	void ActivateDomain();
-	void TickDomain(Sorcerer*);
 	void DomainDrain();
+	void TickDomain();
 
 	void Attack(Character*);
 	
