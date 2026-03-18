@@ -21,8 +21,9 @@ protected:
 	std::unique_ptr<Domain> domain = nullptr;
 	std::unique_ptr<Technique> technique = nullptr;
 	std::unique_ptr<CombatContext> special = nullptr;
-	std::unique_ptr<CursedTool> cursed_tool = nullptr;
+	std::unique_ptr<CursedTool> cursed_tool = nullptr; // thinking about turning this into a pointer/vector duo
 	
+	std::vector<std::unique_ptr<CursedTool>> inventory_curse; // just incase
 	std::vector<std::unique_ptr<Shikigami>> shikigami;
 	
 	bool six_eyes = false;
@@ -40,8 +41,6 @@ protected:
 	const int max_domain_time = 5;
 	const int max_burnout_time = 2;
 
-
-
 	bool domain_amplification_active = false;
 	enum class ReverseCT {
 		Disabled,
@@ -50,6 +49,7 @@ protected:
 	};
 	ReverseCT rct_state = ReverseCT::Disabled;
 public:
+	enum class CurrentWeapon { None = 0, ISOH = 1, PlyCld = 2 };
 	Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {}
 
 	bool DomainActive() const;
@@ -57,8 +57,10 @@ public:
 	Domain* GetDomain();
 	Technique* GetTechnique();
 	CombatContext* GetSpecial();
+	CursedTool* GetTool();
 
 	const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
+	const std::vector<std::unique_ptr<CursedTool>>& GetCursedTools() const;
 
 	void SetAmplification(bool);
 	void SetSixEyes(bool);
@@ -84,6 +86,9 @@ public:
 	void ActivateDomain();
 	void DomainDrain();
 	void TickDomain();
+
+	void CursedToolChoice(int);
+	void ChangeCursedTool(CurrentWeapon);
 
 	void Attack(Character*);
 	
@@ -117,6 +122,9 @@ public:
 class Toji : public Sorcerer {
 public:
 	Toji();
+	std::string GetName() const override;
+	void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) override;
+	bool CanBeHit() const override;
 };
 
 

@@ -19,8 +19,15 @@ CombatContext* Sorcerer::GetSpecial() {
     return special.get();
 }
 
+CursedTool* Sorcerer::GetTool() {
+    return cursed_tool.get();
+}
+
 const std::vector<std::unique_ptr<Shikigami>>& Sorcerer::GetShikigami() const {
     return shikigami;
+}
+const std::vector<std::unique_ptr<CursedTool>>& Sorcerer::GetCursedTools() const {
+    return inventory_curse;
 }
 
 void Sorcerer::SetAmplification(bool t) {
@@ -222,6 +229,39 @@ void Sorcerer::RecoverBurnout(Technique* t) {
     }
 }
 
+void Sorcerer::CursedToolChoice(int c) {
+    auto choice = static_cast<CurrentWeapon>(c);
+    ChangeCursedTool(choice);
+}
+
+void Sorcerer::ChangeCursedTool(CurrentWeapon wep) {
+    if (wep == CurrentWeapon::None) {
+        if (cursed_tool != nullptr) {
+            inventory_curse.push_back(std::move(cursed_tool));
+            cursed_tool = nullptr;
+            std::println("{} put his weapon away.", this->GetName());
+        }
+        return;
+    }
+    for (auto it = inventory_curse.begin(); it != inventory_curse.end(); ++it) {
+        bool match = false;
+
+        if (wep == CurrentWeapon::ISOH && dynamic_cast<InvertedSpearofHeaven*>(it->get())) match = true;
+        else if (wep == CurrentWeapon::PlyCld && dynamic_cast<PlayfulCloud*>(it->get())) match = true;
+
+        if (match) {
+            if (cursed_tool != nullptr) {
+                inventory_curse.push_back(std::move(cursed_tool));
+            }
+            cursed_tool = std::move(*it);
+            inventory_curse.erase(it);
+
+            std::println("{} equipped {}!", this->GetName(), cursed_tool->GetName());
+            return;
+        }
+    }
+}
+
 // ---------------- Gojo -------------------
 
 Gojo::Gojo() : Sorcerer(800.0, 4000.0, 50.0) {
@@ -375,6 +415,28 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
 bool Sukuna::CanBeHit() const {
     return true;
 }
+
+
+// ---------------------- Toji ------------------
+
+
+Toji::Toji() : Sorcerer(1250.0, -1, -1) {
+    inventory_curse.push_back(std::make_unique<InvertedSpearofHeaven>());
+    inventory_curse.push_back(std::make_unique<PlayfulCloud>());
+}
+
+std::string Toji::GetName() const {
+    return "Toji Fushiguro";
+}
+
+void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+    std::println("tojee fushygiro");
+}
+
+bool Toji::CanBeHit() const {
+    return true;
+}
+
 
 /// for testing stuff, use this class
 

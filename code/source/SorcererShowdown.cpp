@@ -1,4 +1,3 @@
-#include "Sorcerer.h"
 #include "CombatContext.h"
 #include "BattleManager.h"
 import std;
@@ -22,12 +21,14 @@ int main() { // main
 
 			if (s->IsThePlayer()) {
 				manager.DisplaySorcererStatus(s.get());
+				std::println("\n");
 				manager.OnPlayerTurn(*s, battlefield, context);
 				std::println("\n");
 				std::cin.clear();
 			}
 			else {
 				manager.DisplaySorcererStatus(s.get());
+				std::println("\n");
 				s->OnSorcererTurn(battlefield);
 				std::println("\n");
 			}

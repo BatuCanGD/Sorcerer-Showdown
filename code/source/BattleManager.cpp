@@ -90,9 +90,25 @@ void BattleManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 	case 7:
 		PlayerDAusage(s);
 		break;
+	case 8:
+		GetPlayerTools(s);
+		break;
 	default:
 		std::println("Invalid Choice");
 	}
+}
+
+void BattleManager::GetPlayerTools(Sorcerer& s) {
+	int count = 1;
+	for (const auto& tool : s.GetCursedTools()) {
+		std::println("{} - {}", count++, tool->GetName());
+	}
+	if (s.GetTool() != nullptr) {
+		std::println("\n0 - Unequip");
+	}
+
+	int choice = 0; std::cin >> choice;
+	s.CursedToolChoice(choice);
 }
 
 void BattleManager::PlayerRCTusage(Sorcerer& s) {
@@ -143,7 +159,7 @@ void BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 			if (count > 0) std::println("{} x{}", name, count);
 		}
 
-		std::println("\n1 - Gojo / 2 - Sukuna / -1 - Undo / 0 - Finish");
+		std::println("\n1 - Gojo / 2 - Sukuna / 3 - Toji Fushiguro / -1 - Undo / 0 - Finish");
 
 		if (!(std::cin >> c)) {
 			std::cin.clear();
@@ -170,6 +186,7 @@ void BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 			switch (c) {
 			case 1:   s = std::make_unique<Gojo>(); break;
 			case 2:   s = std::make_unique<Sukuna>(); break;
+			case 3:	  s = std::make_unique<Toji>(); break;
 			case 150: s = std::make_unique<test_sorcerer>(); break;
 			}
 
@@ -211,6 +228,27 @@ void BattleManager::DisplaySorcererStatus(Sorcerer* s) {
 			s->GetTechnique()->GetStringStatus());
 	}
 
+	if (!s->GetCursedTools().empty() || s->GetTool() != nullptr) {
+		std::print("Inventory: ");
+		if (s->GetCursedTools().empty()) {
+			std::println("[Empty]");
+		}
+		else {
+			for (const auto& t : s->GetCursedTools()) {
+				std::print("[{}] ", t->GetName());
+			}
+			std::println("");
+		}
+		std::print("Current Tool: ");
+
+		if (s->GetTool() != nullptr) {
+			std::println(" {}",s->GetTool()->GetName());
+		}
+		else {
+			std::println(" None");
+		}
+	}
+
 	if (s->IsThePlayer()) {
 		std::println("\nChoose action:");
 		std::print("1-Technique | 2-Fight");
@@ -222,6 +260,9 @@ void BattleManager::DisplaySorcererStatus(Sorcerer* s) {
 
 		if (!s->IsHeavenlyRestricted()) {
 			std::print(" | 6-RCT Usage | 7-Domain Amplification");
+		}
+		if (!s->GetCursedTools().empty() || s->GetTool() != nullptr) {
+			std::println(" | 8-Cursed Tool");
 		}
 
 		std::print("\n=> ");
@@ -265,9 +306,7 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& batt
 		else {
 			c->UseRCT();
 		}
-
 		c->UpdatePreviousHP();
-
 		c->RegenCE();
 		c->ClearStunTime();
 		c->RecoverBurnout(c->GetTechnique());

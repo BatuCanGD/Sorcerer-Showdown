@@ -15,6 +15,7 @@ public:
 	void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield, CombatContext& context);
 	void PlayerRCTusage(Sorcerer& s);
 	void PlayerDAusage(Sorcerer& s);
+	void GetPlayerTools(Sorcerer& s);
 	void SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts);
 	void DisplaySorcererStatus(Sorcerer* s);
 	bool ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield);
