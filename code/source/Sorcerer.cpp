@@ -294,31 +294,27 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
             strongest = target.get();
         }
     }
-
-    for (const auto& target : battlefield) {
-        if (target.get() == this) continue;
-
-        if (target->DomainActive() && !this->DomainActive() && !this->GetTechnique()->BurntOut()) {
+    for (const auto& t : battlefield) {
+        if (t->DomainActive() && !this->DomainActive() && !this->GetTechnique()->BurntOut()) {
             this->ActivateDomain();
             return;
         }
+    }
+    auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
 
-        auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
-        if (limitless && (limitless->Usable() || limitless->Boosted())) {
-            int roll = GetRandomNumber(1, 100);
-            if (roll <= 15 && this->GetCharacterCE() > 3000) {
-                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Purple, this, strongest);
-                return;
-            }
-            else if(roll <= 60){
-                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Blue, this, strongest);
-                return;
-            }
-            else {
-                limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Red, this, strongest);
-                return;
-            }
+    if (limitless && strongest && (limitless->Usable() || limitless->Boosted())) {
+        int roll = GetRandomNumber(1, 100);
+
+        if (roll <= 15 && this->GetCharacterCE() > 3000) {
+            limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Purple, this, strongest);
         }
+        else if (roll <= 60) {
+            limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Blue, this, strongest);
+        }
+        else {
+            limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Red, this, strongest);
+        }
+        return;
     }
 }
 
@@ -383,15 +379,17 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     }
 
     if (makora) {
-        if (this->GetCharacterHealth() < GetCharacterMaxHealth() * 0.40) {
-            makora->Manifest();
+        if (this->GetCharacterHealth() < GetCharacterMaxHealth() * 0.60) {
+            if (!makora->IsActivePhysically()) { 
+                makora->Manifest();
+            }
         }
         else if (!makora->IsActive()) {
             makora->PartiallyManifest();
         }
     }
 
-    if (agito && this->GetCharacterHealth() < 500) {
+    if (agito && this->GetCharacterHealth() < this->GetCharacterMaxHealth() * 0.35) {
         if (!agito->IsActive()) {
             agito->Manifest();
         }
@@ -406,23 +404,21 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
 
     this->CheckSpecial(this);
 
-    for (const auto& target : battlefield) {
-        if (target.get() == this) continue;
 
-        if (shrine->WorldCuttingSlashUnlocked()) {
-            shrine->WorldCuttingSlashToTarget(this, weakest);
-            return;
-        }
-
-        if (target->GetCharacterHealth() < GetCharacterMaxHealth() * 0.25 && roll <= 15) {
-            shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, weakest);
-            return;
-        }
-        else if (target->CanBeHit()) {
-            shrine->UseShrineTechnique(Shrine::ShrineType::Dismantle, this, weakest);
-            return;
-        }
+    if (shrine->WorldCuttingSlashUnlocked()) {
+        shrine->WorldCuttingSlashToTarget(this, weakest);
+        return;
     }
+
+    if (weakest->GetCharacterHealth() < GetCharacterMaxHealth() * 0.25 && roll <= 15) {
+        shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, weakest);
+        return;
+    }
+    else if (weakest->CanBeHit()) {
+        shrine->UseShrineTechnique(Shrine::ShrineType::Dismantle, this, weakest);
+        return;
+    }
+    
 
     if (domain_users.size() < 2 && !this->DomainActive() && !this->GetTechnique()->BurntOut()) {
         this->ActivateDomain();
@@ -447,7 +443,25 @@ std::string Toji::GetName() const {
 }
 
 void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
-    std::println("tojee fushygiro");
+    Sorcerer* ignored = nullptr;
+    for (const auto& t : battlefield) {
+        if (t.get() == this || t->GetCharacterHealth() <= 0.0) continue;
+
+        if (!ignored || t->GetCharacterHealth() > ignored->GetCharacterHealth()) {
+            ignored = t.get();
+        }
+    }
+
+    if (this->GetTool() == nullptr) {
+        if (dynamic_cast<Limitless*>(ignored->GetTechnique()) != nullptr) {
+            this->CursedToolChoice(INVERTED_SPEAR_OF_HEAVEN);
+        }
+        else {
+            this->CursedToolChoice(PLAYFUL_CLOUD);
+        }
+    }
+
+    this->GetTool()->UseTool(this, ignored);
 }
 
 bool Toji::CanBeHit() const {

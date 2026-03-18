@@ -119,6 +119,9 @@ public:
 };
 
 class Toji : public Sorcerer {
+private:
+	int INVERTED_SPEAR_OF_HEAVEN = 1;
+	int PLAYFUL_CLOUD = 2;
 public:
 	Toji();
 	std::string GetName() const override;

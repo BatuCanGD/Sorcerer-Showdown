@@ -159,7 +159,7 @@ void BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 			if (count > 0) std::println("{} x{}", name, count);
 		}
 
-		std::println("\n1 - Gojo / 2 - Sukuna / 3 - Toji Fushiguro / -1 - Undo / 0 - Finish");
+		std::println("\n1 - Gojo | 2 - Sukuna | 3 - Toji Fushiguro |\n\n-1 - Undo | 0 - Finish |");
 
 		if (!(std::cin >> c)) {
 			std::cin.clear();
@@ -406,6 +406,7 @@ bool BattleManager::IsBattleOver(bool game_over ,bool player_found, std::vector<
 		std::println("\nCongratulations! You have defeated all other sorcerers and won the battle!");
 		return true;
 	}
+	return false;
 }
 
 void BattleManager::ClearScreen() {
