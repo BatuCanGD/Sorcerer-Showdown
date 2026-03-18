@@ -115,9 +115,13 @@ void Sorcerer::Attack(Character* target) {
     if (cursed_tool) {
         cursed_tool->UseTool(this, target);
     }
+    else if (domain_amplification_active) {
+        target->DamageBypass(base_attack_damage);
+        std::println("{} landed a strike on {} using domain amplification!", this->GetName(), target->GetName());
+    }
     else {
         target->Damage(base_attack_damage);
-        std::println("{} landed a heavy strike on {} for {} damage!", this->GetName(), target->GetName(), base_attack_damage);
+        std::println("{} landed a heavy strike on {}!", this->GetName(), target->GetName());
     }
 }
 

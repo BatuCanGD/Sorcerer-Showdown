@@ -15,8 +15,8 @@ void PlayfulCloud::UseTool(Sorcerer* user, Character* target) {
 	std::println("{} attacks {} with Playful Cloud!", user->GetName(), target->GetName());
 }
 double PlayfulCloud::GetCalculatedStrength(Sorcerer* user) {
-	if (!user->IsHeavenlyRestricted()) { // cursed energy higher than 0.0
-		return base_tool_damage + ((user->GetCharacterCE() / 300) * 1.25);
+	if (!user->IsHeavenlyRestricted()) { 
+		return base_tool_damage + ((user->GetCharacterCE() / 300.0) * 1.25);
 	}
 	else {
 		return base_tool_damage + (user->GetCharacterMaxHealth() / 10.0);
