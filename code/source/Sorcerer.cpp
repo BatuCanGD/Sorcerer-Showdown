@@ -404,10 +404,17 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
 
     this->CheckSpecial(this);
 
-
     if (shrine->WorldCuttingSlashUnlocked()) {
         shrine->WorldCuttingSlashToTarget(this, weakest);
         return;
+    }
+    if (auto* limitless = dynamic_cast<Limitless*>(weakest->GetTechnique())) {
+        this->SetAmplification(true);
+        this->Attack(weakest);
+        return;
+    }
+    else {
+        this->SetAmplification(false);
     }
 
     if (weakest->GetCharacterHealth() < GetCharacterMaxHealth() * 0.25 && roll <= 15) {
@@ -453,7 +460,7 @@ void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     }
 
     if (this->GetTool() == nullptr) {
-        if (dynamic_cast<Limitless*>(ignored->GetTechnique()) != nullptr) {
+        if (auto* limitless = dynamic_cast<Limitless*>(ignored->GetTechnique())) {
             this->CursedToolChoice(INVERTED_SPEAR_OF_HEAVEN);
         }
         else {

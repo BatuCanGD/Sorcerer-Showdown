@@ -85,9 +85,21 @@ void BattleManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 		break;
 	}
 	case 6:
+		if (s.IsHeavenlyRestricted()) {
+			std::println("You cant use Reverse Cursed Technique because you are heavenly restricted!");
+			return;
+		}
+		else if (s.GetMaxCharCE() < 500.0f) {
+			std::println("You dont have enough cursed energy to continuously maintain Reverse Cursed Technique");
+			return;
+		}
 		PlayerRCTusage(s);
 		break;
 	case 7:
+		if (s.IsHeavenlyRestricted()) {
+			std::println("You cant use Domain Amplification because you are heavenly restricted!");
+			return;
+		}
 		PlayerDAusage(s);
 		break;
 	case 8:
