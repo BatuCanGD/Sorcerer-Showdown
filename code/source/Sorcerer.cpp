@@ -75,6 +75,21 @@ std::string Sorcerer::GetRCTstatus() const {
     }
 }
 
+void Sorcerer::TickZone() {
+    if (!technique) return;
+
+    if (!this->DomainActive() && this->GetTechnique()->GetStatus() == Technique::Status::DomainBoost) {
+        the_zone_time++;
+        if (the_zone_time > 3) {
+            this->GetTechnique()->Set(Technique::Status::Usable);
+            the_zone_time = 0;
+        }
+    }
+    else {
+        the_zone_time = 0;
+    }
+}
+
 std::string Sorcerer::GetDAstatus() const {
     if (domain_amplification_active) return "Active";
     else return "Inactive";
@@ -99,13 +114,30 @@ void Sorcerer::UseRCT() {
 void Sorcerer::Attack(Character* target) {
     if (cursed_tool) {
         cursed_tool->UseTool(this, target);
+        return;
     }
     else if (domain_amplification_active) {
         target->DamageBypass(base_attack_damage);
         std::println("{} landed a strike on {} using domain amplification!", this->GetName(), target->GetName());
+        return;
+    }
+
+    bool is_black_flash = false;
+    if (!this->IsHeavenlyRestricted() && GetRandomNumber(1, 100) <= black_flash_chance) {
+        is_black_flash = true;
+        if (this->technique) {
+            technique->Set(Technique::Status::DomainBoost);
+        }
+    }
+
+    double final_damage = base_attack_damage * (is_black_flash ? black_flash_multiplier : 1.0);
+    target->Damage(final_damage);
+
+    if (is_black_flash) {
+        std::println("\n*** BLACK FLASH! ***");
+        std::println("{} landed a BlackFlash on {}!", this->GetName(), target->GetName());
     }
     else {
-        target->Damage(base_attack_damage);
         std::println("{} landed a heavy strike on {}!", this->GetName(), target->GetName());
     }
 }
@@ -330,6 +362,7 @@ Gojo::Gojo() : Sorcerer(800.0, 4000.0, 50.0) {
     domain = std::make_unique<InfiniteVoid>();
     technique = std::make_unique<Limitless>();
     SetSixEyes(true);
+    black_flash_chance = 15;
 }
 
 std::string Gojo::GetName() const {
@@ -396,6 +429,7 @@ Sukuna::Sukuna() : Sorcerer(1000.0, 12000.0, 25.0) {
 	shikigami.push_back(std::make_unique<Mahoraga>());
 	shikigami.push_back(std::make_unique<Agito>());
 	special = std::make_unique<WorldCuttingSlash>();
+    black_flash_chance = 10;
 }
 
 std::string Sukuna::GetName() const {
@@ -506,6 +540,7 @@ bool Sukuna::CanBeHit() const {
 Toji::Toji() : Sorcerer(1250.0, -1, -1) {
     inventory_curse.push_back(std::make_unique<InvertedSpearofHeaven>());
     inventory_curse.push_back(std::make_unique<PlayfulCloud>());
+    black_flash_chance = 0;
 }
 
 std::string Toji::GetName() const {
@@ -542,7 +577,9 @@ bool Toji::CanBeHit() const {
 /// for testing stuff, use this class
 
 test_sorcerer::test_sorcerer() : Sorcerer(30000000.0, 30000000.0, 1000.0) {
+    technique = std::make_unique<Limitless>();
 	domain = std::make_unique<KillEveryoneDomain>();
+    black_flash_chance = 100;
 }
 
 void test_sorcerer::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {

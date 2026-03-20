@@ -37,6 +37,11 @@ protected:
 	int burnout_time = 0;
 	int active_domain_time = 0;
 
+	int black_flash_chance = 5;
+	int the_zone_time = 0;
+
+	const double black_flash_multiplier = 4.0;
+
 	const int domain_limit = 5;
 	const int max_domain_time = 5;
 	const int max_burnout_time = 2;
@@ -86,7 +91,9 @@ public:
 	void DeactivateDomain();
 	void ActivateDomain();
 	void DomainDrain();
+
 	void TickDomain();
+	void TickZone();
 
 	void CursedToolChoice(int);
 	void ChangeCursedTool(CurrentWeapon);

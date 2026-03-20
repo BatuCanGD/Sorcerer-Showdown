@@ -328,6 +328,7 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& batt
 		c->RegenCE();
 		c->ClearStunTime();
 		c->RecoverBurnout(c->GetTechnique());
+		c->TickZone();
 	}
 	return player_alive;
 }
