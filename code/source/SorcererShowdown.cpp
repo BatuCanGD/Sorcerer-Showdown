@@ -1,9 +1,10 @@
-#include "CombatContext.h"
+#include "Sorcerer.h"
+#include "Specials.h"
 #include "BattleManager.h"
+
 import std;
 
 int main() { // main
-	CombatContext context;
 	BattleManager manager;
 
 	std::vector<std::unique_ptr<Sorcerer>> battlefield;
@@ -12,7 +13,7 @@ int main() { // main
 	manager.SetupBattlefield(battlefield, sorcerer_counts);
 	manager.ShowBattleEntry(battlefield);
 	
-	battlefield[0]->SetAsPlayer(true); // set the first sorcerer inserted as the player
+	battlefield[0]->SetAsPlayer(true);
 
 	while (true) {
 		bool game_over = false;
@@ -22,7 +23,7 @@ int main() { // main
 			if (s->IsThePlayer()) {
 				manager.DisplaySorcererStatus(s.get());
 				std::println("\n");
-				manager.OnPlayerTurn(*s, battlefield, context);
+				manager.OnPlayerTurn(*s, battlefield);
 				std::println("\n");
 				std::cin.clear();
 			}
@@ -37,7 +38,7 @@ int main() { // main
 				game_over = true;
 				break;
 			}
-			std::println("Press Enter to continue to the next turn...");
+			std::println("Press Enter to continue to the next sorcerers turn...");
 			
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			std::cin.get();

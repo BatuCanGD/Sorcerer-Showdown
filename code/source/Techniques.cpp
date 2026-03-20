@@ -1,6 +1,7 @@
 #include "Technique.h"
 #include "Sorcerer.h"
 #include "Character.h"
+#include "Utils.h"
 
 import std;
 
@@ -126,9 +127,34 @@ void Limitless::InfinityNerf(Sorcerer* user) {
 void Limitless::TechniqueMenu(Sorcerer* user, Character* target) {
     std::println("1-use Blue, 2-use Red, 3-use Purple");
     std::print("=> ");
-    size_t choice = 0;
-    std::cin >> choice;
+    size_t choice = GetValidInput();
     UseTheLimitlessTechnique(static_cast<LimitlessType>(choice), user, target);
+}
+
+void Limitless::TechniqueSetting(Sorcerer* user) {
+    std::println("Infinity Status: [{}]", this->CheckInfinity() ? "Active" : "Inactive");
+    if (user->GetCharacterCE() > 100.0) {
+        std::println("1 - Turn on Infinity | 2 - Turn off Infinity | 3 - Return");
+        std::print("=> ");
+        int ch = GetValidInput();
+        switch (ch) {
+        case 1:
+            this->SetInfinity(true);
+            std::println("\nInfinity has been Activated");
+            break;
+        case 2:
+            this->SetInfinity(false);
+            std::println("\nInfinity has been Deactivated");
+            break;
+        case 3:
+            return;
+        default:
+            std::println("Invalid Input!");
+        }
+    }
+    else {
+        std::println("You do not have enough Cursed Energy to alter Infinity's state.");
+    }
 }
 
 // ---------------- Shrine -------------------
@@ -190,7 +216,10 @@ void Shrine::TechniqueMenu(Sorcerer* user, Character* target) {
     }
 
     std::print("=> ");
-    size_t choice = 0;
-    std::cin >> choice;
+    size_t choice = GetValidInput();
     UseShrineTechnique(static_cast<ShrineType>(choice), user, target);
+}
+
+void Shrine::TechniqueSetting(Sorcerer* user) {
+    std::println("Unfinished");
 }

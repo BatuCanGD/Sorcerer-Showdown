@@ -20,6 +20,7 @@ public:
 	std::string GetStringStatus() const;
 	virtual std::string GetTechniqueName() const = 0;
 	virtual void TechniqueMenu(Sorcerer* user, Character* target) = 0;
+	virtual void TechniqueSetting(Sorcerer*) = 0;
 
 	bool Boosted() const;
 	bool BurntOut() const;
@@ -50,6 +51,7 @@ public:
 	void UseTheLimitlessTechnique(LimitlessType choice, Sorcerer* s, Character* c);
 	std::string GetTechniqueName() const override;
 	void TechniqueMenu(Sorcerer* user, Character* target) override;
+	void TechniqueSetting(Sorcerer*) override;
 };
 
 
@@ -69,5 +71,6 @@ public:
 	double WorldCuttingSlashToTarget(Sorcerer* user, Character* target);
 	void UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c);
 	void TechniqueMenu(Sorcerer* user, Character* target) override;
+	void TechniqueSetting(Sorcerer*) override;
 };
 

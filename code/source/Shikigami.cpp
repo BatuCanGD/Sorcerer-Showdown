@@ -50,16 +50,16 @@ Mahoraga::Mahoraga() : Shikigami(400.0, 1000.0, 50.0) {}
 void Mahoraga::Adapt() {
     if (!IsActive()) return;
 
-    if (active_turn_amount >= 50) {
+    if (active_turn_amount >= 25) {
         InfStage = InfinityAdaptation::FourthSpin;
     }
-    else if (active_turn_amount >= 40) {
+    else if (active_turn_amount >= 20) {
         InfStage = InfinityAdaptation::ThirdSpin;
     }
-    else if (active_turn_amount >= 25) {
+    else if (active_turn_amount >= 15) {
         InfStage = InfinityAdaptation::SecondSpin;
     }
-    else if (active_turn_amount >= 10) {
+    else if (active_turn_amount >= 5) {
         InfStage = InfinityAdaptation::FirstSpin;
     }
     else {

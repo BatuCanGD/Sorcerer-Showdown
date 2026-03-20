@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Character.h"
-#include "CombatContext.h"
+#include "Specials.h"
 #include "Shikigami.h"
 #include "Domain.h"
 #include "Technique.h"
@@ -14,13 +14,13 @@
 class Shikigami;
 class Technique;
 class Domain;
-class CombatContext;
+class Specials;
 
 class Sorcerer : public Character {
 protected:
 	std::unique_ptr<Domain> domain = nullptr;
 	std::unique_ptr<Technique> technique = nullptr;
-	std::unique_ptr<CombatContext> special = nullptr;
+	std::unique_ptr<Specials> special = nullptr;
 	std::unique_ptr<CursedTool> cursed_tool = nullptr;
 	
 	std::vector<std::unique_ptr<CursedTool>> inventory_curse; 
@@ -49,12 +49,14 @@ protected:
 	};
 	ReverseCT rct_state = ReverseCT::Disabled;
 public:
-	enum class CurrentWeapon { None = 0, ISOH = 1, PLCLD = 2 };
+	virtual ~Sorcerer() = default;
 	Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {}
+
+	enum class CurrentWeapon { None = 0, ISOH = 1, PLCLD = 2 };
 
 	Domain* GetDomain();
 	Technique* GetTechnique();
-	CombatContext* GetSpecial();
+	Specials* GetSpecial();
 	CursedTool* GetTool();
 
 	const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
@@ -69,7 +71,7 @@ public:
 
 	void SpendCE(double ce) override;
 
-	void CheckSpecial(Sorcerer*);
+	int GetDomainUses() const;
 
 	void DisableRCT();
 	void EnableRCT();
@@ -97,7 +99,8 @@ public:
 
 	virtual void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) = 0;
 	void RecoverBurnout(Technique*);
-	virtual ~Sorcerer() = default;
+	
+	void Taunt(Character* target);
 	bool CanBeHit() const override;
 };
 

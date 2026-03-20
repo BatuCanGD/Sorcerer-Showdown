@@ -1,6 +1,6 @@
 #include "BattleManager.h"
 #include "Sorcerer.h"
-#include "CombatContext.h"
+#include "Utils.h"
 
 import std;
 
@@ -36,8 +36,8 @@ void BattleManager::ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>
 	std::println("-------------------------------------------------------");
 }
 
-void BattleManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield, CombatContext& context) {
-	size_t plrch = 0; std::cin >> plrch;
+void BattleManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+	int plrch = GetValidInput();
 	switch (plrch) {
 	case 1: {
 		if (s.GetTechnique() == nullptr) {
@@ -67,7 +67,7 @@ void BattleManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 			std::println("You dont have a Special move to use");
 			return;
 		}
-		s.CheckSpecial(&s);
+		s.GetSpecial()->PerformSpecial(&s);
 		break;
 	}
 	case 4: {
@@ -80,7 +80,7 @@ void BattleManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 	}
 	case 5: {
 		if (Sorcerer* target = TargetSelector(battlefield, &s)) {
-			context.Taunt(&s, target);
+			s.Taunt(target);
 		}
 		break;
 	}
@@ -105,13 +105,16 @@ void BattleManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 	case 8:
 		GetPlayerTools(s);
 		break;
+	case 9:
+		s.GetTechnique()->TechniqueSetting(&s);
+		break;
 	default:
 		std::println("Invalid Choice");
 	}
 }
 
 void BattleManager::GetPlayerTools(Sorcerer& s) {
-	int count = 1;
+	int count = GetValidInput();
 	for (const auto& tool : s.GetCursedTools()) {
 		std::println("{} - {}", count++, tool->GetName());
 	}
@@ -125,7 +128,7 @@ void BattleManager::GetPlayerTools(Sorcerer& s) {
 
 void BattleManager::PlayerRCTusage(Sorcerer& s) {
 	std::println("1-Enable RCT, 2-Boost RCT, 3-Disable RCT");
-	int choice = 0; std::cin >> choice;
+	int choice = GetValidInput();
 	switch (choice) {
 	case 1:
 		s.EnableRCT();
@@ -146,8 +149,7 @@ void BattleManager::PlayerRCTusage(Sorcerer& s) {
 
 void BattleManager::PlayerDAusage(Sorcerer& s) {
 	std::println("1-On, 2-Off\n=>");
-	int choice = 0; std::cin >> choice;
-
+	int choice = GetValidInput();
 
 	switch (choice) {
 	case 1:
@@ -266,16 +268,19 @@ void BattleManager::DisplaySorcererStatus(Sorcerer* s) {
 		if (s->GetTechnique() != nullptr) std::print("1-Technique | ");
 		std::print("2-Fight");
 
-		if (s->GetSpecial() != nullptr)  std::print(" | 3-Special");
-		if (s->GetDomain() != nullptr)   std::print(" | 4-Domain");
+		if (s->GetSpecial() != nullptr)  std::print(" | 3-Special [{}]",s->GetSpecial()->GetSpecialSimplifiedName());
+		if (s->GetDomain() != nullptr)   std::print(" | \n4-Domain");
 
 		std::print(" | 5-Taunt");
 
 		if (!s->IsHeavenlyRestricted()) {
-			std::print(" | 6-RCT Usage | 7-Domain Amplification");
+			std::print(" | 6-RCT Usage | \n7-Domain Amplification");
 		}
 		if (!s->GetCursedTools().empty() || s->GetTool() != nullptr) {
 			std::println(" | 8-Cursed Tool");
+		}
+		if (s->GetTechnique() != nullptr) {
+			std::println(" | 9-Technique Settings");
 		}
 
 		std::print("\n=> ");

@@ -6,13 +6,12 @@
 
 class Sorcerer;
 class Character;
-class CombatContext;
 
 class BattleManager {
 public:
 	bool GameEndCheck(const std::vector<std::unique_ptr<Sorcerer>>& battlefield);
 	void ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>& battlefield);
-	void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield, CombatContext& context);
+	void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield);
 	void PlayerRCTusage(Sorcerer& s);
 	void PlayerDAusage(Sorcerer& s);
 	void GetPlayerTools(Sorcerer& s);

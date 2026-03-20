@@ -1,5 +1,6 @@
 #include "Sorcerer.h"
 #include "Technique.h"
+#include "Utils.h"
 
 import std;
 
@@ -15,7 +16,7 @@ Technique* Sorcerer::GetTechnique() {
     return technique.get();
 }
 
-CombatContext* Sorcerer::GetSpecial() {
+Specials* Sorcerer::GetSpecial() {
     return special.get();
 }
 
@@ -32,22 +33,6 @@ const std::vector<std::unique_ptr<CursedTool>>& Sorcerer::GetCursedTools() const
 
 void Sorcerer::SetAmplification(bool t) {
     domain_amplification_active = t;
-}
-
-void Sorcerer::CheckSpecial(Sorcerer* sorcerer) {
-    if (GetSpecial() == nullptr) return;
-
-    auto wcs = dynamic_cast<WorldCuttingSlash*>(special.get());
-
-
-    if (auto* limitless = dynamic_cast<Limitless*>(technique.get())) {
-        std::println("no limitless special yet");
-    }
-    else if (auto* shrine = dynamic_cast<Shrine*>(technique.get())) {
-        if (wcs) {
-            wcs->WorldCuttingSlashReady(sorcerer);
-        }
-    }
 }
 
 void Sorcerer::SetSixEyes(bool t) {
@@ -111,13 +96,6 @@ void Sorcerer::UseRCT() {
     }
 }
 
-void Sorcerer::DeactivateDomain() {
-    domain_active = false;
-    if (technique) {
-        technique->Set(Technique::Status::BurntOut);
-    }
-}
-
 void Sorcerer::Attack(Character* target) {
     if (cursed_tool) {
         cursed_tool->UseTool(this, target);
@@ -148,7 +126,6 @@ void Sorcerer::TickDomain() {
     }
 }
 
-
 void Sorcerer::ActivateDomain() {
     if (!domain) {
         std::println("You don't have a domain to activate!");
@@ -169,6 +146,18 @@ void Sorcerer::ActivateDomain() {
     std::println("\n********Domain Expansion********\n*******{}*******\n", this->GetDomain()->GetDomainName());
     if (technique) {
         technique->Set(Technique::Status::DomainBoost);
+    }
+}
+
+int Sorcerer::GetDomainUses() const {
+    return total_domain_uses;
+}
+
+void Sorcerer::DeactivateDomain() {
+    domain_active = false;
+    active_domain_time = 0;
+    if (technique) {
+        technique->Set(Technique::Status::BurntOut);
     }
 }
 
@@ -262,6 +251,79 @@ void Sorcerer::ChangeCursedTool(CurrentWeapon wep) {
     }
 }
 
+void Sorcerer::Taunt(Character* taunted) { // pure aura
+    if (!taunted) return;
+    const double healthy_threshold = 0.70;
+    const double injured_threshold = 0.40;
+    const double critical_threshold = 0.20;
+
+    int taunt_type = GetRandomNumber(1, 4);
+
+    if (this->GetCharacterHealth() > (this->GetCharacterMaxHealth() * healthy_threshold)) {
+        switch (taunt_type) {
+        case 1:
+            std::println("I'm surprised you've even managed to scratch me this much {}!", taunted->GetName());
+            break;
+        case 2:
+            std::println("Is that all you've got, {}? I expected more from you!", taunted->GetName());
+            break;
+        case 3:
+            std::println("You're not even worth my time, {}!", taunted->GetName());
+            break;
+        default:
+            std::println("You should just give up now, {}!", taunted->GetName());
+        }
+    }
+    else if (this->GetCharacterHealth() > (this->GetCharacterMaxHealth() * injured_threshold)) {
+        switch (taunt_type) {
+        case 1:
+            std::println("You're starting to annoy me, {}. Keep it up and I'll make you regret it!", taunted->GetName());
+            break;
+        case 2:
+            std::println("You're not doing too bad, {}. But don't get too confident just yet!", taunted->GetName());
+            break;
+        case 3:
+            std::println("Huh, you're actually putting up a fight, {}. I might have to take you more seriously!", taunted->GetName());
+            break;
+        default:
+            std::println("You're not bad, {}. But I'm still better!", taunted->GetName());
+
+        }
+    }
+    else if (this->GetCharacterHealth() > (this->GetCharacterMaxHealth() * critical_threshold)) {
+        switch (taunt_type) {
+        case 1:
+            std::println("You're really starting to piss me off, {}. I'll make you regret your actions!", taunted->GetName());
+            break;
+        case 2:
+            std::println("You're actually pretty strong, but it won't be enough to defeat me, {}!", taunted->GetName());
+            break;
+        case 3:
+            std::println("You're really starting to get on my nerves, {}. I might have to end this quickly!", taunted->GetName());
+            break;
+        default:
+            std::println("You think a few hits will stop me, {}? Im just getting warmed up!", taunted->GetName());
+        }
+    }
+    else {
+        switch (taunt_type) {
+        case 1:
+            std::println("You think this is over, {}? I'll drag you to the grave with me!", taunted->GetName());
+            break;
+        case 2:
+            std::println("Blood for blood, {}! You won't leave this place alive!", taunted->GetName());
+            break;
+        case 3:
+            std::println("You're really starting to piss me off, {}. I might have to end this quickly!", taunted->GetName());
+            break;
+        default:
+            std::println("I'll make you wish you were never born {}!", taunted->GetName());
+        }
+    }
+}
+
+
+
 // ---------------- Gojo -------------------
 
 Gojo::Gojo() : Sorcerer(800.0, 4000.0, 50.0) {
@@ -295,7 +357,7 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         }
     }
     for (const auto& t : battlefield) {
-        if (t->DomainActive() && !this->DomainActive() && !this->GetTechnique()->BurntOut()) {
+        if (t->DomainActive() && !this->DomainActive() && !this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5) {
             this->ActivateDomain();
             return;
         }
@@ -399,19 +461,25 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         s->OnShikigamiTurn(this);
     }
 
-    auto shrine = dynamic_cast<Shrine*> (this->GetTechnique());
+    Shrine* shrine = dynamic_cast<Shrine*> (this->GetTechnique());
     int roll = GetRandomNumber(1, 100);
 
-    this->CheckSpecial(this);
+    this->GetSpecial()->PerformSpecial(this);
 
     if (shrine->WorldCuttingSlashUnlocked()) {
         shrine->WorldCuttingSlashToTarget(this, weakest);
         return;
     }
-    if (auto* limitless = dynamic_cast<Limitless*>(weakest->GetTechnique())) {
-        this->SetAmplification(true);
-        this->Attack(weakest);
+    if (domain_users.size() < 2 && !this->DomainActive() && !this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5) {
+        this->ActivateDomain();
         return;
+    }
+    if (auto* limitless = dynamic_cast<Limitless*>(weakest->GetTechnique())) {
+        if (limitless->CheckInfinity()) {
+            this->SetAmplification(true);
+            this->Attack(weakest);
+            return;
+        }
     }
     else {
         this->SetAmplification(false);
@@ -424,11 +492,6 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     else if (weakest->CanBeHit()) {
         shrine->UseShrineTechnique(Shrine::ShrineType::Dismantle, this, weakest);
         return;
-    }
-    
-
-    if (domain_users.size() < 2 && !this->DomainActive() && !this->GetTechnique()->BurntOut()) {
-        this->ActivateDomain();
     }
 }
 
