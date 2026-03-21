@@ -48,6 +48,10 @@ int main() { // main
 		bool player_found = manager.ManageEndOfTurn(battlefield);
 
 		if (manager.IsBattleOver(game_over, player_found, battlefield)) break;
+
+		std::println("Press Enter to begin the next round...");
+		std::cin.get();
+		
 		manager.ClearScreen();
 	}
 	std::println("press enter to end the game...");
