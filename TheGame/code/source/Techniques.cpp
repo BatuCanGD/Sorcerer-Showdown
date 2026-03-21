@@ -68,7 +68,7 @@ std::string Technique::GetStringChantLevel() const {
     case ChantLevel::One: return "One";
     case ChantLevel::Two: return "Two";
     case ChantLevel::Three: return "Three";
-    case ChantLevel::Four: return "Four";
+    case ChantLevel::Four: return "Max";
     default: return "One";
     }
 }
@@ -147,7 +147,7 @@ void Limitless::TechniqueMenu(Sorcerer* user, Character* target) {
     UseTheLimitlessTechnique(static_cast<LimitlessType>(choice), user, target);
 }
 
-void Limitless::TechniqueSetting(Sorcerer* user) {
+void Limitless::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     std::println("Infinity Status: [{}] | Chant level: [{}]", this->CheckInfinity() ? "Active" : "Inactive", this->GetStringChantLevel());
     std::println("1 - Turn on Infinity | 2 - Turn off Infinity | 3 - Chant | 4 - Return");
     std::print("=> ");
@@ -209,6 +209,10 @@ void Limitless::Chant() {
     else {
         std::println("Its time to use your Technique, its not gonna get anymore stronger");
     }
+}
+
+std::unique_ptr<Technique> Limitless::Clone() const {
+    return std::make_unique<Limitless>(*this);
 }
 
 // ---------------- Shrine -------------------
@@ -278,7 +282,7 @@ void Shrine::TechniqueMenu(Sorcerer* user, Character* target) {
     UseShrineTechnique(static_cast<ShrineType>(choice), user, target);
 }
 
-void Shrine::TechniqueSetting(Sorcerer* user) {
+void Shrine::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     std::println("Chant level: [{}]", this->GetStringChantLevel());
     std::println("1 - Chant | 2 - Return");
     std::print("=> ");
@@ -314,5 +318,137 @@ void Shrine::Chant() {
     }
     else {
         std::println("The technique is already at maximum output. Sever them!");
+    }
+}
+
+std::unique_ptr<Technique> Shrine::Clone() const {
+    return std::make_unique<Shrine>(*this);
+}
+
+// ------------------ Copy -------------------
+
+std::unique_ptr<Technique> Copy::Clone() const {
+    auto new_copy = std::make_unique<Copy>();
+
+    for (const auto& tech : copied_techniques) {
+        new_copy->copied_techniques.push_back(tech->Clone());
+    }
+
+    new_copy->active_copy = this->active_copy;
+    new_copy->state = this->state;
+    new_copy->chant = this->chant;
+    return new_copy;
+}
+
+
+void Copy::CopyFrom(Sorcerer* target) {
+    if (!target || !target->GetTechnique()) {
+        std::println("Nothing to copy!");
+        return;
+    }
+    if (target->IsHeavenlyRestricted()) {
+        std::println("{} has no cursed technique to copy!", target->GetName());
+        return;
+    }
+    if (copied_techniques.size() >= max_copies) {
+        std::println("Copy limit reached ({})!", max_copies);
+        return;
+    }
+    std::string ttname = target->GetTechnique()->GetTechniqueName();
+    for (const auto& tech : copied_techniques) {
+        if (tech->GetTechniqueName() == ttname) {
+            std::println("You have already copied this technique!");
+            return;
+        }
+    }
+
+
+    auto cloned = target->GetTechnique()->Clone();
+    std::println("Copied {}'s {}!", target->GetName(), cloned->GetTechniqueName());
+    copied_techniques.push_back(std::move(cloned));
+}
+
+void Copy::SwitchCopy(int index) {
+    if (index < 0 || index >= copied_techniques.size()) {
+        std::println("Invalid choice.");
+        return;
+    }
+    active_copy = index;
+    std::println("Switched to: {}", copied_techniques[active_copy]->GetTechniqueName());
+}
+
+Technique* Copy::GetActive() const {
+    if (active_copy < 0 || active_copy >= copied_techniques.size())
+        return nullptr;
+    return copied_techniques[active_copy].get();
+}
+
+std::string Copy::GetTechniqueName() const {
+    if (Technique* t = GetActive())
+        return std::format("Copy [{}]", t->GetTechniqueName());
+    return "Copy [None]";
+}
+
+void Copy::Chant() {
+    if (Technique* t = GetActive()) t->Chant();
+    else std::println("No technique active to chant for!");
+}
+
+void Copy::TechniqueMenu(Sorcerer* user, Character* target) {
+    Technique* t = GetActive();
+    if (!t) {
+        std::println("No technique used! Use Technique Settings to copy or switch to one first.");
+        return;
+    }
+    t->TechniqueMenu(user, target);
+}
+
+void Copy::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+    std::println("=== Copy Technique Settings ===");
+    std::println("Active: {}", GetTechniqueName());
+    std::println("Stored copies: {}", copied_techniques.size());
+
+    for (int i = 0; i < copied_techniques.size(); i++) {
+        std::println("  [{}] {}", i, copied_techniques[i]->GetTechniqueName());
+    }
+
+    std::println("1 - Copy from a target | 2 - Switch active copy | 3 - Return");
+    std::print("=> ");
+    int ch = GetValidInput();
+
+    switch (ch) {
+    case 1: {
+        std::println("Choose a target to copy from:");
+
+        for (size_t i = 0; i < battlefield.size(); ++i) {
+            if (battlefield[i].get() == user || battlefield[i]->GetCharacterHealth() <= 0) continue;
+
+            std::println("{} - {}", i, battlefield[i]->GetName());
+        }
+
+        std::print("=> ");
+        size_t tdex = GetValidInput();
+        if (tdex < battlefield.size() && battlefield[tdex].get() != user && battlefield[tdex]->GetCharacterHealth() > 0) {
+            this->CopyFrom(battlefield[tdex].get());
+        }
+        else {
+            std::println("Invalid target missed!");
+        }
+        break;
+    }
+    case 2: {
+        if (copied_techniques.empty()) {
+            std::println("No copies to switch to.");
+            break;
+        }
+        std::println("Enter index: ");
+        int dex = GetValidInput();
+        SwitchCopy(dex);
+        break;
+    }
+    case 3:
+        break;
+    default:
+        std::println("Invalid Input!");
     }
 }

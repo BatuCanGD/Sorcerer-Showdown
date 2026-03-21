@@ -591,13 +591,13 @@ void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
 
     if (limitless && limitless->CheckInfinity()) {
         if (!this->GetTool() || this->GetTool()->GetName() != "The Inverted Spear of Heaven") {
-            this->ChangeCursedTool(CurrentWeapon::ISOH);
+            this->CursedToolChoice(INVERTED_SPEAR_OF_HEAVEN);
             return;
         }
     }
     else {
         if (!this->GetTool() || this->GetTool()->GetName() != "Playful Cloud") {
-            this->ChangeCursedTool(CurrentWeapon::PLCLD);
+            this->CursedToolChoice(PLAYFUL_CLOUD);
             return;
         }
     }
@@ -610,10 +610,31 @@ bool Toji::CanBeHit() const {
 }
 
 
+// -------------- Yuta ------------------
+
+Yuta::Yuta() : Sorcerer(800.0, 6000.0, 45.0){
+    technique = std::make_unique<Copy>();
+    cursed_tool = std::make_unique<Katana>();
+    shikigami.push_back(std::make_unique<Rika>());
+    black_flash_chance = 10;
+}
+
+std::string Yuta::GetName() const {
+    return "Yuta Okkotsu";
+}
+
+void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+    std::println("bushcamper");
+}
+
+bool Yuta::CanBeHit() const{
+    return true;
+}
+
 /// for testing stuff, use this class
 
 test_sorcerer::test_sorcerer() : Sorcerer(30000000.0, 30000000.0, 1000.0) {
-    technique = std::make_unique<Limitless>();
+    technique = std::make_unique<Copy>();
 	domain = std::make_unique<KillEveryoneDomain>();
     black_flash_chance = 100;
 }

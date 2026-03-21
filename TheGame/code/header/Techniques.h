@@ -1,26 +1,24 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <memory>
 
 class Sorcerer;
 class Character;
 
 class Technique { // BASE CLASS
-public:
-	enum class Status { Usable, DomainBoost, BurntOut };
 protected:
 	static constexpr double base_output = 10.0;
-	Status state = Status::Usable;
-
 	enum class ChantLevel {
-		Zero,
-		One,
-		Two,
-		Three,
-		Four
+		Zero, One, Two, 
+		Three, Four
 	};
 	ChantLevel chant = ChantLevel::Zero;
 public:
+	enum class Status { Usable, DomainBoost, BurntOut };
+	Status state = Status::Usable;
+
 	virtual ~Technique() = default;
 	void Set(Status s);
 	Status GetStatus() const;
@@ -30,7 +28,8 @@ public:
 	virtual std::string GetTechniqueName() const = 0;
 	virtual void Chant() = 0;
 	virtual void TechniqueMenu(Sorcerer* user, Character* target) = 0;
-	virtual void TechniqueSetting(Sorcerer*) = 0;
+	virtual void TechniqueSetting(Sorcerer*, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) = 0;
+	virtual std::unique_ptr<Technique> Clone() const = 0;
 
 	std::string GetStringChantLevel() const;
 	double GetChantPower() const;
@@ -43,8 +42,12 @@ public:
 class Limitless : public Technique { // LIMITLESS
 protected:
 	bool Infinity = true;
-	static constexpr double blue_output = 20.0 + base_output, red_output = 40.0 + base_output, purple_output = 90.0 + base_output;
+	static constexpr double blue_output = 20.0 + base_output;
+	static constexpr double red_output = 40.0 + base_output;
+	static constexpr double purple_output = 90.0 + base_output;
 public:
+	std::unique_ptr<Technique> Clone() const override;
+
 	enum class LimitlessType { Blue = 1, Red = 2, Purple = 3 };
 
 	void SetInfinity(bool s);
@@ -57,16 +60,20 @@ public:
 	void UseTheLimitlessTechnique(LimitlessType choice, Sorcerer* s, Character* c);
 	std::string GetTechniqueName() const override;
 	void TechniqueMenu(Sorcerer* user, Character* target) override;
-	void TechniqueSetting(Sorcerer*) override;
+	void TechniqueSetting(Sorcerer*, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
 	void Chant() override;
 };
 
 
 class Shrine : public Technique { // SHRINE
 protected:
-	static constexpr double slash_output = 45.0, cleave_output = 300.0, wcs_output = 2500.0;
+	static constexpr double slash_output = 45.0;
+	static constexpr double cleave_output = 300.0;
+	static constexpr double wcs_output = 2500.0;
 	bool world_cutting_slash_allowed = false;
 public:
+	std::unique_ptr<Technique> Clone() const override;
+
 	enum class ShrineType { Dismantle = 1, Cleave = 2, WCS = 3 };
 
 	void SetWCS(bool s);
@@ -78,7 +85,25 @@ public:
 	void WorldCuttingSlashToTarget(Sorcerer* user, Character* target);
 	void UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c);
 	void TechniqueMenu(Sorcerer* user, Character* target) override;
-	void TechniqueSetting(Sorcerer*) override;
+	void TechniqueSetting(Sorcerer*, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
 	void Chant() override;
+};
+
+class Copy : public Technique {
+private:
+	std::vector<std::unique_ptr<Technique>> copied_techniques;
+	static constexpr int max_copies = 5;
+	int active_copy = -1;
+public:
+	std::unique_ptr<Technique> Clone() const override;
+
+	void CopyFrom(Sorcerer* target);
+	void SwitchCopy(int index);              
+	Technique* GetActive() const;             
+
+	void TechniqueMenu(Sorcerer* user, Character* target) override;
+	void TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
+	void Chant() override;
+	std::string GetTechniqueName() const override;
 };
 

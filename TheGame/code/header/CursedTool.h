@@ -30,3 +30,9 @@ public:
 	void UseTool(Sorcerer*, Character*) override;
 	std::string GetName() const override;
 };
+
+class Katana : public CursedTool {
+public:
+	void UseTool(Sorcerer*, Character*) override;
+	std::string GetName() const override;
+};

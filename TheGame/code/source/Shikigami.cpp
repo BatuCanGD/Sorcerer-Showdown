@@ -132,3 +132,25 @@ bool Agito::CanBeHit() const {
     }
     return false;
 }
+
+// ----------- Rika -----------
+
+Rika::Rika() : Shikigami(1000.0, 100000.0, 500.0) {}
+
+
+void Rika::OnShikigamiTurn(Sorcerer* user) {
+    std::println("the carrier");
+}
+
+
+bool Rika::CanBeHit() const {
+    if (IsActivePhysically()) {
+        return true;
+    }
+    return false;
+}
+
+
+std::string Rika::GetName() const {
+    return "Rika";
+}

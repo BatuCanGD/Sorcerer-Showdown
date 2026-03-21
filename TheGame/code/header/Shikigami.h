@@ -59,3 +59,11 @@ public:
 	std::string GetName() const override;
 	bool CanBeHit() const override;
 };
+
+class Rika : public Shikigami {
+public:
+	Rika();
+	void OnShikigamiTurn(Sorcerer*) override;
+	std::string GetName() const override;
+	bool CanBeHit() const override;
+};

@@ -28,3 +28,11 @@ double PlayfulCloud::GetCalculatedStrength(Sorcerer* user) {
 std::string PlayfulCloud::GetName() const {
 	return "Playful Cloud";
 }
+
+void Katana::UseTool(Sorcerer* user, Character* target) {
+	target->Damage(base_tool_damage * special_tool_mult);
+	std::println("{} attacks {} using their katana!", user->GetName(), target->GetName());
+}
+std::string Katana::GetName() const {
+	return "a Katana";
+}

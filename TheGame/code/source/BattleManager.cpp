@@ -106,7 +106,7 @@ void BattleManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 		GetPlayerTools(s);
 		break;
 	case 9:
-		s.GetTechnique()->TechniqueSetting(&s);
+		s.GetTechnique()->TechniqueSetting(&s, battlefield);
 		break;
 	default:
 		std::println("Invalid Choice");
@@ -173,7 +173,7 @@ void BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 			if (count > 0) std::println("{} x{}", name, count);
 		}
 
-		std::println("\n1 - Gojo | 2 - Sukuna | 3 - Toji Fushiguro |\n\n-1 - Undo | 0 - Finish |");
+		std::println("\n1 - Gojo | 2 - Sukuna | 3 - Toji Fushiguro |\n4-Yuta Okkotsu\n\n-1 - Undo | 0 - Finish |");
 
 		if (!(std::cin >> c)) {
 			std::cin.clear();
@@ -201,6 +201,7 @@ void BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 			case 1:   s = std::make_unique<Gojo>(); break;
 			case 2:   s = std::make_unique<Sukuna>(); break;
 			case 3:	  s = std::make_unique<Toji>(); break;
+			case 4:	  s = std::make_unique<Yuta>(); break;
 			case 150: s = std::make_unique<test_sorcerer>(); break;
 			}
 
