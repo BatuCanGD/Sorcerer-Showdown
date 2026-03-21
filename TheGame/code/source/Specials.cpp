@@ -14,7 +14,7 @@ void WorldCuttingSlash::PerformSpecial(Sorcerer* user) {
 	const auto& shikigami_list = user->GetShikigami();
 	for (const auto& s : shikigami_list) {
 		if (Mahoraga* m = dynamic_cast<Mahoraga*>(s.get())) {
-			if (m->FullyAdaptedToInfinity()) {
+			if (m->FullyAdapted()) {
 				shrinePtr->SetWCS(true);
 				std::println("The blueprint is complete. World Cutting Slash enabled!");
 				return;

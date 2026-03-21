@@ -41,7 +41,7 @@ protected:
 	InfinityAdaptation InfStage = InfinityAdaptation::None;
 public:
 	void Adapt();
-	bool FullyAdaptedToInfinity()const;
+	bool FullyAdapted()const;
 	void OnShikigamiTurn(Sorcerer*) override;
 	std::string GetName() const override;
 	bool CanBeHit() const override;

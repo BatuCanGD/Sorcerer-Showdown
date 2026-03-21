@@ -370,11 +370,15 @@ std::string Gojo::GetName() const {
 }
 
 void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
-    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.60) {
-        this->EnableRCT();
+    if (this->IsCharacterStunned()) {
+        std::println("{} is stunned and their turn will be skipped", this->GetName());
+        return;
     }
-    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25) {
+    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25) {
         this->BoostRCT();
+    }
+    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.65) {
+        this->EnableRCT();
     }
     else {
         this->DisableRCT();
@@ -397,8 +401,15 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     }
     auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
 
+
     if (limitless && strongest && (limitless->Usable() || limitless->Boosted())) {
         int roll = GetRandomNumber(1, 100);
+        int croll = GetRandomNumber(1, 10);
+
+        if (croll <= 3 && limitless->GetChantPower() < 3.0) {
+            limitless->Chant();
+            return;
+        }
 
         if (roll <= 15 && this->GetCharacterCE() > 3000) {
             limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Purple, this, strongest);
@@ -437,11 +448,15 @@ std::string Sukuna::GetName() const {
 }
 
 void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
-    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.55) {
-        this->EnableRCT();
+    if (this->IsCharacterStunned()) {
+        std::println("{} is stunned and their turn will be skipped", this->GetName());
+        return;
     }
-    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.35) {
+    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 35) {
         this->BoostRCT();
+    }
+    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.75) {
+        this->EnableRCT();
     }
     else {
         this->DisableRCT();
@@ -474,6 +489,8 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         }
     }
 
+    Shrine* shrine = dynamic_cast<Shrine*> (this->GetTechnique());
+
     if (makora) {
         if (this->GetCharacterHealth() < GetCharacterMaxHealth() * 0.60) {
             if (!makora->IsActivePhysically()) { 
@@ -482,6 +499,11 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         }
         else if (!makora->IsActive()) {
             makora->PartiallyManifest();
+        }
+
+        if (makora->FullyAdapted() && !shrine->WorldCuttingSlashUnlocked()) {
+            this->GetSpecial()->PerformSpecial(this);
+            return;
         }
     }
 
@@ -495,12 +517,13 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         s->OnShikigamiTurn(this);
     }
 
-    Shrine* shrine = dynamic_cast<Shrine*> (this->GetTechnique());
     int roll = GetRandomNumber(1, 100);
 
-    this->GetSpecial()->PerformSpecial(this);
-
     if (shrine->WorldCuttingSlashUnlocked()) {
+        if (shrine->GetChantPower() < 3.0) {
+            shrine->Chant();
+            return;
+        }
         shrine->WorldCuttingSlashToTarget(this, weakest);
         return;
     }
@@ -519,7 +542,7 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         this->SetAmplification(false);
     }
 
-    if (weakest->GetCharacterHealth() < GetCharacterMaxHealth() * 0.25 && roll <= 15) {
+    if (weakest->GetCharacterHealth() < weakest->GetCharacterMaxHealth() * 0.25 && roll <= 15) {
         shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, weakest);
         return;
     }
@@ -548,6 +571,11 @@ std::string Toji::GetName() const {
 }
 
 void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+    if (this->IsCharacterStunned()) {
+        std::println("{} is stunned and their turn will be skipped", this->GetName());
+        return;
+    }
+
     Sorcerer* ignored = nullptr;
     for (const auto& t : battlefield) {
         if (t.get() == this || t->GetCharacterHealth() <= 0.0) continue;
@@ -557,12 +585,20 @@ void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         }
     }
 
-    if (this->GetTool() == nullptr) {
-        if (auto* limitless = dynamic_cast<Limitless*>(ignored->GetTechnique())) {
-            this->CursedToolChoice(INVERTED_SPEAR_OF_HEAVEN);
+    if (!ignored) return; 
+
+    auto* limitless = dynamic_cast<Limitless*>(ignored->GetTechnique());
+
+    if (limitless && limitless->CheckInfinity()) {
+        if (!this->GetTool() || this->GetTool()->GetName() != "The Inverted Spear of Heaven") {
+            this->ChangeCursedTool(CurrentWeapon::ISOH);
+            return;
         }
-        else {
-            this->CursedToolChoice(PLAYFUL_CLOUD);
+    }
+    else {
+        if (!this->GetTool() || this->GetTool()->GetName() != "Playful Cloud") {
+            this->ChangeCursedTool(CurrentWeapon::PLCLD);
+            return;
         }
     }
 

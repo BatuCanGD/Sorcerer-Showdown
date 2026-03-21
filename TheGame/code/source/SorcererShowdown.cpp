@@ -51,7 +51,7 @@ int main() { // main
 
 		std::println("Press Enter to begin the next round...");
 		std::cin.get();
-		
+
 		manager.ClearScreen();
 	}
 	std::println("press enter to end the game...");
