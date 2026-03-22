@@ -19,8 +19,9 @@ class Specials;
 class Sorcerer : public Character {
 protected:
 	std::unique_ptr<Domain> domain = nullptr;
+	std::unique_ptr<Domain> counter_domain = nullptr; // frankenstein of a class
 	std::unique_ptr<Technique> technique = nullptr;
-	std::unique_ptr<Specials> special = nullptr;
+	std::unique_ptr<Specials> special = nullptr; // cursed technique extension <- why didnt i think of this name first??
 	std::unique_ptr<CursedTool> cursed_tool = nullptr;
 	
 	std::vector<std::unique_ptr<CursedTool>> inventory_curse; 
@@ -30,12 +31,17 @@ protected:
 
 	double base_attack_damage = 20.0;
 
+	bool domain_amplification_active = false;
+
+	bool counter_domain_active = false;
 	bool domain_active = false;
+
 	bool is_player = false;
 
 	int total_domain_uses = 0;
 	int burnout_time = 0;
 	int active_domain_time = 0;
+	int active_counter_time = 0;
 
 	int black_flash_chance = 5;
 	int the_zone_time = 0;
@@ -43,23 +49,20 @@ protected:
 	const double black_flash_multiplier = 4.0;
 
 	const int domain_limit = 5;
+	const int max_counter_time = 3;
 	const int max_domain_time = 5;
 	const int max_burnout_time = 2;
 
-	bool domain_amplification_active = false;
 	enum class ReverseCT {
-		Disabled,
-		Active,
-		Overdrive
+		Disabled, Active, Overdrive
 	};
 	ReverseCT rct_state = ReverseCT::Disabled;
 public:
 	virtual ~Sorcerer() = default;
 	Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {}
 
-	enum class CurrentWeapon { None = 0, ISOH = 1, PLCLD = 2 };
-
 	Domain* GetDomain();
+	Domain* GetCounterDomain();
 	Technique* GetTechnique();
 	Specials* GetSpecial();
 	CursedTool* GetTool();
@@ -92,11 +95,15 @@ public:
 	void ActivateDomain();
 	void DomainDrain();
 
+	bool CounterDomainActive() const;
+	void ActivateCounterDomain();
+	void DeactivateCounterDomain();
+
 	void TickDomain();
 	void TickZone();
 
 	void CursedToolChoice(int);
-	void ChangeCursedTool(CurrentWeapon);
+	void EquipToolByName(const std::string& weaponname);
 
 	void Attack(Character*);
 	
@@ -129,9 +136,6 @@ public:
 };
 
 class Toji : public Sorcerer {
-private:
-	int INVERTED_SPEAR_OF_HEAVEN = 1;
-	int PLAYFUL_CLOUD = 2;
 public:
 	Toji();
 	std::string GetName() const override;

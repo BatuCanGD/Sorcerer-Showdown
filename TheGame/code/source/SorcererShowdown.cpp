@@ -22,6 +22,7 @@ int main() { // main
 
 			if (s->IsThePlayer()) {
 				manager.DisplaySorcererStatus(s.get());
+				if (s->IsCharacterStunned()) continue;
 				std::println("\n");
 				manager.OnPlayerTurn(*s, battlefield);
 				std::println("\n");

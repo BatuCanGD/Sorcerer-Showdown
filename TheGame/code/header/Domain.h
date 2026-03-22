@@ -13,6 +13,7 @@ protected:
 	const double base_range;
 	double current_range;
 	bool clashing = false;
+	bool is_neutralizer = false;
 public:
 	Domain(double, double, double);
 	virtual ~Domain() = default;
@@ -31,6 +32,7 @@ public:
 	void CollapseDomain();
 
 	bool IsDestroyed() const;
+	bool IsNeutralizer() const;
 };
 
 
@@ -51,6 +53,23 @@ public:
 	void OnSureHit(Character& target) override;
 	std::string GetDomainName() const override;
 };
+
+// neutralizer domains
+
+class SimpleDomain : public Domain {
+public:
+	SimpleDomain();
+	void OnSureHit(Character&) override;
+	std::string GetDomainName() const override;
+};
+class HollowWickerBasket : public Domain {
+public:
+	HollowWickerBasket();
+	void OnSureHit(Character&) override;
+	std::string GetDomainName() const override;
+};
+
+// fun domain
 
 class KillEveryoneDomain : public Domain {
 protected:

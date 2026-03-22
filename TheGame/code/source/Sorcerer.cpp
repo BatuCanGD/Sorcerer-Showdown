@@ -8,6 +8,10 @@ bool Sorcerer::DomainActive() const {
     return domain_active;
 }
 
+Domain* Sorcerer::GetCounterDomain() {
+    return counter_domain.get();
+}
+
 Domain* Sorcerer::GetDomain() {
     return domain.get();
 }
@@ -145,7 +149,6 @@ void Sorcerer::Attack(Character* target) {
 void Sorcerer::TickDomain() {
     if (this->DomainActive()) {
         active_domain_time++;
-
         if (active_domain_time == max_domain_time) {
             std::println("{}'s domain will end soon", this->GetName());
         }
@@ -156,6 +159,18 @@ void Sorcerer::TickDomain() {
             active_domain_time = 0;
         }
     }
+    else if (this->CounterDomainActive()) {
+        active_counter_time++;
+        if (active_counter_time == max_counter_time) {
+            std::println("{}'s {} is about to shatter", this->GetName(), this->GetCounterDomain()->GetDomainName());
+        }
+        else if (active_counter_time > max_counter_time) {
+            std::println("{}'s {} has been shattered", this->GetName(), this->GetCounterDomain()->GetDomainName());
+            this->DeactivateCounterDomain();
+            active_counter_time = 0;
+        }
+    }
+    if (!this->CounterDomainActive() && active_counter_time > 0) active_counter_time = 0;
 }
 
 void Sorcerer::ActivateDomain() {
@@ -191,6 +206,26 @@ void Sorcerer::DeactivateDomain() {
     if (technique) {
         technique->Set(Technique::Status::BurntOut);
     }
+}
+
+bool Sorcerer::CounterDomainActive() const {
+    return counter_domain_active;
+}
+
+void Sorcerer::ActivateCounterDomain() {
+    if (!counter_domain) {
+        std::println("{} doesn't have a counter domain!", this->GetName());
+        return;
+    }
+    if (!counter_domain_active) counter_domain_active = true;
+}
+
+void Sorcerer::DeactivateCounterDomain() {
+    if (!counter_domain) {
+        std::println("{} doesn't have a counter domain!", this->GetName());
+        return;
+    }
+    if (counter_domain_active) counter_domain_active = false;
 }
 
 std::string Sorcerer::GetName() const {
@@ -250,38 +285,40 @@ void Sorcerer::RecoverBurnout(Technique* t) {
     }
 }
 
-void Sorcerer::CursedToolChoice(int c) {
-    auto choice = static_cast<CurrentWeapon>(c);
-    ChangeCursedTool(choice);
-}
-
-void Sorcerer::ChangeCursedTool(CurrentWeapon wep) {
-    if (wep == CurrentWeapon::None) {
+void Sorcerer::CursedToolChoice(int choice) {
+    if (choice == 0) {
         if (cursed_tool != nullptr) {
+            std::println("{} put {} away.", this->GetName(), cursed_tool->GetName());
             inventory_curse.push_back(std::move(cursed_tool));
             cursed_tool = nullptr;
-            std::println("{} put his weapon away.", this->GetName());
         }
         return;
     }
-    for (auto it = inventory_curse.begin(); it != inventory_curse.end(); ++it) {
-        bool match = false;
 
-        if (wep == CurrentWeapon::ISOH && dynamic_cast<InvertedSpearofHeaven*>(it->get())) match = true;
-        else if (wep == CurrentWeapon::PLCLD && dynamic_cast<PlayfulCloud*>(it->get())) match = true;
+    int inv_index = choice - 1;
+    if (inv_index >= 0 && inv_index < inventory_curse.size()) {
+        if (cursed_tool != nullptr) {
+            inventory_curse.push_back(std::move(cursed_tool));
+        }
+        cursed_tool = std::move(inventory_curse[inv_index]);
+        inventory_curse.erase(inventory_curse.begin() + inv_index);
 
-        if (match) {
-            if (cursed_tool != nullptr) {
-                inventory_curse.push_back(std::move(cursed_tool));
-            }
-            cursed_tool = std::move(*it);
-            inventory_curse.erase(it);
+        std::println("{} equipped {}!", this->GetName(), cursed_tool->GetName());
+    }
+    else {
+        std::println("Invalid tool choice.");
+    }
+}
 
-            std::println("{} equipped {}!", this->GetName(), cursed_tool->GetName());
+void Sorcerer::EquipToolByName(const std::string& weaponName) {
+    for (int i = 0; i < inventory_curse.size(); ++i) {
+        if (inventory_curse[i]->GetName() == weaponName) {
+            CursedToolChoice(i + 1); 
             return;
         }
     }
 }
+
 
 void Sorcerer::Taunt(Character* taunted) { // pure aura
     if (!taunted) return;
@@ -360,6 +397,7 @@ void Sorcerer::Taunt(Character* taunted) { // pure aura
 
 Gojo::Gojo() : Sorcerer(800.0, 4000.0, 50.0) {
     domain = std::make_unique<InfiniteVoid>();
+    counter_domain = std::make_unique<SimpleDomain>();
     technique = std::make_unique<Limitless>();
     SetSixEyes(true);
     black_flash_chance = 15;
@@ -436,6 +474,7 @@ bool Gojo::CanBeHit() const {
 
 Sukuna::Sukuna() : Sorcerer(1000.0, 12000.0, 25.0) {
     domain = std::make_unique<MalevolentShrine>();
+    counter_domain = std::make_unique<HollowWickerBasket>();
     technique = std::make_unique<Shrine>();
 	shikigami.push_back(std::make_unique<Mahoraga>());
 	shikigami.push_back(std::make_unique<Agito>());
@@ -591,13 +630,13 @@ void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
 
     if (limitless && limitless->CheckInfinity()) {
         if (!this->GetTool() || this->GetTool()->GetName() != "The Inverted Spear of Heaven") {
-            this->CursedToolChoice(INVERTED_SPEAR_OF_HEAVEN);
+            this->EquipToolByName("The Inverted Spear of Heaven");
             return;
         }
     }
     else {
         if (!this->GetTool() || this->GetTool()->GetName() != "Playful Cloud") {
-            this->CursedToolChoice(PLAYFUL_CLOUD);
+            this->EquipToolByName("Playful Cloud");
             return;
         }
     }
@@ -615,6 +654,7 @@ bool Toji::CanBeHit() const {
 Yuta::Yuta() : Sorcerer(800.0, 6000.0, 45.0){
     technique = std::make_unique<Copy>();
     cursed_tool = std::make_unique<Katana>();
+    counter_domain = std::make_unique<SimpleDomain>();
     shikigami.push_back(std::make_unique<Rika>());
     black_flash_chance = 10;
 }
@@ -635,12 +675,20 @@ bool Yuta::CanBeHit() const{
 
 test_sorcerer::test_sorcerer() : Sorcerer(30000000.0, 30000000.0, 1000.0) {
     technique = std::make_unique<Copy>();
-	domain = std::make_unique<KillEveryoneDomain>();
+	domain = std::make_unique<InfiniteVoid>();
+    counter_domain = std::make_unique<SimpleDomain>();
     black_flash_chance = 100;
 }
 
 void test_sorcerer::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     std::println("John Zenin just stands there... menacingly.");
+    if (this->domain && !this->DomainActive() && !(this->GetTechnique()->BurntOut() || this->GetTechnique()->Boosted())) {
+        this->ActivateDomain();
+    }
+    for (const auto& s : battlefield) {
+        if (s.get() == this) continue;
+        this->Taunt(s.get());
+    }
 }
 std::string test_sorcerer::GetName() const {
     return "John Zenin";

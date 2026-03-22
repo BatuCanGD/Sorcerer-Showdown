@@ -71,11 +71,7 @@ void BattleManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 		break;
 	}
 	case 4: {
-		if (s.GetDomain() == nullptr) {
-			std::println("You dont have a domain to use!");
-			break;
-		}
-		s.ActivateDomain();
+		PlayerDomainUsage(s);
 		break;
 	}
 	case 5: {
@@ -113,16 +109,75 @@ void BattleManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 	}
 }
 
+void BattleManager::PlayerDomainUsage(Sorcerer& s) {
+	if (s.GetDomain() == nullptr && s.GetCounterDomain() == nullptr) {
+		std::println("You dont have a domain and a counter to a domain");
+		return;
+	}
+	if (s.GetDomain() != nullptr) {
+		std::println("Domain Status: [{}]", s.DomainActive() ? "Active" : "Inactive");
+	}
+	if (s.GetCounterDomain() != nullptr) {
+		std::println("{} Status: [{}]", s.GetCounterDomain()->GetDomainName(), s.CounterDomainActive() ? "Active" : "Inactive");
+	}
+	if (s.GetDomain() != nullptr) {
+		std::print("1 - Activate Domain | 2 - Disable Domain ");
+	}
+	if (s.GetCounterDomain() != nullptr) {
+		std::println("\n3 - Activate {} | 4 - Disable {} ", s.GetCounterDomain()->GetDomainName(), s.GetCounterDomain()->GetDomainName());
+	}
+	std::print("=> ");
+	int ch = GetValidInput();
+	switch (ch) {
+	case 1:
+		if (s.GetDomain() == nullptr) {
+			std::println("You dont have a domain");
+			break;
+		}
+		s.ActivateDomain();
+		break;
+	case 2:
+		if (s.GetDomain() == nullptr) {
+			std::println("You dont have a domain");
+			break;
+		}
+		s.DeactivateDomain();
+		break;
+	case 3:
+		if (s.GetCounterDomain() == nullptr) {
+			std::println("You dont have a counter domain");
+			break;
+		}
+		s.ActivateCounterDomain();
+		break;
+	case 4:
+		if (s.GetCounterDomain() == nullptr) {
+			std::println("You dont have a counter domain");
+			break;
+		}
+		s.DeactivateCounterDomain();
+		break;
+	default:
+		std::println("Invalid Input");
+	}
+}
+
 void BattleManager::GetPlayerTools(Sorcerer& s) {
-	int count = GetValidInput();
+	int count = 1; 
+	std::println("Available Tools:");
 	for (const auto& tool : s.GetCursedTools()) {
 		std::println("{} - {}", count++, tool->GetName());
 	}
+
 	if (s.GetTool() != nullptr) {
-		std::println("\n0 - Unequip");
+		std::println("\n0 - Unequip ({})", s.GetTool()->GetName());
+	}
+	else {
+		std::println("\n0 - Go Back");
 	}
 
-	int choice = 0; std::cin >> choice;
+	std::print("\n=> ");
+	int choice = GetValidInput();
 	s.CursedToolChoice(choice);
 }
 
@@ -242,6 +297,12 @@ void BattleManager::DisplaySorcererStatus(Sorcerer* s) {
 			s->GetTechnique()->GetTechniqueName(),
 			s->GetTechnique()->GetStringStatus());
 	}
+	if (s->GetCounterDomain() != nullptr) {
+		std::print("{}: [{}]   ", 
+			s->GetCounterDomain()->GetDomainName(), 
+			s->CounterDomainActive() ? "Active" : "Inactive");
+	}
+
 
 	if (!s->GetCursedTools().empty() || s->GetTool() != nullptr) {
 		std::print("Inventory: ");
@@ -263,17 +324,18 @@ void BattleManager::DisplaySorcererStatus(Sorcerer* s) {
 			std::println(" None");
 		}
 	}
-
-	if (s->IsThePlayer()) {
+	if (s->IsThePlayer() && s->IsCharacterStunned()) {
+		std::println("\n\n");
+		std::println("You have been Stunned and your turn has been skipped!");
+		std::println("\n\n");
+	}
+	else if (s->IsThePlayer()) {
 		std::println("\nChoose action:");
 		if (s->GetTechnique() != nullptr) std::print("1-Technique | ");
 		std::print("2-Fight");
-
 		if (s->GetSpecial() != nullptr)  std::print(" | 3-Special [{}]",s->GetSpecial()->GetSpecialSimplifiedName());
-		if (s->GetDomain() != nullptr)   std::print(" | \n4-Domain");
-
+		if (s->GetDomain() != nullptr || s->GetCounterDomain() != nullptr) std::print(" | \n4-Domain actions");
 		std::print(" | 5-Taunt");
-
 		if (!s->IsHeavenlyRestricted()) {
 			std::print(" | 6-RCT Usage | \n7-Domain Amplification");
 		}
@@ -283,7 +345,6 @@ void BattleManager::DisplaySorcererStatus(Sorcerer* s) {
 		if (s->GetTechnique() != nullptr) {
 			std::println(" | 9-Technique Settings");
 		}
-
 		std::print("\n=> ");
 	}
 }
@@ -372,11 +433,9 @@ void BattleManager::DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>
 
 		for (const auto& s : battlefield) {
 			if (s.get() == domain_user) continue;
-			std::println("{}'s domain; {} has hit {}",
-				domain_user->GetName(),
-				domain_user->GetDomain()->GetDomainName(),
-				s->GetName());
-
+			std::println("{} has been caught inside {}",
+				s->GetName(),
+				domain_user->GetDomain()->GetDomainName());
 			domain_user->GetDomain()->OnSureHit(*s);
 		}
 	}
