@@ -432,8 +432,12 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         }
     }
     for (const auto& t : battlefield) {
-        if (t->DomainActive() && !this->DomainActive() && !this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5) {
+        if (!t->IsThePlayer() && t->DomainActive() && !this->DomainActive() && !this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5) {
             this->ActivateDomain();
+            return;
+        }
+        else if ((!t->IsThePlayer() && t->DomainActive()) && (this->GetTechnique()->BurntOut() || this->GetDomainUses() >= 5)) {
+            this->ActivateCounterDomain();
             return;
         }
     }
