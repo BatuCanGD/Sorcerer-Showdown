@@ -195,6 +195,10 @@ void Sorcerer::ActivateDomain() {
         std::println("Your domain is already active!");
         return;
 	}
+    if (is_strained) {
+        std::println("Your technique is burnt out and cannot be used yet");
+        return;
+    }
     if (total_domain_uses >= domain_limit) {
         this->DamageBypass(50.0);
         this->SetStunState(true);
@@ -215,9 +219,11 @@ int Sorcerer::GetDomainUses() const {
 
 void Sorcerer::DeactivateDomain() {
     domain_active = false;
+    is_strained = true;
     active_domain_time = 0;
     if (technique) {
         technique->Set(Technique::Status::BurntOut);
+        technique_burnout_time = 0;
     }
 }
 
@@ -285,17 +291,27 @@ void Sorcerer::CleanupShikigami() {
     shikigami.erase(removed_begin, removed_end);
 }
 
-void Sorcerer::RecoverBurnout(Technique* t) {
-    if (t == nullptr) return;
-    
-    if (t->BurntOut()) {
+void Sorcerer::RecoverBurnout() {
+    if (is_strained) {
         burnout_time++;
-        if (burnout_time >= max_burnout_time) {
-            t->Set(Technique::Status::Usable);
+        if (burnout_time >= max_technique_burnout_time) {
+            is_strained = false;
             burnout_time = 0;
+        }
+    }
+}
+
+void Sorcerer::RecoverTechniqueBurnout(Technique* t) {
+    if (t == nullptr) return;
+    if (t->BurntOut()) {
+        technique_burnout_time++;
+        if (technique_burnout_time >= max_technique_burnout_time) {
+            t->Set(Technique::Status::Usable);
+            technique_burnout_time = 0;
             std::println("{}'s cursed technique has recovered from burnout!", this->GetName());
         }
     }
+    if (technique_burnout_time != 0 && !t->BurntOut()) technique_burnout_time = 0;
 }
 
 void Sorcerer::CursedToolChoice(int choice) {
@@ -489,7 +505,7 @@ bool Gojo::CanBeHit() const {
 
 // ---------------- Sukuna -------------------
 
-Sukuna::Sukuna() : Sorcerer(1000.0, 12000.0, 25.0) {
+Sukuna::Sukuna() : Sorcerer(1000.0, 16000.0, 150.0) {
     domain = std::make_unique<MalevolentShrine>();
     counter_domain = std::make_unique<HollowWickerBasket>();
     technique = std::make_unique<Shrine>();
@@ -664,7 +680,7 @@ bool Toji::CanBeHit() const {
 
 // -------------- Yuta ------------------
 
-Yuta::Yuta() : Sorcerer(800.0, 6000.0, 45.0){
+Yuta::Yuta() : Sorcerer(800.0, 8000.0, 75.0){
     technique = std::make_unique<Copy>();
     cursed_tool = std::make_unique<Katana>();
     counter_domain = std::make_unique<SimpleDomain>();

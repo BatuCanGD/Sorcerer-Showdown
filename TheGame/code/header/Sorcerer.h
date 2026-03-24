@@ -38,8 +38,12 @@ protected:
 
 	bool is_player = false;
 
+	bool is_strained = false;
+
 	int total_domain_uses = 0;
+	int technique_burnout_time = 0;
 	int burnout_time = 0;
+
 	int active_domain_time = 0;
 	int active_counter_time = 0;
 
@@ -51,7 +55,7 @@ protected:
 	const int domain_limit = 5;
 	const int max_counter_time = 3;
 	const int max_domain_time = 5;
-	const int max_burnout_time = 2;
+	const int max_technique_burnout_time = 4;
 
 	enum class ReverseCT {
 		Disabled, Active, Overdrive
@@ -114,7 +118,8 @@ public:
 	std::string GetName() const override;
 
 	virtual void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) = 0;
-	void RecoverBurnout(Technique*);
+	void RecoverBurnout();
+	void RecoverTechniqueBurnout(Technique*);
 	
 	void Taunt(Character* target);
 	bool CanBeHit() const override;

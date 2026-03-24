@@ -29,6 +29,7 @@ int main() { // main
 				std::cin.clear();
 			}
 			else {
+				std::println("\n");
 				manager.DisplaySorcererStatus(s.get());
 				std::println("\n");
 				s->OnSorcererTurn(battlefield);
@@ -44,7 +45,6 @@ int main() { // main
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			std::cin.get();
 		}
-
 		manager.DomainCheckAndPerform(battlefield);
 		bool player_found = manager.ManageEndOfTurn(battlefield);
 
