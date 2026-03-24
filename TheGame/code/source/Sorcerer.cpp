@@ -524,7 +524,7 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         std::println("{} is stunned and their turn will be skipped", this->GetName());
         return;
     }
-    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 35) {
+    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.35) {
         this->BoostRCT();
     }
     else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.75) {
