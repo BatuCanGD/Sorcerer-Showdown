@@ -5,7 +5,6 @@
 
 #include "Character.h"
 
-class Character;
 class Shikigami;
 class Technique;
 class CursedTool;
@@ -61,12 +60,12 @@ public:
 	virtual ~Sorcerer();
 	Sorcerer(double hp, double ce, double re);
 
-	Shikigami* ChooseShikigami(size_t);
-	Technique* GetTechnique();
-	Specials* GetSpecial();
-	CursedTool* GetTool();
-	Domain* GetCounterDomain();
-	Domain* GetDomain();
+	Shikigami* ChooseShikigami(size_t) const;
+	Technique* GetTechnique() const;
+	Specials* GetSpecial() const;
+	CursedTool* GetTool() const;
+	Domain* GetCounterDomain() const;
+	Domain* GetDomain() const;
 
 	const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
 	const std::vector<std::unique_ptr<CursedTool>>& GetCursedTools() const;

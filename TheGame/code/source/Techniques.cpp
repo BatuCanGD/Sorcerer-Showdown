@@ -45,7 +45,7 @@ bool Technique::BurntOut() const {
     return state == Status::BurntOut;
 }
 
-double Technique::CalculateDamage(Sorcerer* user, double cost) {
+double Technique::CalculateDamage(Sorcerer* user, double cost) const {
     double multiplier = GetTechniqueOutput();
     double currentCE = user->GetCharacterCE();
 

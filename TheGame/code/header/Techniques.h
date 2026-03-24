@@ -23,7 +23,7 @@ public:
 	void Set(Status s);
 	Status GetStatus() const;
 	double GetTechniqueOutput() const;
-	double CalculateDamage(Sorcerer* user, double cost);
+	double CalculateDamage(Sorcerer* user, double cost) const;
 	std::string GetStringStatus() const;
 	virtual std::string GetTechniqueName() const = 0;
 	virtual void Chant() = 0;

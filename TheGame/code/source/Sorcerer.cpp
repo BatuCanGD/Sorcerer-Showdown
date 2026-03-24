@@ -16,30 +16,30 @@ bool Sorcerer::DomainActive() const {
     return domain_active;
 }
 
-Shikigami* Sorcerer::ChooseShikigami(size_t index) {
+Shikigami* Sorcerer::ChooseShikigami(size_t index)  const {
     if (index >= 0 && index < shikigami.size()) {
         return shikigami[index].get();
     }
     return nullptr; 
 }
 
-Domain* Sorcerer::GetCounterDomain() {
+Domain* Sorcerer::GetCounterDomain() const {
     return counter_domain.get();
 }
 
-Domain* Sorcerer::GetDomain() {
+Domain* Sorcerer::GetDomain() const {
     return domain.get();
 }
 
-Technique* Sorcerer::GetTechnique() {
+Technique* Sorcerer::GetTechnique() const {
     return technique.get();
 }
 
-Specials* Sorcerer::GetSpecial() {
+Specials* Sorcerer::GetSpecial() const {
     return special.get();
 }
 
-CursedTool* Sorcerer::GetTool() {
+CursedTool* Sorcerer::GetTool() const {
     return cursed_tool.get();
 }
 
@@ -463,11 +463,11 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         }
     }
     for (const auto& t : battlefield) {
-        if (!t->IsThePlayer() && t->DomainActive() && !this->DomainActive() && !this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5) {
+        if (t->DomainActive() && !this->DomainActive() && !this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5) {
             this->ActivateDomain();
             return;
         }
-        else if ((!t->IsThePlayer() && t->DomainActive()) && (this->GetTechnique()->BurntOut() || this->GetDomainUses() >= 5)) {
+        else if ((t->DomainActive()) && (this->GetTechnique()->BurntOut() || this->GetDomainUses() >= 5)) {
             this->ActivateCounterDomain();
             return;
         }
@@ -476,7 +476,7 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         int roll = GetRandomNumber(1, 100);
         int croll = GetRandomNumber(1, 10);
 
-        if (croll < 3 && limitless->GetChantPower() < 3.0) {
+        if (croll <= 4 && limitless->GetChantPower() < 3.0) {
             limitless->Chant();
             return;
         }
@@ -492,6 +492,15 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         }
         return;
     }
+    else if (strongest) {
+        Limitless* str = dynamic_cast<Limitless*>(strongest->GetTechnique());
+
+        if (str->CheckInfinity()) SetAmplification(true);
+        else SetAmplification(false);
+
+        this->Attack(strongest);
+    }
+
 }
 
 bool Gojo::CanBeHit() const {
@@ -703,7 +712,7 @@ bool Yuta::CanBeHit() const{
 
 test_sorcerer::test_sorcerer() : Sorcerer(30000000.0, 30000000.0, 1000.0) {
     technique = std::make_unique<Copy>();
-	domain = std::make_unique<InfiniteVoid>();
+	domain = std::make_unique<KillEveryoneDomain>();
     counter_domain = std::make_unique<SimpleDomain>();
     black_flash_chance = 100;
 }

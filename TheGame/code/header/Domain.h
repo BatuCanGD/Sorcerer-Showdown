@@ -84,7 +84,7 @@ public:
 class KillEveryoneDomain : public Domain {
 protected:
 	static constexpr double surehit_killdamage = INT32_MAX;
-	static constexpr double domain_cost = 1.0;
+	static constexpr double domain_cost = 5000000.0;
 public:
 	KillEveryoneDomain();
 	void OnSureHit(Character& target) override;
