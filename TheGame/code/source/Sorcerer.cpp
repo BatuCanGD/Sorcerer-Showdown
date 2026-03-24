@@ -70,7 +70,11 @@ void Sorcerer::SpendCE(double ce) {
             efficiency = 0.50; 
         }
     }
-    cursed_energy -= (ce * efficiency);
+    cursed_energy = std::max(cursed_energy - (ce * efficiency), 0.0);
+}
+
+void Sorcerer::SpendCEdirect(double ce) {
+    cursed_energy = std::max(cursed_energy - ce , 0.0);
 }
 
 void Sorcerer::DisableRCT() {
@@ -199,15 +203,15 @@ void Sorcerer::ActivateDomain() {
         std::println("You don't have a domain to activate!");
         return;
 	}
-    if (domain_active) {
+    else if (domain_active) {
         std::println("Your domain is already active!");
         return;
 	}
-    if (is_strained) {
+    else if (is_strained) {
         std::println("Your technique is burnt out and cannot be used yet");
         return;
     }
-    if (total_domain_uses >= domain_limit) {
+    else if (total_domain_uses >= domain_limit) {
         this->DamageBypass(50.0);
         this->SetStunState(true);
         std::println("You have overused your domain! You take 50 damage and are stunned for the next turn.");
@@ -438,7 +442,8 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         std::println("{} is stunned and their turn will be skipped", this->GetName());
         return;
     }
-    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25) {
+    auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
+    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25 || !limitless->CheckInfinity()) {
         this->BoostRCT();
     }
     else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.65) {
@@ -467,14 +472,11 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
             return;
         }
     }
-    auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
-
-
     if (limitless && strongest && (limitless->Usable() || limitless->Boosted())) {
         int roll = GetRandomNumber(1, 100);
         int croll = GetRandomNumber(1, 10);
 
-        if (croll <= 3 && limitless->GetChantPower() < 3.0) {
+        if (croll < 3 && limitless->GetChantPower() < 3.0) {
             limitless->Chant();
             return;
         }

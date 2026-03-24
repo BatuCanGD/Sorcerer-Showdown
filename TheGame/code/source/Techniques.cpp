@@ -75,9 +75,6 @@ std::string Technique::GetStringChantLevel() const {
 
 // ---------------- Limitless -------------------
 
-
-
-
 void Limitless::BlueTechniqueDamageTarget(Sorcerer* user, Character* target) {
     println("{} uses Blue on {}!", user->GetName(), target->GetName());
     double dmg = CalculateDamage(user, blue_output * GetChantPower());
@@ -128,14 +125,21 @@ bool Limitless::CheckInfinity() const {
 }
 
 void Limitless::InfinityNerf(Sorcerer* user) {
-    if (Infinity) {
+    if (this->BurntOut()) {
+        if (CheckInfinity()) {
+            std::println("{}'s Infinity shatters due to technique burnout!", user->GetName());
+            SetInfinity(false);
+        }
+        return;
+    }
+    if (this->CheckInfinity()) {
         double maintain_cost = 100.0;
         if (user->GetCharacterCE() < maintain_cost) {
             std::println("{}'s concentration wavers due to low CE! Infinity is deactivated.", user->GetName());
             SetInfinity(false);
         }
         else {
-            user->SetCursedEnergy(user->GetCharacterCE() - 50.0);
+            user->SpendCEdirect(maintain_cost);
         }
     }
 }

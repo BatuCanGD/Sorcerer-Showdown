@@ -79,6 +79,7 @@ public:
 	void SetAsPlayer(bool);
 
 	void SpendCE(double ce) override;
+	void SpendCEdirect(double ce);
 
 	int GetDomainUses() const;
 
