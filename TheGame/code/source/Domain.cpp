@@ -77,7 +77,6 @@ void Domain::ClashDomains(Sorcerer& user1, Sorcerer& user2) {
 }
 
 void Domain::CollapseDomain() {
-    if (this == nullptr) return;
     domain_health = base_health; // reset domain stats for next time use
     clashing = false;
 }
@@ -108,6 +107,11 @@ void InfiniteVoid::OnSureHit(Character & target) {
 std::string InfiniteVoid::GetDomainName() const {
     return "Infinite Void";
 }
+
+double InfiniteVoid::GetUseCost() const {
+    return domain_cost;
+}
+
 // ---------------- Malevolent Shrine ----------------
 
 MalevolentShrine::MalevolentShrine() : Domain(600.0, 200.0, 20.0) {}
@@ -126,6 +130,10 @@ std::string MalevolentShrine::GetDomainName() const {
     return "Malevolent Shrine";
 }
 
+double MalevolentShrine::GetUseCost() const {
+    return domain_cost;
+}
+
 // ---------------neutralizer domains---------
 
 // simple domain
@@ -140,10 +148,18 @@ std::string SimpleDomain::GetDomainName() const {
     return "Simple Domain";
 }
 
+double SimpleDomain::GetUseCost() const {
+    return domain_cost;
+}
+
 // hollow wicker basket
 
 HollowWickerBasket::HollowWickerBasket() : Domain(150.0, 2, 2) { 
     is_neutralizer = true; 
+}
+
+double HollowWickerBasket::GetUseCost() const {
+    return domain_cost;
 }
 
 void HollowWickerBasket::OnSureHit(Character&) {}
@@ -164,4 +180,8 @@ void KillEveryoneDomain::OnSureHit(Character & target) {
 }
 std::string KillEveryoneDomain::GetDomainName() const {
     return "KillEveryone Domain 3000";
+}
+
+double KillEveryoneDomain::GetUseCost() const {
+    return domain_cost;
 }

@@ -1,7 +1,8 @@
 #pragma once
-#include <string>
 #include "Character.h"
-#include "Sorcerer.h"
+#include <string>
+
+class Sorcerer;
 
 class Shikigami : public Character {
 protected:

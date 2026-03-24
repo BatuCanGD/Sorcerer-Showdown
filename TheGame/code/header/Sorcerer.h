@@ -1,18 +1,14 @@
 #pragma once
-
-#include "Character.h"
-#include "Specials.h"
-#include "Shikigami.h"
-#include "Domain.h"
-#include "Techniques.h"
-#include "CursedTool.h"
-
 #include <memory>
 #include <vector>
 #include <string>
 
+#include "Character.h"
+
+class Character;
 class Shikigami;
 class Technique;
+class CursedTool;
 class Domain;
 class Specials;
 
@@ -62,8 +58,8 @@ protected:
 	};
 	ReverseCT rct_state = ReverseCT::Disabled;
 public:
-	virtual ~Sorcerer() = default;
-	Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {}
+	virtual ~Sorcerer();
+	Sorcerer(double hp, double ce, double re);
 
 	Shikigami* ChooseShikigami(size_t);
 	Technique* GetTechnique();

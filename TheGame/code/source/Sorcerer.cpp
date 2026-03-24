@@ -1,8 +1,16 @@
 #include "Sorcerer.h"
 #include "Techniques.h"
+#include "Shikigami.h"
+#include "Domain.h"
+#include "CursedTool.h"
 #include "Utils.h"
+#include "Specials.h"
 
 import std;
+
+Sorcerer::~Sorcerer() = default;
+
+Sorcerer::Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {}
 
 bool Sorcerer::DomainActive() const {
     return domain_active;
@@ -261,18 +269,7 @@ void Sorcerer::SetAsPlayer(bool p) {
 
 void Sorcerer::DomainDrain() {
     if (DomainActive()) {
-        double shrinecost = 350.0;
-        double limitlesscost = 500.0;
-
-        Domain* currentDomain = GetDomain();
-
-        if (dynamic_cast<InfiniteVoid*>(currentDomain)) {
-            SpendCE(limitlesscost);
-        }
-        else if (dynamic_cast<MalevolentShrine*>(currentDomain)) {
-            SpendCE(shrinecost);
-        }
-
+        this->SpendCE(this->GetDomain()->GetUseCost());
     }
 }
 

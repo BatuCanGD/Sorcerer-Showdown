@@ -1,4 +1,9 @@
 #include "BattleManager.h"
+#include "Shikigami.h"
+#include "Techniques.h"
+#include "CursedTool.h"
+#include "Specials.h"
+#include "Domain.h"
 #include "Sorcerer.h"
 #include "Utils.h"
 

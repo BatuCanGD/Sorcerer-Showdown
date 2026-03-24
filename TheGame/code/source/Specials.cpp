@@ -1,5 +1,7 @@
 #include "Specials.h"
 #include "Character.h"
+#include "Shikigami.h"
+#include "Techniques.h"
 #include "Sorcerer.h"
 #include "Utils.h"
 
