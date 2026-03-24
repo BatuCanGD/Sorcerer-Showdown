@@ -8,6 +8,13 @@ bool Sorcerer::DomainActive() const {
     return domain_active;
 }
 
+Shikigami* Sorcerer::ChooseShikigami(size_t index) {
+    if (index >= 0 && index < shikigami.size()) {
+        return shikigami[index].get();
+    }
+    return nullptr; 
+}
+
 Domain* Sorcerer::GetCounterDomain() {
     return counter_domain.get();
 }
@@ -91,6 +98,12 @@ void Sorcerer::TickZone() {
     }
     else {
         the_zone_time = 0;
+    }
+}
+
+void Sorcerer::TickShikigami() {
+    for (const auto& s : shikigami) {
+        s->OnShikigamiTurn(this);
     }
 }
 
@@ -554,10 +567,6 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         if (!agito->IsActive()) {
             agito->Manifest();
         }
-    }
-
-    for (const auto& s : shikigami) {
-        s->OnShikigamiTurn(this);
     }
 
     int roll = GetRandomNumber(1, 100);

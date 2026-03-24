@@ -34,6 +34,15 @@ bool Shikigami::IsActivePhysically() const {
     return shikigami_state == State::Full;
 }
 
+std::string Shikigami::GetShikigamiStatus() const {
+    switch (shikigami_state) {
+    case State::Shadow: return "Dormant";
+    case State::Partial: return "Ability Active";
+    case State::Full: return "Physically Manifested";
+    default: return "Dormant";
+    }
+}
+
 
 std::string Shikigami::GetName() const {
     return "Shikigami";
@@ -108,7 +117,6 @@ std::string Agito::GetName() const {
 void Agito::PassiveSupport(Sorcerer* user) {
     if (IsActive()) {
         user->Regen(passive_heal_amount);
-        user->SpendCE(summon_amount);
     }
 }
 
@@ -124,6 +132,7 @@ void Agito::OnShikigamiTurn(Sorcerer* user) {
     }
     ActiveTimeIncrementor();
 	PassiveSupport(user);
+    user->SpendCE(summon_amount);
 }
 
 bool Agito::CanBeHit() const {

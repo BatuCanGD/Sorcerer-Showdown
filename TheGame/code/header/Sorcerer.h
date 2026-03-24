@@ -61,11 +61,12 @@ public:
 	virtual ~Sorcerer() = default;
 	Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {}
 
-	Domain* GetDomain();
-	Domain* GetCounterDomain();
+	Shikigami* ChooseShikigami(size_t);
 	Technique* GetTechnique();
 	Specials* GetSpecial();
 	CursedTool* GetTool();
+	Domain* GetCounterDomain();
+	Domain* GetDomain();
 
 	const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
 	const std::vector<std::unique_ptr<CursedTool>>& GetCursedTools() const;
@@ -101,6 +102,7 @@ public:
 
 	void TickDomain();
 	void TickZone();
+	void TickShikigami();
 
 	void CursedToolChoice(int);
 	void EquipToolByName(const std::string& weaponname);
@@ -144,6 +146,9 @@ public:
 };
 
 class Yuta : public Sorcerer {
+private:
+	static constexpr double rika_ce_increase = 30000.0;
+	static constexpr double rika_regen_increase = 150.0;
 public:
 	Yuta();
 	std::string GetName() const override;

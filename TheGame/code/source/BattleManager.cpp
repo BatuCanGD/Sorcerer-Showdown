@@ -104,6 +104,9 @@ void BattleManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 	case 9:
 		s.GetTechnique()->TechniqueSetting(&s, battlefield);
 		break;
+	case 10:
+		PlayerShikigami(s);
+		break;
 	default:
 		std::println("Invalid Choice");
 	}
@@ -213,6 +216,77 @@ void BattleManager::PlayerDAusage(Sorcerer& s) {
 	case 2:
 		s.SetAmplification(false);
 		break;
+	}
+}
+
+void BattleManager::PlayerShikigami(Sorcerer& s) {
+	if (s.GetShikigami().empty()) {
+		std::println("You dont have any shikigami to use");
+		return;
+	}
+	int count = 1;
+	for (const auto& sh : s.GetShikigami()) {
+		std::println("{}: {} ", count, sh->GetName());
+		count++;
+	}
+	std::println("Choose the shikigami you'd like to use\n=> ");
+	int ch = GetValidInput(); ch--;
+	if (ch >= 0 && ch < s.GetShikigami().size()) {
+		Shikigami* sk = s.ChooseShikigami(ch);
+		std::println("Chosen Shikigami: {} | [{}]", sk->GetName(), sk->GetShikigamiStatus());
+		if (!sk->IsActivePhysically()) {
+			std::println("1 - Manifest");
+		}
+		if (!sk->IsActive()) {
+			std::println("2 - Partially Manifest");
+		}
+		if (sk->IsActive()) {
+			std::println("3 - Dismiss");
+		}
+		std::println("0 - Cancel");
+		std::print("=> ");
+
+		int cs = GetValidInput();
+		switch (cs) {
+		case 1:
+			if (sk->IsActivePhysically()) {
+				std::println("{} is already physically present!", sk->GetName());
+			}
+			else {
+				sk->Manifest();
+				std::println("{} has been Physically Manifested on the battlefield!", sk->GetName());
+			}
+			break;
+		case 2:
+			if (sk->IsActive()) {
+				std::println("{} is already active!", sk->GetName());
+			}
+			else {
+				sk->PartiallyManifest();
+				std::println("{}'s technique is now Projected. [Ability Active]", sk->GetName());
+			}
+			break;
+		case 3:
+			if (!sk->IsActive()) {
+				std::println("{} is already dormant.", sk->GetName());
+			}
+			else {
+				sk->Withdraw();
+				std::println("{} has been dismissed and is now Dormant.", sk->GetName());
+			}
+			break;
+		case 0:
+			std::println("Action cancelled.");
+			break;
+
+		default:
+			std::println("Invalid input.");
+			break;
+		}
+
+	}
+	else {
+		std::println("Invalid Choice");
 	}
 }
 
@@ -331,20 +405,16 @@ void BattleManager::DisplaySorcererStatus(Sorcerer* s) {
 	}
 	else if (s->IsThePlayer()) {
 		std::println("\nChoose action:");
-		if (s->GetTechnique() != nullptr) std::print("1-Technique | ");
-		std::print("2-Fight");
-		if (s->GetSpecial() != nullptr)  std::print(" | 3-Special [{}]",s->GetSpecial()->GetSpecialSimplifiedName());
-		if (s->GetDomain() != nullptr || s->GetCounterDomain() != nullptr) std::print(" | \n4-Domain actions");
-		std::print(" | 5-Taunt");
-		if (!s->IsHeavenlyRestricted()) {
-			std::print(" | 6-RCT Usage | \n7-Domain Amplification");
-		}
-		if (!s->GetCursedTools().empty() || s->GetTool() != nullptr) {
-			std::println(" | 8-Cursed Tool");
-		}
-		if (s->GetTechnique() != nullptr) {
-			std::println(" | 9-Technique Settings");
-		}
+		if (s->GetTechnique() != nullptr) std::print("1 - Technique | ");
+		std::print("2 - Fight");
+		if (s->GetSpecial() != nullptr)  std::print(" | 3 - Special [{}]",s->GetSpecial()->GetSpecialSimplifiedName());
+		if (s->GetDomain() != nullptr || s->GetCounterDomain() != nullptr) std::print(" | \n4 - Domain actions");
+		std::print(" | 5 - Taunt");
+		if (!s->IsHeavenlyRestricted()) { std::print(" | 6 - RCT Usage | \n7 - Domain Amplification"); }
+		if (!s->GetCursedTools().empty() || s->GetTool() != nullptr) { std::println(" | 8 - Cursed Tool"); }
+		if (s->GetTechnique() != nullptr) { std::println(" | 9 - Technique Settings"); }
+		if (!s->GetShikigami().empty()) { std::println("10 - Shikigami "); }
+
 		std::print("\n=> ");
 	}
 }
@@ -371,6 +441,7 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& batt
 		}
 
 		c->CleanupShikigami();
+		c->TickShikigami();
 
 		double damage_taken = c->GetCharacterPreviousHealth() - c->GetCharacterHealth();
 		if (damage_taken > 0) {
