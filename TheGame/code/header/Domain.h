@@ -38,7 +38,7 @@ public:
 
 class InfiniteVoid : public Domain {
 protected:
-	static constexpr double domain_cost = 250.0;
+	static constexpr double domain_cost = 1000.0;
 	static constexpr double surehit_braindamage = 30.0;
 public:
 	InfiniteVoid();
@@ -53,6 +53,17 @@ protected:
 	static constexpr double surehit_slashdamage = 75.0;
 public:
 	MalevolentShrine();
+	void OnSureHit(Character& target) override;
+	std::string GetDomainName() const override;
+	double GetUseCost() const override;
+};
+
+class AuthenticMutualLove : public Domain {
+protected:
+	static constexpr double domain_cost = 500.0;
+	static constexpr double imbued_surehit_damage = 60.0;
+public:
+	AuthenticMutualLove();
 	void OnSureHit(Character& target) override;
 	std::string GetDomainName() const override;
 	double GetUseCost() const override;

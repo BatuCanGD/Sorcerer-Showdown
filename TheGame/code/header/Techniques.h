@@ -20,7 +20,7 @@ public:
 	Status state = Status::Usable;
 
 	virtual ~Technique() = default;
-	void Set(Status s);
+	virtual void Set(Status s);
 	Status GetStatus() const;
 	double GetTechniqueOutput() const;
 	double CalculateDamage(Sorcerer* user, double cost) const;
@@ -100,6 +100,7 @@ public:
 	void CopyFrom(Sorcerer* target);
 	void SwitchCopy(int index);              
 	Technique* GetActive() const;             
+	void Set(Status s) override;
 
 	void TechniqueMenu(Sorcerer* user, Character* target) override;
 	void TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;

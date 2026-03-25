@@ -90,6 +90,7 @@ public:
 	std::string GetDAstatus() const;
 
 	void UseRCT();
+	bool DomainAmplificationActive() const;
 
 	bool DomainActive() const;
 	void DeactivateDomain();

@@ -20,6 +20,7 @@ public:
 	void Manifest();
 	void Withdraw();
 	void ActiveTimeIncrementor();
+	int GetActiveTime() const;
 	bool IsActive() const;
 	bool IsActivePhysically() const;
 	virtual void OnShikigamiTurn(Sorcerer*) = 0;		
