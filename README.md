@@ -31,7 +31,7 @@ Standard: Set your language standard to c++23 or /std:c++latest.
 
 ## Adding New Characters
 
-```h
+```cpp
 // First, create a header file with any name you want
 // like MyNewSorcerer.h
 // And then using classes Create your custom sorcerer class inheriting from sorcerer
