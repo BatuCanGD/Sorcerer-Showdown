@@ -38,7 +38,7 @@ void Character::SetCursedEnergyRegen(double c) {
 }
 
 void Character::Damage(double h) {
-	if (CanBeHit() || !is_invulnerable) {
+	if (CanBeHit() && !is_invulnerable) {
 		health = std::max(health - h, 0.0);
 	}
 }

@@ -416,7 +416,7 @@ void BattleManager::DisplaySorcererStatus(Sorcerer* s) {
 		if (s->GetDomain() != nullptr || s->GetCounterDomain() != nullptr) std::print(" | \n4 - Domain actions");
 		std::print(" | 5 - Taunt");
 		if (!s->IsHeavenlyRestricted()) { std::print(" | 6 - RCT Usage | \n7 - Domain Amplification"); }
-		if (!s->GetCursedTools().empty() || s->GetTool() != nullptr) { std::println(" | 8 - Cursed Tool"); }
+		if (!s->GetCursedTools().empty() || s->GetTool() != nullptr) { std::print(" | 8 - Cursed Tool"); }
 		if (s->GetTechnique() != nullptr) { std::println(" | 9 - Technique Settings"); }
 		if (!s->GetShikigami().empty()) { std::println("10 - Shikigami "); }
 
