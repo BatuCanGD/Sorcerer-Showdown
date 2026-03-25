@@ -12,6 +12,9 @@ Character::Character(double hp, double ce, double regen)
 	max_cursed_energy(ce),
 	ce_regen_efficiency(regen),
 	is_heavenly_restricted(cursed_energy < 0.0) { // -1 or -0.01 or whatever you prefer to make a character heavenly restricted
+	stun_duration = 3;
+	is_stunned = false;
+	is_invulnerable = false;
 }
 
 void Character::SetVulnerability(bool t) {
@@ -24,6 +27,14 @@ void Character::SetHealth(double h) {
 
 void Character::SetCursedEnergy(double c) {
 	cursed_energy = c;
+}
+
+void Character::SetMaxCursedEnergy(double c) {
+	max_cursed_energy = c;
+}
+
+void Character::SetCursedEnergyRegen(double c) {
+	ce_regen_efficiency = c;
 }
 
 void Character::Damage(double h) {
@@ -57,6 +68,10 @@ void Character::SpendCE(double c) {
 void Character::RegenCE() {
 	if (is_heavenly_restricted) return;
 	cursed_energy = std::min(cursed_energy + ce_regen_efficiency, max_cursed_energy);
+}
+
+double Character::GetCEregen() const {
+	return ce_regen_efficiency;
 }
 
 double Character::GetMaxCharCE() const {

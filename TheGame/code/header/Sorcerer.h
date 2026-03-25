@@ -147,9 +147,6 @@ public:
 };
 
 class Yuta : public Sorcerer {
-private:
-	static constexpr double rika_ce_increase = 30000.0;
-	static constexpr double rika_regen_increase = 150.0;
 public:
 	Yuta();
 	std::string GetName() const override;
