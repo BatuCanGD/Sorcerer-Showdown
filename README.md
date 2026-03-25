@@ -37,6 +37,9 @@ Standard: Set your language standard to c++23 or /std:c++latest.
 // And then using classes Create your custom sorcerer class inheriting from sorcerer
 
 #include "Sorcerer.h" // this is required to compile properly and inherit from the sorcerer class
+#include <string> // std::string     |
+#include <vector> // std::vector     |   these 3 are needed for the OnSorcererTurn and GetName functions
+#include <memory> // std::unique_ptr |
 
 class MyNewSorcerer : public Sorcerer {
 public:
