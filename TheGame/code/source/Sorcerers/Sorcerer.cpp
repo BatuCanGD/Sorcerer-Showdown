@@ -141,15 +141,16 @@ void Sorcerer::UseRCT() {
 }
 
 void Sorcerer::Attack(Character* target) {
-    if (cursed_tool) {
-        cursed_tool->UseTool(this, target);
-        return;
-    }
-    else if (domain_amplification_active) {
+    if (domain_amplification_active) {
         target->DamageBypass(base_attack_damage);
         std::println("{} landed a strike on {} using domain amplification!", this->GetName(), target->GetName());
         return;
     }
+    else if (cursed_tool) {
+        cursed_tool->UseTool(this, target);
+        return;
+    }
+
 
     bool is_black_flash = false;
     if (!this->IsHeavenlyRestricted() && GetRandomNumber(1, 100) <= black_flash_chance) {
@@ -248,7 +249,10 @@ void Sorcerer::ActivateCounterDomain() {
         std::println("{} doesn't have a counter domain!", this->GetName());
         return;
     }
-    if (!counter_domain_active) counter_domain_active = true;
+    if (!counter_domain_active) {
+        counter_domain_active = true;
+        std::println("{} activates {}!", this->GetName(), counter_domain->GetDomainName());
+    }
 }
 
 void Sorcerer::DeactivateCounterDomain() {
@@ -256,7 +260,10 @@ void Sorcerer::DeactivateCounterDomain() {
         std::println("{} doesn't have a counter domain!", this->GetName());
         return;
     }
-    if (counter_domain_active) counter_domain_active = false;
+    if (counter_domain_active) {
+        counter_domain_active = false;
+        std::println("{} deactivated {}!", this->GetName(), counter_domain->GetDomainName());
+    }
 }
 
 std::string Sorcerer::GetName() const {

@@ -56,21 +56,24 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
             domain_users.push_back(s.get());
         }
 
-        if (s->GetCharacterHealth() > strongesthealth) {
+        if (!strongest || s->GetCharacterHealth() > strongesthealth) {
             strongesthealth = s->GetCharacterHealth();
             strongest = s.get();
         }
     }
 
     if (domain_users.size() > 0) {
-        if (domain_users.size() >= 2 || this->GetTechnique()->BurntOut() || this->GetDomainUses() >= 5) {
+        if (domain_users.size() == 1 && !this->CounterDomainActive() && (this->GetTechnique()->BurntOut() || this->GetDomainUses() >= 5)) {
             this->ActivateCounterDomain();
             return;
         }
-        else if (!this->DomainActive() && !this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5) {
+        else if (domain_users.size() == 1 && !this->DomainActive() && !this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5) {
             this->ActivateDomain();
             return;
         }
+    }
+    else {
+        if (this->CounterDomainActive()) this->DeactivateCounterDomain();
     }
 
     if (strongest) {
@@ -82,7 +85,7 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         else {
             this->SetAmplification(false);
         }
-        this->GetTool()->UseTool(this, strongest);
+        this->Attack(strongest);
     }
 }
 

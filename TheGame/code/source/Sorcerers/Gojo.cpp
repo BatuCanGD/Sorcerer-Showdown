@@ -76,7 +76,7 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     else if (strongest) {
         Limitless* str = dynamic_cast<Limitless*>(strongest->GetTechnique());
 
-        if (str->CheckInfinity()) SetAmplification(true);
+        if (str && str->CheckInfinity()) SetAmplification(true);
         else SetAmplification(false);
 
         this->Attack(strongest);

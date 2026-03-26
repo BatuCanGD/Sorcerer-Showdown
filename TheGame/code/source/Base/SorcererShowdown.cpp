@@ -1,17 +1,21 @@
 #include "Sorcerer.h"
 #include "Specials.h"
 #include "BattleManager.h"
+#include "PlayerManager.h"
+#include "UIDisplay.h"
 
 import std;
 
 int main() { // main
 	BattleManager manager;
+	PlayerManager player;
+	UserInterface interface;
 
 	std::vector<std::unique_ptr<Sorcerer>> battlefield;
 	std::map<std::string, int> sorcerer_counts;
 
 	manager.SetupBattlefield(battlefield, sorcerer_counts);
-	manager.ShowBattleEntry(battlefield);
+	interface.ShowBattleEntry(battlefield);
 	
 	battlefield[0]->SetAsPlayer(true);
 
@@ -21,16 +25,16 @@ int main() { // main
 			if (s->GetCharacterHealth() <= 0.0) continue;
 
 			if (s->IsThePlayer()) {
-				manager.DisplaySorcererStatus(s.get());
+				interface.DisplaySorcererStatus(s.get());
 				if (s->IsCharacterStunned()) continue;
 				std::println("\n");
-				manager.OnPlayerTurn(*s, battlefield);
+				player.OnPlayerTurn(*s, battlefield);
 				std::println("\n");
 				std::cin.clear();
 			}
 			else {
 				std::println("\n");
-				manager.DisplaySorcererStatus(s.get());
+				interface.DisplaySorcererStatus(s.get());
 				std::println("\n");
 				s->OnSorcererTurn(battlefield);
 				std::println("\n");
@@ -53,7 +57,7 @@ int main() { // main
 		std::println("Press Enter to begin the next round...");
 		std::cin.get();
 
-		manager.ClearScreen();
+		interface.ClearScreen();
 	}
 	std::println("press enter to end the game...");
 	std::cin.get();
