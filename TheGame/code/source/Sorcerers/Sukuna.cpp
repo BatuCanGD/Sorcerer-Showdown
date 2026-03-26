@@ -71,15 +71,16 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     Shrine* shrine = dynamic_cast<Shrine*> (this->GetTechnique());
 
     if (makora) {
-
-        if (!makora->IsActivePhysically() && (this->GetCharacterCE() >= this->GetCharacterMaxCE() * 0.235)) {
-            makora->Manifest();
-        }
-        else if (!makora->IsActive() && (this->GetCharacterCE() <= this->GetCharacterMaxCE() * 0.75)) {
-            makora->PartiallyManifest();
-        }
-        else {
-            makora->Withdraw();
+        if (!shrine->WorldCuttingSlashUnlocked()) {
+            if (!makora->IsActivePhysically() && this->GetCharacterCE() >= this->GetCharacterMaxCE() * 0.75) {
+                makora->Manifest();
+            }
+            else if (!makora->IsActive() && this->GetCharacterCE() >= this->GetCharacterMaxCE() * 0.235) {
+                makora->PartiallyManifest();
+            }
+            else if (this->GetCharacterCE() < this->GetCharacterMaxCE() * 0.235) {
+                makora->Withdraw();
+            }
         }
 
         if (makora->FullyAdapted() && !shrine->WorldCuttingSlashUnlocked()) {
@@ -97,6 +98,9 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     int roll = GetRandomNumber(1, 100);
 
     if (shrine->WorldCuttingSlashUnlocked()) {
+        if (makora) {
+            makora->Withdraw();
+        }
         if (shrine->GetChantPower() < 3.0) {
             shrine->Chant();
             return;
@@ -104,10 +108,22 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         shrine->WorldCuttingSlashToTarget(this, weakest);
         return;
     }
-    if (domain_users.size() < 2 && !this->DomainActive() && !this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5) {
+    if (domain_users.empty() && roll <= 40 && (!this->DomainActive() && !shrine->BurntOut() && this->GetDomainUses() < 5)) {
         this->ActivateDomain();
         return;
     }
+    else if (domain_users.size() == 1 && (!this->DomainActive() && !shrine->BurntOut() && this->GetDomainUses() < 5)) {
+        this->ActivateDomain();
+        return;
+    }
+    else if ((shrine->BurntOut() || this->GetDomainUses() >= 5) && !domain_users.empty()) {
+        this->ActivateCounterDomain();
+        return;
+    }
+    else {
+        if (this->CounterDomainActive()) this->DeactivateCounterDomain();
+    }
+
     if (auto* limitless = dynamic_cast<Limitless*>(weakest->GetTechnique())) {
         if (limitless->CheckInfinity()) {
             this->SetAmplification(true);

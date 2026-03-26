@@ -25,7 +25,7 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     }
     auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
     if ((this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25 && \
-        !(this->GetCharacterCE() <= this->GetCharacterMaxCE() * 0.25)) || \
+         this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.25) || \
         !limitless->CheckInfinity()) 
     {
         this->BoostRCT();
@@ -41,6 +41,7 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     }
     double strongesthealth = -1.0;
     Sorcerer* strongest = nullptr;
+    std::vector<Sorcerer*> domain_users;
 
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
@@ -48,17 +49,28 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
             strongesthealth = target->GetCharacterHealth();
             strongest = target.get();
         }
-    }
-    for (const auto& t : battlefield) {
-        if (t->DomainActive() && !this->DomainActive() && !this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5) {
-            this->ActivateDomain();
-            return;
-        }
-        else if ((t->DomainActive()) && (this->GetTechnique()->BurntOut() || this->GetDomainUses() >= 5)) {
-            this->ActivateCounterDomain();
-            return;
+        if (target->DomainActive()) {
+            domain_users.push_back(target.get());
         }
     }
+
+    int droll = GetRandomNumber(1, 100);
+    if (droll <= 30 && domain_users.empty() && !limitless->BurntOut() && this->GetDomainUses() < 5) {
+        this->ActivateDomain();
+        return;
+    }
+    else if (domain_users.size() == 1 && !limitless->BurntOut() && this->GetDomainUses() < 5) {
+        this->ActivateDomain();
+        return;
+    }
+    else if (!domain_users.empty() && (limitless->BurntOut() || this->GetDomainUses() >= 5)) {
+        this->ActivateCounterDomain();
+        return;
+    }
+    else {
+        if (this->CounterDomainActive()) this->DeactivateCounterDomain();
+    }
+ 
     if (limitless && strongest && (limitless->Usable() || limitless->Boosted()) && this->GetCharacterCE() >= this->GetCharacterMaxCE() * 0.2) {
         int roll = GetRandomNumber(1, 100);
         int croll = GetRandomNumber(1, 10);
