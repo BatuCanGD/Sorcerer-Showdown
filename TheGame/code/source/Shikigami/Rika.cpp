@@ -36,15 +36,15 @@ void Rika::RikaCooldownRegeneration(Sorcerer* user) {
         }
         user->SetMaxCursedEnergy(user_ce);
         user->SetCursedEnergyRegen(user_regen);
-        if (user->GetCharacterCE() > user->GetMaxCharCE()) {
-            user->SetCursedEnergy(user->GetMaxCharCE());
+        if (user->GetCharacterCE() > user->GetCharacterMaxCE()) {
+            user->SetCursedEnergy(user->GetCharacterMaxCE());
         }
     }
 }
 
 void Rika::SaveUserCursedEnergy(Sorcerer* user) {
     if (value_saved) return;
-    user_ce = user->GetMaxCharCE();
+    user_ce = user->GetCharacterMaxCE();
     user_regen = user->GetCEregen();
     value_saved = true;
 }

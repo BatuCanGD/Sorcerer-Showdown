@@ -6,7 +6,7 @@
 
 import std;
 
-Gojo::Gojo() : Sorcerer(800.0, 4000.0, 50.0) {
+Gojo::Gojo() : Sorcerer(800.0, 4000.0, 40.0) {
     domain = std::make_unique<InfiniteVoid>();
     counter_domain = std::make_unique<SimpleDomain>();
     technique = std::make_unique<Limitless>();
@@ -24,13 +24,19 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         return;
     }
     auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
-    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25 || !limitless->CheckInfinity()) {
+    if ((this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25 && \
+        !(this->GetCharacterCE() <= this->GetCharacterMaxCE() * 0.25)) || \
+        !limitless->CheckInfinity()) 
+    {
         this->BoostRCT();
     }
-    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.65) {
+    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.65 && \
+        !(this->GetCharacterCE() <= this->GetCharacterMaxCE() * 0.10)) 
+    {
         this->EnableRCT();
     }
-    else {
+    else 
+    {
         this->DisableRCT();
     }
     double strongesthealth = -1.0;
@@ -53,7 +59,7 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
             return;
         }
     }
-    if (limitless && strongest && (limitless->Usable() || limitless->Boosted())) {
+    if (limitless && strongest && (limitless->Usable() || limitless->Boosted()) && this->GetCharacterCE() >= this->GetCharacterMaxCE() * 0.2) {
         int roll = GetRandomNumber(1, 100);
         int croll = GetRandomNumber(1, 10);
 

@@ -128,8 +128,8 @@ void Sorcerer::UseRCT() {
     if (this->GetCharacterHealth() >= this->GetCharacterMaxHealth()) {
         return;
     }
-    const double default_regen = 25.0;
-    const double overdrive_regen = 75.0;
+    const double default_regen = 50.0;
+    const double overdrive_regen = 100.0;
     if (rct_state == ReverseCT::Active) {
         this->Regen(default_regen);
         this->SpendCE(default_regen * 2);
@@ -142,7 +142,10 @@ void Sorcerer::UseRCT() {
 
 void Sorcerer::Attack(Character* target) {
     if (domain_amplification_active) {
-        target->DamageBypass(base_attack_damage);
+        double ce_addon = std::sqrt(std::max(0.0, this->GetCharacterCE())) * 0.633;
+        double amp_damage = base_attack_damage + ce_addon;
+
+        target->DamageBypass(amp_damage);
         std::println("{} landed a strike on {} using domain amplification!", this->GetName(), target->GetName());
         return;
     }

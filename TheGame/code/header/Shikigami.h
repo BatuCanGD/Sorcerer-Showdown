@@ -22,6 +22,7 @@ public:
 	void ActiveTimeIncrementor();
 	int GetActiveTime() const;
 	bool IsActive() const;
+	bool IsPartiallyActive() const;
 	bool IsActivePhysically() const;
 	virtual void OnShikigamiTurn(Sorcerer*) = 0;		
 	std::string GetShikigamiStatus() const;

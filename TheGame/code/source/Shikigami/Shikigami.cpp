@@ -34,6 +34,10 @@ int Shikigami::GetActiveTime() const {
     return active_turn_amount;
 }
 
+bool Shikigami::IsPartiallyActive() const {
+    return shikigami_state == State::Partial;
+}
+
 bool Shikigami::IsActivePhysically() const {
     return shikigami_state == State::Full;
 }

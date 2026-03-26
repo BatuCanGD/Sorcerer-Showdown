@@ -9,7 +9,7 @@ import std;
 
 // -------------- Yuta ------------------
 
-Yuta::Yuta() : Sorcerer(800.0, 6000.0, 25.0) {
+Yuta::Yuta() : Sorcerer(800.0, 6000.0, 30.0) {
     technique = std::make_unique<Copy>();
     cursed_tool = std::make_unique<Katana>();
     domain = std::make_unique<AuthenticMutualLove>();
@@ -27,20 +27,21 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         std::println("{} is stunned and their turn will be skipped", this->GetName());
         return;
     }
-    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.65) {
+    Shikigami* rika = this->ChooseShikigami(0);
+
+    if (!(this->GetCharacterHealth() > this->GetCharacterMaxHealth() * 0.45) || rika->IsActivePhysically()) {
         this->BoostRCT();
     }
-    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.95) {
+    else if (!(this->GetCharacterHealth() > this->GetCharacterMaxHealth() * 0.95)) {
         this->EnableRCT();
     }
     else {
         this->DisableRCT();
     }
+
     double strongesthealth = -1.0;
     Sorcerer* strongest = nullptr;
     std::vector<Sorcerer*> domain_users;
-
-    auto rika = this->ChooseShikigami(0);
 
     if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.40 && \
         !(rika->GetActiveTime() > 5) && !rika->IsActivePhysically()){

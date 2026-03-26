@@ -26,13 +26,18 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         std::println("{} is stunned and their turn will be skipped", this->GetName());
         return;
     }
-    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.35) {
+    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.35 && \
+            !(this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.35)) 
+    {
         this->BoostRCT();
     }
-    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.75) {
+    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.75 && \
+            !(this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.10)) 
+    {
         this->EnableRCT();
     }
-    else {
+    else 
+    {
         this->DisableRCT();
     }
 
@@ -66,13 +71,15 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     Shrine* shrine = dynamic_cast<Shrine*> (this->GetTechnique());
 
     if (makora) {
-        if (this->GetCharacterHealth() < GetCharacterMaxHealth() * 0.60) {
-            if (!makora->IsActivePhysically()) {
-                makora->Manifest();
-            }
+
+        if (!makora->IsActivePhysically() && (this->GetCharacterCE() >= this->GetCharacterMaxCE() * 0.235)) {
+            makora->Manifest();
         }
-        else if (!makora->IsActive()) {
+        else if (!makora->IsActive() && (this->GetCharacterCE() <= this->GetCharacterMaxCE() * 0.75)) {
             makora->PartiallyManifest();
+        }
+        else {
+            makora->Withdraw();
         }
 
         if (makora->FullyAdapted() && !shrine->WorldCuttingSlashUnlocked()) {
@@ -111,15 +118,20 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     else {
         this->SetAmplification(false);
     }
+    if (this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.20) {
+        if (weakest->GetCharacterHealth() < weakest->GetCharacterMaxHealth() * 0.25 && roll <= 15) {
+            shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, weakest);
+            return;
+        }
+        else if (weakest->CanBeHit()) {
+            shrine->UseShrineTechnique(Shrine::ShrineType::Dismantle, this, weakest);
+            return;
+        }
+    }
+    else {
+        this->Attack(weakest);
+    }
 
-    if (weakest->GetCharacterHealth() < weakest->GetCharacterMaxHealth() * 0.25 && roll <= 15) {
-        shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, weakest);
-        return;
-    }
-    else if (weakest->CanBeHit()) {
-        shrine->UseShrineTechnique(Shrine::ShrineType::Dismantle, this, weakest);
-        return;
-    }
 }
 
 bool Sukuna::CanBeHit() const {

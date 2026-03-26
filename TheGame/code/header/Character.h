@@ -40,7 +40,7 @@ public:
 	void ClearStunTime();
 
 	double GetCharacterCE() const;
-	double GetMaxCharCE() const;
+	double GetCharacterMaxCE() const;
 
 	double GetCharacterHealth() const;
 	double GetCharacterMaxHealth() const;

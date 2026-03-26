@@ -74,7 +74,7 @@ double Character::GetCEregen() const {
 	return ce_regen_efficiency;
 }
 
-double Character::GetMaxCharCE() const {
+double Character::GetCharacterMaxCE() const {
 	return max_cursed_energy;
 }
 double Character::GetCharacterPreviousHealth() const {

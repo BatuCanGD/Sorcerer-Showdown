@@ -4,7 +4,7 @@
 
 import std;
 
-SimpleDomain::SimpleDomain() : Domain(std::numeric_limits<double>::infinity(), 3, 3) {
+SimpleDomain::SimpleDomain() : Domain(INT32_MAX, 3, 3) {
     is_neutralizer = true;
 }
 

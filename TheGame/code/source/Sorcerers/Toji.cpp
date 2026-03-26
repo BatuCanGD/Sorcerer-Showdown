@@ -11,7 +11,7 @@ import std;
 // ---------------------- Toji ------------------
 
 
-Toji::Toji() : Sorcerer(1250.0, -1, -1) {
+Toji::Toji() : Sorcerer(1300.0, -1, -1) {
     inventory_curse.push_back(std::make_unique<InvertedSpearofHeaven>());
     inventory_curse.push_back(std::make_unique<PlayfulCloud>());
     black_flash_chance = 0;

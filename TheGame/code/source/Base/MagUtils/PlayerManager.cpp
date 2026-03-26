@@ -58,7 +58,7 @@ void PlayerManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 			std::println("You cant use Reverse Cursed Technique because you are heavenly restricted!");
 			return;
 		}
-		else if (s.GetMaxCharCE() < 500.0f) {
+		else if (s.GetCharacterMaxCE() < 500.0f) {
 			std::println("You dont have enough cursed energy to continuously maintain Reverse Cursed Technique");
 			return;
 		}
@@ -210,7 +210,7 @@ void PlayerManager::PlayerShikigami(Sorcerer& s) {
 		if (!sk->IsActivePhysically()) {
 			std::println("1 - Manifest");
 		}
-		if (!sk->IsActive()) {
+		if (!sk->IsPartiallyActive()) {
 			std::println("2 - Partially Manifest");
 		}
 		if (sk->IsActive()) {
@@ -231,7 +231,7 @@ void PlayerManager::PlayerShikigami(Sorcerer& s) {
 			}
 			break;
 		case 2:
-			if (sk->IsActive()) {
+			if (sk->IsPartiallyActive()) {
 				std::println("{} is already active!", sk->GetName());
 			}
 			else {

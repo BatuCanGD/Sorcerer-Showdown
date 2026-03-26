@@ -44,7 +44,6 @@ void Copy::CopyFrom(Sorcerer* target) {
             return;
         }
     }
-
     auto cloned = target->GetTechnique()->Clone();
     cloned->Set(this->state);
     std::println("Copied {}'s {}!", target->GetName(), cloned->GetTechniqueName());
