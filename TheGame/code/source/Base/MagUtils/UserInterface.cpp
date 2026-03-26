@@ -32,10 +32,10 @@ void UserInterface::DisplaySorcererStatus(Sorcerer* s) {
 		std::println("-------------{}'s Turn-------------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
 	}
 
-	std::print("Health: {} | ", s->GetCharacterHealth());
+	std::print("Health: {:.1f} | ", s->GetCharacterHealth());
 
 	if (!s->IsHeavenlyRestricted()) {
-		std::print("Cursed Energy: {} | RCT: [{}] | DA: [{}]",
+		std::print("Cursed Energy: {:.1f} | RCT: [{}] | DA: [{}]",
 			s->GetCharacterCE(),
 			s->GetRCTstatus(),
 			s->GetDAstatus());

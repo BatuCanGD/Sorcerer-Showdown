@@ -98,7 +98,7 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     int roll = GetRandomNumber(1, 100);
 
     if (shrine->WorldCuttingSlashUnlocked()) {
-        if (makora) {
+        if (makora && makora->IsActive()) {
             makora->Withdraw();
         }
         if (shrine->GetChantPower() < 3.0) {
@@ -144,10 +144,7 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
             return;
         }
     }
-    else {
-        this->Attack(weakest);
-    }
-
+    this->Attack(weakest); // attack at all costs if havent returned
 }
 
 bool Sukuna::CanBeHit() const {

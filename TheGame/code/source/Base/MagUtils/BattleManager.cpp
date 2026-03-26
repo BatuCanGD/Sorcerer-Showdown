@@ -106,7 +106,7 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& batt
 
 		double damage_taken = c->GetCharacterPreviousHealth() - c->GetCharacterHealth();
 		if (damage_taken > 0) {
-			std::println("{} took {} damage this turn", c->GetName(), damage_taken);
+			std::println("{} took {:.1f} damage this turn", c->GetName(), damage_taken);
 			c->UseRCT();
 			if (c->GetCharacterHealth() >= c->GetCharacterPreviousHealth()) {
 				std::println("{} healed the damage back!", c->GetName());
