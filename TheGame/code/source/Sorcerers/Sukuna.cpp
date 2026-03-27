@@ -26,17 +26,17 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         std::println("{} is stunned and their turn will be skipped", this->GetName());
         return;
     }
-    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.35 && \
-            !(this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.35)) 
+    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.35 && 
+        !(this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.35))
     {
         this->BoostRCT();
     }
-    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.75 && \
-            !(this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.10)) 
+    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.75 && 
+        !(this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.10))
     {
         this->EnableRCT();
     }
-    else 
+    else
     {
         this->DisableRCT();
     }
@@ -46,14 +46,14 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     std::vector<Sorcerer*> domain_users;
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
+        double perceived_health = target->GetCharacterHealth() + GetRandomNumber(-100, 100);
         if (target->DomainActive()) {
             domain_users.push_back(target.get());
         }
-        if (target->GetCharacterHealth() < weakesthealth) {
-            weakesthealth = target->GetCharacterHealth();
+        if (perceived_health < weakesthealth || !weakest) {
+            weakesthealth = perceived_health;
             weakest = target.get();
         }
-
     }
 
     Mahoraga* makora = nullptr;
@@ -116,14 +116,15 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         this->ActivateDomain();
         return;
     }
-    else if ((shrine->BurntOut() || this->GetDomainUses() >= 5) && !domain_users.empty()) {
+    else if ((shrine->BurntOut() || this->GetDomainUses() >= 5) && !domain_users.empty() && !this->CounterDomainActive()) {
         this->ActivateCounterDomain();
         return;
     }
-    else {
-        if (this->CounterDomainActive()) this->DeactivateCounterDomain();
+    else if (domain_users.empty() && this->CounterDomainActive()) {
+        this->DeactivateCounterDomain();
+        return;
     }
-
+    
     if (auto* limitless = dynamic_cast<Limitless*>(weakest->GetTechnique())) {
         if (limitless->CheckInfinity()) {
             this->SetAmplification(true);

@@ -17,13 +17,13 @@ int main() { // main
 	manager.SetupBattlefield(battlefield, sorcerer_counts);
 	interface.ShowBattleEntry(battlefield);
 	
-	battlefield[0]->SetAsPlayer(true);
-
+	//battlefield[0]->SetAsPlayer(true);
+	int turncount = 0;
 	while (true) {
-		bool game_over = false;
+		//bool game_over = false;
+		std::println("Turn: {}", turncount);
 		for (const auto& s : battlefield) {
 			if (s->GetCharacterHealth() <= 0.0) continue;
-
 			if (s->IsThePlayer()) {
 				interface.DisplaySorcererStatus(s.get());
 				if (s->IsCharacterStunned()) continue;
@@ -40,10 +40,10 @@ int main() { // main
 				std::println("\n");
 			}
 
-			if (manager.GameEndCheck(battlefield) == true) {
+			/*if (manager.GameEndCheck(battlefield) == true) {
 				game_over = true;
 				break;
-			}
+			}*/
 			std::println("Press Enter to continue to the next sorcerers turn...");
 			
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -52,11 +52,12 @@ int main() { // main
 		manager.DomainCheckAndPerform(battlefield);
 		bool player_found = manager.ManageEndOfTurn(battlefield);
 
-		if (manager.IsBattleOver(game_over, player_found, battlefield)) break;
+		//if (manager.IsBattleOver(game_over, player_found, battlefield)) break;
 
 		std::println("Press Enter to begin the next round...");
 		std::cin.get();
-
+		turncount++;
+		if (turncount > 100) break;
 		interface.ClearScreen();
 	}
 	std::println("press enter to end the game...");

@@ -24,13 +24,13 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         return;
     }
     auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
-    if ((this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25 && \
-         this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.25) || \
+    if ((this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25 && 
+         this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.25) || 
         !limitless->CheckInfinity()) 
     {
         this->BoostRCT();
     }
-    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.65 && \
+    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.65 && 
         !(this->GetCharacterCE() <= this->GetCharacterMaxCE() * 0.10)) 
     {
         this->EnableRCT();
@@ -45,8 +45,9 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
 
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
-        if (target->GetCharacterHealth() > strongesthealth) {
-            strongesthealth = target->GetCharacterHealth();
+        double perceived_health = target->GetCharacterHealth() + GetRandomNumber(-100, 100);
+        if (perceived_health > strongesthealth || !strongest) {
+            strongesthealth = perceived_health;
             strongest = target.get();
         }
         if (target->DomainActive()) {
@@ -55,20 +56,21 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     }
 
     int droll = GetRandomNumber(1, 100);
-    if (droll <= 30 && domain_users.empty() && !limitless->BurntOut() && this->GetDomainUses() < 5) {
+    if (droll <= 30 && domain_users.empty() && !limitless->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
         this->ActivateDomain();
         return;
     }
-    else if (domain_users.size() == 1 && !limitless->BurntOut() && this->GetDomainUses() < 5) {
+    else if (domain_users.size() == 1 && !limitless->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
         this->ActivateDomain();
         return;
     }
-    else if (!domain_users.empty() && (limitless->BurntOut() || this->GetDomainUses() >= 5)) {
+    else if (!domain_users.empty() && (limitless->BurntOut() || this->GetDomainUses() >= 5) && !this->CounterDomainActive()) {
         this->ActivateCounterDomain();
         return;
     }
-    else {
-        if (this->CounterDomainActive()) this->DeactivateCounterDomain();
+    else if (domain_users.empty() && this->CounterDomainActive()) {
+        this->DeactivateCounterDomain();
+        return;
     }
  
     if (limitless && strongest && (limitless->Usable() || limitless->Boosted()) && this->GetCharacterCE() >= this->GetCharacterMaxCE() * 0.2) {

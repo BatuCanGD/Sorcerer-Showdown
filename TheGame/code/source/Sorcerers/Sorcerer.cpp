@@ -141,6 +141,15 @@ void Sorcerer::UseRCT() {
 }
 
 void Sorcerer::Attack(Character* target) {
+    Sorcerer* target_sorcerer = dynamic_cast<Sorcerer*>(target);
+    if (target_sorcerer) {
+        if (Limitless* limitless = dynamic_cast<Limitless*>(target_sorcerer->GetTechnique())) {
+            if (limitless->CheckInfinity() && !this->DomainAmplificationActive()) {
+                std::println("{}'s attack was blocked by {}'s Infinity!", this->GetName(), target->GetName());
+                return;
+            }
+        }
+    }
     if (domain_amplification_active) {
         double ce_addon = std::sqrt(std::max(0.0, this->GetCharacterCE())) * 0.633;
         double amp_damage = base_attack_damage + ce_addon;

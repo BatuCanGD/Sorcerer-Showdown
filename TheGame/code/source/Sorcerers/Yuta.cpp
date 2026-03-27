@@ -56,9 +56,9 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         if (s->DomainActive()) {
             domain_users.push_back(s.get());
         }
-
-        if (!strongest || s->GetCharacterHealth() > strongesthealth) {
-            strongesthealth = s->GetCharacterHealth();
+        double perceived_health = s->GetCharacterHealth() + GetRandomNumber(-100, 100);
+        if (!strongest || perceived_health > strongesthealth) {
+            strongesthealth = perceived_health;
             strongest = s.get();
         }
     }

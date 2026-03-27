@@ -31,7 +31,9 @@ void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     for (const auto& t : battlefield) {
         if (t.get() == this || t->GetCharacterHealth() <= 0.0) continue;
 
-        if (!ignored || t->GetCharacterHealth() == t->GetCharacterPreviousHealth()) {
+        if (!ignored || t->GetCharacterHealth() == t->GetCharacterPreviousHealth() || 
+            (t->GetTechnique() && t->GetTechnique()->GetTechniqueName() == "Limitless")) 
+        {
             ignored = t.get();
         }
     }
