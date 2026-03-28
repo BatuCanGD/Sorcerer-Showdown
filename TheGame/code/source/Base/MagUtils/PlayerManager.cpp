@@ -266,24 +266,38 @@ void PlayerManager::PlayerShikigami(Sorcerer& s) {
 Sorcerer* PlayerManager::TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>& battlefield, Sorcerer* player) {
 	std::println("Choose your target:");
 	for (size_t i = 0; i < battlefield.size(); ++i) {
-		if (battlefield[i]->GetCharacterHealth() <= 0) continue;
+		auto& current = *battlefield[i];
+		if (current.GetCharacterHealth() <= 0) continue;
+
+		double health = current.GetCharacterHealth();
+		double cursed_energy = current.GetCharacterCE();
+
+		Technique* tech = current.GetTechnique();
+		Domain* domain = current.GetDomain();
+
+		std::string stunned = current.IsCharacterStunned() ? " (Stunned)" : "";
+		std::string name = current.GetName();
+		std::string t_status = (tech == nullptr) ? "" : std::format("| Technique status: [{}] ", tech->GetStringStatus());
+		std::string d_status = (domain == nullptr) ? "" : std::format("| Domain status: [{}] ", current.DomainActive() ? "Active" : "Inactive");
+		std::string ce_display = current.IsHeavenlyRestricted() ? "Heavenly Restricted" : std::format("{:.1f} CE", cursed_energy);
 
 		if (battlefield[i].get() == player) {
-			std::println("{}: {} (You){}", i,
-				battlefield[i]->GetName(),
-				player->IsCharacterStunned() ? " (Stunned)" : "");
+			std::println("{}: {} (You)",
+							i, name);
 		}
 		else {
-			std::println("{}: {}{}", i,
-				battlefield[i]->GetName(),
-				battlefield[i]->IsCharacterStunned() ? " (Stunned)" : "");
+			std::println("{}: {}{} | ({:.1f} HP) ({}) {}{} ",
+						i, name, stunned, health, ce_display, t_status, d_status);
 		}
 	}
 
 	std::print("=> ");
 	size_t t;
 	if (!(std::cin >> t) || t >= battlefield.size() || battlefield[t].get() == player || battlefield[t]->GetCharacterHealth() <= 0.0) {
-		if (std::cin.fail()) { std::cin.clear(); std::cin.ignore(1000, '\n'); }
+		if (std::cin.fail()) { 
+			std::cin.clear(); 
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+		}
 		std::println("Target missed or invalid!");
 		return nullptr;
 	}

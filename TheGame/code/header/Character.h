@@ -53,5 +53,6 @@ public:
 	bool IsHeavenlyRestricted() const;
 
 	virtual std::string GetName() const;
+	std::string GetStunStringStatus() const;
 	virtual bool CanBeHit() const = 0;
 };
