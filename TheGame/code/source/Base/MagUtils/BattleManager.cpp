@@ -10,36 +10,53 @@
 
 import std;
 
-bool BattleManager::GameEndCheck(const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+bool BattleManager::GameEndCheck(const std::vector<std::unique_ptr<Sorcerer>>& battlefield, bool spectator_mode) {
 	int alive_sorcerers = 0;
-	bool player_alive = false;
+	bool player_found = false;
 
 	for (const auto& sc : battlefield) {
 		if (sc->GetCharacterHealth() > 0) {
-			if (sc->IsThePlayer()) player_alive = true;
-			else alive_sorcerers++;
+			alive_sorcerers++;
+			if (sc->IsThePlayer()) player_found = true;
 		}
 	}
-
-	if (!player_alive || alive_sorcerers == 0) {
-		return true;
-	}
+	if (spectator_mode && alive_sorcerers <= 1) return true;
+	if (!spectator_mode && (!player_found || alive_sorcerers == 1)) return true;
 	return false;
 }
 
-void BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts) {
-	bool choosing = true;
+bool BattleManager::SkipTurnFullyCheck() {
+	std::println("1 - Skip AI sorcerer turns\n"
+				 "2 - Keep AI sorcerer turns");
+	std::println("this is for if you want to read what every sorcerer on the board does line by line\n"
+				 "or if you want to skip to do a game worth of simulation");
+	std::print("=> ");
+	int ch = GetValidInput();
+	UserInterface::ClearScreen();
+	switch (ch) {
+	case 1: return false;
+	case 2: return true;
+	default: return true;
+	}
+}
+
+bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts) {
+	bool choosing = true; bool spec_mode = false;
 	int c = 0;
 
 	while (choosing) {
 		std::println("Choose your sorcerer and the amount of opponents you want to fight!");
-		std::println("===> Player: {}", battlefield.empty() ? "None" : battlefield[0]->GetName());
-
+		if (!spec_mode) {
+			std::println("===> Player: {}", battlefield.empty() ? "None" : battlefield[0]->GetName());
+		}
+		else {
+			std::println("[<Spectator Mode Enabled>]");
+		}
 		for (auto const& [name, count] : sorcerer_counts) {
 			if (count > 0) std::println("{} x{}", name, count);
 		}
 
-		std::println("\n1 - Gojo | 2 - Sukuna | 3 - Toji Fushiguro |\n4-Yuta Okkotsu\n\n-1 - Undo | 0 - Finish |");
+		std::println("\n1 - Gojo | 2 - Sukuna | 3 - Toji Fushiguro |\n4-Yuta Okkotsu\n\n-2 - Spectator mode | -1 - Undo | 0 - Finish |");
 
 		if (!(std::cin >> c)) {
 			std::cin.clear();
@@ -61,6 +78,14 @@ void BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 			sorcerer_counts[battlefield.back()->GetName()]--;
 			battlefield.pop_back();
 		}
+		else if (c == -2) {
+			if (spec_mode) {
+				spec_mode = false;
+			}
+			else {
+				spec_mode = true;
+			}
+		}
 		else {
 			std::unique_ptr<Sorcerer> s = nullptr;
 			switch (c) {
@@ -78,9 +103,16 @@ void BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 		}
 		UserInterface::ClearScreen();
 	}
+
+	if (spec_mode) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
-bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield, bool spectator_mode) {
 	auto [removed_begin, removed_end] = std::ranges::remove_if(battlefield, [](const auto& s) {
 		if (s->GetCharacterHealth() <= 0.0) {
 			std::println("{} has been defeated and is removed from the battlefield!", s->GetName());
@@ -97,7 +129,7 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& batt
 		if (limitless) {
 			limitless->InfinityNerf(c.get());
 		}
-		if (c->IsThePlayer()) {
+		if (c->IsThePlayer() || spectator_mode) {
 			player_alive = true;
 		}
 
@@ -177,17 +209,21 @@ void BattleManager::DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>
 	}
 }
 
-bool BattleManager::IsBattleOver(bool game_over ,bool player_found, std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
-	if (!player_found && battlefield.size() == 1) {
+bool BattleManager::IsBattleOver(bool game_over ,bool player_found,bool spectator_mode, std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+	if (!player_found && battlefield.size() == 1 && !spectator_mode) {
 		std::println("\nYou have been defeated by {}! Game Over.", battlefield[0]->GetName());
 		return true;
 	}
-	else if (!player_found) {
+	else if (!player_found && !spectator_mode) {
 		std::println("\nYou have been defeated! Game Over.");
 		return true;
 	}
-	else if (battlefield.size() == 1 || game_over) {
+	else if ((battlefield.size() == 1 || game_over) && !spectator_mode) {
 		std::println("\nCongratulations! You have defeated all other sorcerers and won the battle!");
+		return true;
+	}
+	else if (battlefield.size() == 1 && spectator_mode){
+		std::println("The battle has ended, only one remains");
 		return true;
 	}
 	return false;
