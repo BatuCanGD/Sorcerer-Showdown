@@ -24,14 +24,11 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         return;
     }
     auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
-    if ((this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.25 && 
-         this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.25) || 
-        !limitless->CheckInfinity()) 
+    if ((!this->HPMoreThanMax(0.35) && this->CEMoreThanMax(0.20)) || !limitless->CheckInfinity()) 
     {
         this->BoostRCT();
     }
-    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.65 && 
-        !(this->GetCharacterCE() <= this->GetCharacterMaxCE() * 0.10)) 
+    else if (!this->HPMoreThanMax(0.75) && this->CEMoreThanMax(0.20))
     {
         this->EnableRCT();
     }
@@ -82,7 +79,7 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
             return;
         }
 
-        if (roll <= 15 && this->GetCharacterCE() > 3000) {
+        if (roll <= 15 && this->CEMoreThanMax(0.75)) {
             limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Purple, this, strongest);
         }
         else if (roll <= 60) {

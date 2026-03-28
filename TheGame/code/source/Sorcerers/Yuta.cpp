@@ -29,10 +29,10 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     }
     Shikigami* rika = this->ChooseShikigami(0);
 
-    if (!(this->GetCharacterHealth() > this->GetCharacterMaxHealth() * 0.45) || rika->IsActivePhysically()) {
+    if (!this->HPMoreThanMax(0.40) || rika->IsActivePhysically()) {
         this->BoostRCT();
     }
-    else if (!(this->GetCharacterHealth() > this->GetCharacterMaxHealth() * 0.95)) {
+    else if (!(this->HPMoreThanMax(0.70))) {
         this->EnableRCT();
     }
     else {
@@ -43,8 +43,7 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     Sorcerer* strongest = nullptr;
     std::vector<Sorcerer*> domain_users;
 
-    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.40 && \
-        !(rika->GetActiveTime() > 5) && !rika->IsActivePhysically()){
+    if (!this->HPMoreThanMax(0.40) && !(rika->GetActiveTime() > 5) && !rika->IsActivePhysically()){
 
         std::println("Come, Rika.");
         rika->Manifest();

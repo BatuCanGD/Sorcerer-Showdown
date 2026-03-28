@@ -96,6 +96,13 @@ bool Character::IsHeavenlyRestricted() const {
 	return is_heavenly_restricted;
 }
 
+bool Character::CEMoreThanMax(double c) const {
+	return this->GetCharacterCE() > this->GetCharacterMaxCE() * c;
+}
+bool Character::HPMoreThanMax(double h) const {
+	return this->GetCharacterHealth() > this->GetCharacterMaxHealth() * h;
+}
+
 void Character::ClearStunTime() {
 	if (stun_duration <= 0) {
 		is_stunned = false;

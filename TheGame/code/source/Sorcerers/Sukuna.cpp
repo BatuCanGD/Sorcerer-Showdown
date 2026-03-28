@@ -26,13 +26,11 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         std::println("{} is stunned and their turn will be skipped", this->GetName());
         return;
     }
-    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.35 && 
-        !(this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.35))
+    if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.35 && this->CEMoreThanMax(0.40))
     {
         this->BoostRCT();
     }
-    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.75 && 
-        !(this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.10))
+    else if (this->GetCharacterHealth() <= this->GetCharacterMaxHealth() * 0.75 && this->CEMoreThanMax(0.10))
     {
         this->EnableRCT();
     }
@@ -72,32 +70,36 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
 
     if (makora) {
         if (!shrine->WorldCuttingSlashUnlocked()) {
-            if (!makora->IsActivePhysically() && this->GetCharacterCE() >= this->GetCharacterMaxCE() * 0.75) {
+            if (!makora->IsActivePhysically() && this->CEMoreThanMax(0.75)) {
                 makora->Manifest();
             }
-            else if (!makora->IsActive() && this->GetCharacterCE() >= this->GetCharacterMaxCE() * 0.235) {
+            else if (!makora->IsActive() && this->CEMoreThanMax(0.235)) {
                 makora->PartiallyManifest();
             }
-            else if (this->GetCharacterCE() < this->GetCharacterMaxCE() * 0.235) {
+            else if (!this->CEMoreThanMax(0.235)) {
                 makora->Withdraw();
             }
         }
 
         if (makora->FullyAdapted() && !shrine->WorldCuttingSlashUnlocked()) {
             this->GetSpecial()->PerformSpecial(this);
+            makora->Withdraw();
             return;
         }
     }
 
-    if (agito && this->GetCharacterHealth() < this->GetCharacterMaxHealth() * 0.35) {
-        if (!agito->IsActive()) {
+    if (agito && !this->HPMoreThanMax(0.35)) {
+        if (!this->CEMoreThanMax(0.30) && agito->IsActive()) {
+            agito->Withdraw();
+        }
+        else if (!agito->IsActive() && this->HPMoreThanMax(0.50) && this->CEMoreThanMax(0.30)) {
             agito->Manifest();
         }
     }
 
     int roll = GetRandomNumber(1, 100);
 
-    if (shrine->WorldCuttingSlashUnlocked()) {
+    if (shrine->WorldCuttingSlashUnlocked() && this->CEMoreThanMax(0.16)) {
         if (makora && makora->IsActive()) {
             makora->Withdraw();
         }
@@ -135,7 +137,7 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     else {
         this->SetAmplification(false);
     }
-    if (this->GetCharacterCE() > this->GetCharacterMaxCE() * 0.20) {
+    if (this->CEMoreThanMax(0.20)) {
         if (weakest->GetCharacterHealth() < weakest->GetCharacterMaxHealth() * 0.25 && roll <= 15) {
             shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, weakest);
             return;

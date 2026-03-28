@@ -39,6 +39,9 @@ public:
 	void SetStunState(bool s);
 	void ClearStunTime();
 
+	bool CEMoreThanMax(double) const;
+	bool HPMoreThanMax(double) const;
+
 	double GetCharacterCE() const;
 	double GetCharacterMaxCE() const;
 
