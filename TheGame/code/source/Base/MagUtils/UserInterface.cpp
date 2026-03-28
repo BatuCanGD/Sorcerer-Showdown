@@ -86,15 +86,29 @@ void UserInterface::DisplaySorcererStatus(Sorcerer* s) {
 	}
 	else if (s->IsThePlayer()) {
 		std::println("\nChoose action:");
-		if (s->GetTechnique() != nullptr) std::print("1 - Technique | ");
-		std::print("2 - Fight");
-		if (s->GetSpecial() != nullptr)  std::print(" | 3 - Special [{}]", s->GetSpecial()->GetSpecialSimplifiedName());
-		if (s->GetDomain() != nullptr || s->GetCounterDomain() != nullptr) std::print(" | \n4 - Domain actions");
-		std::print(" | 5 - Taunt");
-		if (!s->IsHeavenlyRestricted()) { std::print(" | 6 - RCT Usage | \n7 - Domain Amplification"); }
-		if (!s->GetCursedTools().empty() || s->GetTool() != nullptr) { std::print(" | 8 - Cursed Tool"); }
-		if (s->GetTechnique() != nullptr) { std::println(" | 9 - Technique Settings"); }
-		if (!s->GetShikigami().empty()) { std::println("10 - Shikigami "); }
+
+		Domain* domain = s->GetDomain();
+		Domain* counter = s->GetCounterDomain();
+		Technique* tech = s->GetTechnique();
+		Specials* special = s->GetSpecial();
+
+		std::string techdisplay = (tech == nullptr) ? "1 - Technique [None] " : std::format("1 - Technique [{}] ", tech->GetTechniqueName());
+		std::string fightdisplay = "2 - Fight";
+		std::string specdisplay = (special == nullptr) ? "3 - Special [None] " : std::format("3 - Special [{}] ", special->GetSpecialSimplifiedName());
+		std::string domaindisplay = (domain == nullptr && counter == nullptr) ? "4 - Domain [Locked]" : "4 - Domain Actions";
+		std::string tauntdisplay = "5 - Taunt";
+		std::string rctdisplay = s->IsHeavenlyRestricted() ? "6 - Reverse Cursed Technique [Locked]" : std::format("6 - Reverse Cursed Technique [{}]", s->GetRCTstatus());
+		std::string ampdisplay = s->IsHeavenlyRestricted() ? "7 - Domain Amplification [Locked]" : std::format("7 - Domain Amplification [{}]", s->GetDAstatus());		
+		std::string tooldisplay = (s->GetCursedTools().empty() && s->GetTool() == nullptr) ? "8 - Cursed Tools [None]" : "8 - Cursed Tools";
+		std::string setdisplay = (tech == nullptr) ? "9 - Technique Settings [Locked]" : "9 - Technique Settings";
+		std::string shikigamidisplay = (s->GetShikigami().empty()) ? "10 - Shikigami [None]" : "10 - Shikigami";
+
+
+		std::println("  {:<35} | {:<35} | {:<35} ", techdisplay, fightdisplay, specdisplay);
+		std::println("  {:<35} | {:<35} | {:<35} ", domaindisplay, tauntdisplay, rctdisplay);
+		std::println("  {:<35} | {:<35} | {:<35} ", ampdisplay, tooldisplay, setdisplay);
+		std::println("  {:<35} |", shikigamidisplay);
+		
 
 		std::print("\n=> ");
 	}

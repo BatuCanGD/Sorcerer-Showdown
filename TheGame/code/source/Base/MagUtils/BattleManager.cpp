@@ -60,7 +60,7 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 
 		if (!(std::cin >> c)) {
 			std::cin.clear();
-			std::cin.ignore(1000, '\n');
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			continue;
 		}
 
