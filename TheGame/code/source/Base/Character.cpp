@@ -103,10 +103,6 @@ bool Character::HPMoreThanMax(double h) const {
 	return this->GetCharacterHealth() > this->GetCharacterMaxHealth() * h;
 }
 
-std::string Character::GetStunStringStatus() const {
-	return is_stunned ? " (Stunned)" : "";
-}
-
 void Character::ClearStunTime() {
 	if (stun_duration <= 0) {
 		is_stunned = false;
