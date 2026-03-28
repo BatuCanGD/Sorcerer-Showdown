@@ -1,5 +1,4 @@
 #include "Sorcerer.h"
-#include "Specials.h"
 #include "BattleManager.h"
 #include "PlayerManager.h"
 #include "UIDisplay.h"
@@ -45,7 +44,7 @@ int main() { // main
 				game_over = true;
 				break;
 			}
-			if (skip_turns) {
+			if (!skip_turns) {
 				std::println("Press Enter to continue to the next sorcerers turn...");
 				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 				std::cin.get();

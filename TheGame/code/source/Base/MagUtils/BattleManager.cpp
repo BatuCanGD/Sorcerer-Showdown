@@ -34,9 +34,9 @@ bool BattleManager::SkipTurnFullyCheck() {
 	int ch = GetValidInput();
 	UserInterface::ClearScreen();
 	switch (ch) {
-	case 1: return false;
-	case 2: return true;
-	default: return true;
+	case 1: return true;
+	case 2: return false;
+	default: return false;
 	}
 }
 

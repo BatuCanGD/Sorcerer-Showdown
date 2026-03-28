@@ -43,8 +43,7 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     Sorcerer* strongest = nullptr;
     std::vector<Sorcerer*> domain_users;
 
-    if (!this->HPMoreThanMax(0.40) && !(rika->GetActiveTime() > 5) && !rika->IsActivePhysically()){
-
+    if (!(this->HPMoreThanMax(0.40) || this->CEMoreThanMax(0.20)) && !(rika->GetActiveTime() > 5) && !rika->IsActivePhysically()) {
         std::println("Come, Rika.");
         rika->Manifest();
     }

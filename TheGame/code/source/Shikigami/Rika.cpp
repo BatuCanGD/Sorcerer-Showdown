@@ -20,9 +20,10 @@ void Rika::OnShikigamiTurn(Sorcerer* user) {
         user->SetCursedEnergyRegen(rika_regen_increase);
 
         ActiveTimeIncrementor();
-        return;
     }
-    RikaCooldownRegeneration(user);
+    else {
+        RikaCooldownRegeneration(user);
+    }
 }
 
 void Rika::RikaCooldownRegeneration(Sorcerer* user) {

@@ -381,7 +381,7 @@ void Sorcerer::Taunt(Character* taunted) { // pure aura
 
     int taunt_type = GetRandomNumber(1, 4);
 
-    if (this->GetCharacterHealth() > (this->GetCharacterMaxHealth() * healthy_threshold)) {
+    if (this->HPMoreThanMax(healthy_threshold)) {
         switch (taunt_type) {
         case 1:
             std::println("I'm surprised you've even managed to scratch me this much {}!", taunted->GetName());
@@ -396,7 +396,7 @@ void Sorcerer::Taunt(Character* taunted) { // pure aura
             std::println("You should just give up now, {}!", taunted->GetName());
         }
     }
-    else if (this->GetCharacterHealth() > (this->GetCharacterMaxHealth() * injured_threshold)) {
+    else if (this->HPMoreThanMax(injured_threshold)) {
         switch (taunt_type) {
         case 1:
             std::println("You're starting to annoy me, {}. Keep it up and I'll make you regret it!", taunted->GetName());
@@ -412,7 +412,7 @@ void Sorcerer::Taunt(Character* taunted) { // pure aura
 
         }
     }
-    else if (this->GetCharacterHealth() > (this->GetCharacterMaxHealth() * critical_threshold)) {
+    else if (this->HPMoreThanMax(critical_threshold)) {
         switch (taunt_type) {
         case 1:
             std::println("You're really starting to piss me off, {}. I'll make you regret your actions!", taunted->GetName());

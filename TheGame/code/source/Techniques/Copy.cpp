@@ -94,7 +94,7 @@ void Copy::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<So
     std::println("Active: {}", GetTechniqueName());
     std::println("Stored copies: {}", copied_techniques.size());
 
-    for (int i = 0; i < copied_techniques.size(); i++) {
+    for (size_t i = 0; i < copied_techniques.size(); i++) {
         std::println("  [{}] {}", i, copied_techniques[i]->GetTechniqueName());
     }
 
