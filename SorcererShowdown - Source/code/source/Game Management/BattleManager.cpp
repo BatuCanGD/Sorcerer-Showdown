@@ -7,7 +7,6 @@
 #include "UIDisplay.h"
 #include "Utils.h"
 
-
 import std;
 
 bool BattleManager::GameEndCheck(const std::vector<std::unique_ptr<Sorcerer>>& battlefield, bool spectator_mode) {
@@ -44,6 +43,13 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 	bool choosing = true; bool spec_mode = false;
 	int c = 0;
 
+	std::vector<std::unique_ptr<Sorcerer>> sorcerers;
+	sorcerers.push_back(std::make_unique<Gojo>());
+	sorcerers.push_back(std::make_unique<Sukuna>());
+	sorcerers.push_back(std::make_unique<Yuta>());
+	sorcerers.push_back(std::make_unique<Toji>());
+	sorcerers.push_back(std::make_unique<test_sorcerer>());
+	
 	while (choosing) {
 		std::println("Choose your sorcerer and the amount of opponents you want to fight!");
 		if (!spec_mode) {
@@ -55,8 +61,13 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 		for (auto const& [name, count] : sorcerer_counts) {
 			if (count > 0) std::println("{} x{}", name, count);
 		}
-
-		std::println("\n1 - Gojo | 2 - Sukuna | 3 - Toji Fushiguro |\n4-Yuta Okkotsu\n\n-2 - Spectator mode | -1 - Undo | 0 - Finish |");
+		std::println("\n");
+		int i = 1;
+		for (const auto& s : sorcerers) {
+			std::println("{}: {}",i, s->GetName());
+			i++;
+		}
+		std::println("-2 - Spectator mode | -1 - Undo | 0 - Finish |");
 
 		if (!(std::cin >> c)) {
 			std::cin.clear();
@@ -87,18 +98,14 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 			}
 		}
 		else {
-			std::unique_ptr<Sorcerer> s = nullptr;
-			switch (c) {
-			case 1:   s = std::make_unique<Gojo>(); break;
-			case 2:   s = std::make_unique<Sukuna>(); break;
-			case 3:	  s = std::make_unique<Toji>(); break;
-			case 4:	  s = std::make_unique<Yuta>(); break;
-			case 2147: s = std::make_unique<test_sorcerer>(); break;
+			if (c > 0 && c <= sorcerers.size()) {
+				int index = c - 1;
+				std::unique_ptr<Sorcerer> new_sorcerer = sorcerers[index]->Clone();
+				sorcerer_counts[new_sorcerer->GetName()]++;
+				battlefield.push_back(std::move(new_sorcerer));
 			}
-
-			if (s) {
-				sorcerer_counts[s->GetName()]++;
-				battlefield.push_back(std::move(s));
+			else {
+				std::println("Invalid selection!");
 			}
 		}
 		UserInterface::ClearScreen();
@@ -113,11 +120,11 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 }
 
 bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield, bool spectator_mode) {
-	std::println("\n\n============ END OF TURN SUMMARY ============");
+	std::println("\n\n{}============ END OF TURN SUMMARY ============{}",Color::Yellow,Color::Clear);
 
 	auto [removed_begin, removed_end] = std::ranges::remove_if(battlefield, [](const auto& s) {
 		if (s->GetCharacterHealth() <= 0.0) {
-			std::println("{} has been defeated and is removed from the battlefield!", s->GetName());
+			std::println("{}{} has been defeated and is removed from the battlefield!{}",Color::Red, s->GetName(),Color::Clear);
 			return true;
 		}
 		return false;
@@ -140,13 +147,13 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& batt
 
 		double damage_taken = c->GetCharacterPreviousHealth() - c->GetCharacterHealth();
 		if (damage_taken > 0) {
-			std::println("{} took {:.1f} damage this turn", c->GetName(), damage_taken);
+			std::println("{} took {}{:.1f} damage{} this turn",c->GetName(),Color::Red,  damage_taken,Color::Clear);
 			c->UseRCT();
 			if (c->GetCharacterHealth() >= c->GetCharacterPreviousHealth()) {
-				std::println("{} healed the damage back!", c->GetName());
+				std::println("{} {}healed the damage back!{}",c->GetName(),Color::Green, Color::Clear);
 			}
 			else if (c->GetCharacterHealth() > (c->GetCharacterPreviousHealth() - damage_taken)) {
-				std::println("{} partially healed their wounds.", c->GetName());
+				std::println("{} {}partially healed their wounds.{}",c->GetName(),Color::Yellow,Color::Clear);
 			}
 		}
 		else {

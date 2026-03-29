@@ -28,10 +28,10 @@ double Technique::GetTechniqueOutput() const {
 
 std::string Technique::GetStringStatus() const {
     switch (state) {
-	case Status::Usable:      return "Usable";
-	case Status::DomainBoost: return "Output Boosted";
-	case Status::BurntOut:    return "Burnt Out";
-    default:                  return "Unknown State";
+	case Status::Usable:      return "\033[32mUsable\033[0m";
+	case Status::DomainBoost: return "\033[33mOutput Boosted\033[0m";
+	case Status::BurntOut:    return "\033[31mBurnt Out\033[0m";
+    default:                  return "\033[2;90mUnknown State\033[0m";
     }
 }
 
@@ -64,11 +64,11 @@ double Technique::GetChantPower()const {
 
 std::string Technique::GetStringChantLevel() const {
     switch (chant) {
-    case ChantLevel::Zero: return "Zero";
-    case ChantLevel::One: return "One";
-    case ChantLevel::Two: return "Two";
-    case ChantLevel::Three: return "Three";
-    case ChantLevel::Four: return "Max";
+    case ChantLevel::Zero: return "\033[2;90mZero\033[0m";
+    case ChantLevel::One: return "\033[31mOne\033[0m";
+    case ChantLevel::Two: return "\033[33mTwo\033[0m";
+    case ChantLevel::Three: return "\033[32mThree\033[0m";
+    case ChantLevel::Four: return "\033[35mMax\033[0m";
     default: return "One";
     }
 }

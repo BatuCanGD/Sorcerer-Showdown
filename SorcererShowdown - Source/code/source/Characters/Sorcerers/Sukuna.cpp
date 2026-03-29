@@ -20,8 +20,12 @@ Sukuna::Sukuna() : Sorcerer(1000.0, 16000.0, 150.0) {
     black_flash_chance = 10;
 }
 
+std::unique_ptr<Sorcerer> Sukuna::Clone() const {
+    return std::make_unique<Sukuna>();
+}
+
 std::string Sukuna::GetName() const {
-    return "Sukuna";
+    return "\033[31mSukuna\033[0m";
 }
 
 void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
@@ -145,6 +149,11 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     else {
         this->SetAmplification(false);
     }
+    if (roll <= 25) {
+        shrine->Chant();
+        return;
+    }
+
     if (this->CEMoreThanMax(0.20)) {
         if (weakest->GetCharacterHealth() < weakest->GetCharacterMaxHealth() * 0.25 && roll <= 15) {
             shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, weakest);

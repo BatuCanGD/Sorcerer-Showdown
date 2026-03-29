@@ -9,23 +9,23 @@ void Shrine::SetWCS(bool s) {
 }
 
 void Shrine::CleaveTechniqueDamageTarget(Sorcerer* user, Character* target) {
-    println("{} uses Cleave on {}!", user->GetName(), target->GetName());
+    println("{} uses {}Cleave{} on {}!", user->GetName(),Color::Red,Color::Clear, target->GetName());
     double dmg = CalculateDamage(user, cleave_output * GetChantPower());
     target->Damage(dmg);
     chant = ChantLevel::Zero;
 }
 void Shrine::DismantleTechniqueDamageTarget(Sorcerer* user, Character* target) {
-    println("{} uses Dismantle on {}!", user->GetName(), target->GetName());
+    println("{} uses {}Dismantle{} on {}!", user->GetName(),Color::Red,Color::Clear, target->GetName());
     double dmg = CalculateDamage(user, slash_output * GetChantPower());
     target->Damage(dmg);
     chant = ChantLevel::Zero;
 }
 void Shrine::WorldCuttingSlashToTarget(Sorcerer* user, Character* target) {
     if (this->chant != ChantLevel::Four) {
-        std::println("{} hasn't completed the incantations! The slash fails to divide the world...", user->GetName());
+        std::println("{} hasn't completed the incantations! {}The slash fails to divide the world...{}", user->GetName(), Color::Red,Color::Clear);
         return;
     }
-    println("{} uses the World Cutting Slash on {}!", user->GetName(), target->GetName());
+    println("{} uses the {}World Cutting Slash{} on {}!", user->GetName(),Color::Red,Color::Clear, target->GetName());
     double dmg = CalculateDamage(user, wcs_output * GetChantPower());
     target->DamageBypass(dmg);
     chant = ChantLevel::Zero;
@@ -49,7 +49,7 @@ void Shrine::UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c) {
 }
 
 std::string Shrine::GetTechniqueName() const {
-    return "Shrine";
+    return "\033[31mShrine\033[0m";
 }
 
 bool Shrine::WorldCuttingSlashUnlocked() const {
@@ -92,19 +92,19 @@ void Shrine::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<
 
 void Shrine::Chant() {
     if (chant == ChantLevel::Zero) {
-        std::println("\"Scale of the Dragon\"");
+        std::println("{}\"Scale of the Dragon\"{}",Color::BrightRed,Color::Clear);
         chant = ChantLevel::One;
     }
     else if (chant == ChantLevel::One) {
-        std::println("\"Recoil.\"");
+        std::println("{}\"Recoil.\"{}", Color::BrightRed, Color::Clear);
         chant = ChantLevel::Two;
     }
     else if (chant == ChantLevel::Two) {
-        std::println("\"Twin Meteors.\"");
+        std::println("{}\"Twin Meteors.\"{}", Color::Red, Color::Clear);
         chant = ChantLevel::Three;
     }
     else if (chant == ChantLevel::Three) {
-        std::println("\"Silence. Desolation. Anatomy of Ruin.\"");
+        std::println("{}\"Silence. Desolation. Anatomy of Ruin.\"{}", Color::Red, Color::Clear);
         chant = ChantLevel::Four;
     }
     else {

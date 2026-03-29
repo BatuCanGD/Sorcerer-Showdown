@@ -26,5 +26,5 @@ void WorldCuttingSlash::PerformSpecial(Sorcerer* user) {
 	}
 }
 std::string WorldCuttingSlash::GetSpecialSimplifiedName() const {
-	return "World Cutting Slash";
+	return "\033[31mWorld Cutting Slash\033[0m";
 }

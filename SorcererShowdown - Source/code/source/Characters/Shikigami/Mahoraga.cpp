@@ -1,5 +1,6 @@
 #include "Mahoraga.h"
 #include "Sorcerer.h"
+#include "Utils.h"
 
 import std;
 
@@ -26,10 +27,10 @@ void Mahoraga::Adapt() {
 
     switch (InfStage) {
     case InfinityAdaptation::None: break;
-    case InfinityAdaptation::FirstSpin: std::println("Mahoraga has started to adapt space itself!"); break;
-    case InfinityAdaptation::SecondSpin: std::println("Mahoraga is on its second spin to adapt space itself!"); break;
-    case InfinityAdaptation::ThirdSpin: std::println("Mahoraga is on its final spin to adapt space itself!"); break;
-    case InfinityAdaptation::FourthSpin: std::println("Mahoraga has adapted to space itself!"); break;
+    case InfinityAdaptation::FirstSpin: std::println("{} has started to adapt space itself!", this->GetName()); break;
+    case InfinityAdaptation::SecondSpin: std::println("{} is on its second spin to adapt space itself!", this->GetName()); break;
+    case InfinityAdaptation::ThirdSpin: std::println("{} is on its final spin to adapt space itself!", this->GetName()); break;
+    case InfinityAdaptation::FourthSpin: std::println("{} has adapted to space itself!",this->GetName()); break;
     default:
         break;
     }
@@ -45,7 +46,7 @@ void Mahoraga::OnShikigamiTurn(Sorcerer* user) {
         return;
     }
     if (user->GetCharacterCE() < keep_active_cost) {
-        std::println("Mahoraga cannot maintain its active state due to insufficient Cursed Energy! It withdraws back into the shadows");
+        std::println("{} cannot maintain its active state due to insufficient {}Cursed Energy!{} It withdraws back into the shadows",this->GetName(), Color::Cyan,Color::Clear);
         this->Withdraw();
         return;
     }
@@ -54,7 +55,7 @@ void Mahoraga::OnShikigamiTurn(Sorcerer* user) {
     user->SpendCE(keep_active_cost);
 }
 std::string Mahoraga::GetName() const {
-    return "Mahoraga";
+    return "\033[33mMahoraga\033[0m";
 }
 
 bool Mahoraga::CanBeHit() const {

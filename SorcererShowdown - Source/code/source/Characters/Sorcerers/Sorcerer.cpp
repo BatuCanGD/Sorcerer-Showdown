@@ -63,6 +63,11 @@ bool Sorcerer::HasSixEyes() const {
     return six_eyes;
 }
 
+std::string Sorcerer::GetDomainStatus()const{
+    if (domain_active) return "\033[35mActive\033[0m";
+    else return "\033[2;90mInactive\033[0m";
+}
+
 void Sorcerer::SpendCE(double ce) {
     double efficiency = 1.0;
     if (HasSixEyes()) {
@@ -92,10 +97,10 @@ void Sorcerer::BoostRCT() {
 
 std::string Sorcerer::GetRCTstatus() const {
     switch (rct_state) {
-    case ReverseCT::Disabled: return "Disabled";
-    case ReverseCT::Active: return "Active";
-    case ReverseCT::Overdrive: return "Overdrive";
-    default: return "Active";
+    case ReverseCT::Disabled: return "\033[31mDisabled\033[0m";
+    case ReverseCT::Active: return "\033[33mActive\033[0m";
+    case ReverseCT::Overdrive: return "\033[32mOverdrive\033[0m";
+    default: return "\033[2;90mDisabled\033[0m";
     }
 }
 
@@ -121,8 +126,12 @@ void Sorcerer::TickShikigami() {
 }
 
 std::string Sorcerer::GetDAstatus() const {
-    if (domain_amplification_active) return "Active";
-    else return "Inactive";
+    if (domain_amplification_active) return "\033[36mActive\033[0m";
+    else return "\033[31mInactive\033[0m";
+}
+std::string Sorcerer::GetCounterStatus() const {
+    if (counter_domain_active) return "\033[35mActive\033[0m";
+    else return "\033[31mInactive\033[0m";
 }
 
 void Sorcerer::UseRCT() {
@@ -146,7 +155,7 @@ void Sorcerer::Attack(Character* target) {
     if (target_sorcerer) {
         if (Limitless* limitless = dynamic_cast<Limitless*>(target_sorcerer->GetTechnique())) {
             if (limitless->CheckInfinity() && !this->DomainAmplificationActive()) {
-                std::println("{}'s attack was blocked by {}'s Infinity!", this->GetName(), target->GetName());
+                std::println("{}'s attack was blocked by {}'s {}Infinity{}!", this->GetName(), target->GetName(),Color::Cyan,Color::Clear);
                 return;
             }
         }
@@ -156,7 +165,7 @@ void Sorcerer::Attack(Character* target) {
         double amp_damage = base_attack_damage + ce_addon;
 
         target->DamageBypass(amp_damage);
-        std::println("{} landed a strike on {} using domain amplification!", this->GetName(), target->GetName());
+        std::println("{} landed a strike on {} using {}domain amplification{}!", this->GetName(), target->GetName(),Color::Yellow,Color::Clear);
         return;
     }
     else if (cursed_tool) {
@@ -177,11 +186,11 @@ void Sorcerer::Attack(Character* target) {
     target->Damage(final_damage);
 
     if (is_black_flash) {
-        std::println("\n*** BLACK FLASH! ***");
-        std::println("{} landed a BlackFlash on {}!", this->GetName(), target->GetName());
+        std::println("\n*** {}BLACK FLASH!{} ***",Color::Red,Color::Clear);
+        std::println("{} landed a {}BlackFlash{} on {}!", this->GetName(), Color::Red, Color::Clear, target->GetName());
     }
     else {
-        std::println("{} landed a heavy strike on {}!", this->GetName(), target->GetName());
+        std::println("{} landed a {}heavy strike{} on {}!", this->GetName(),Color::BrightRed,Color::Clear, target->GetName());
     }
 }
 
@@ -201,10 +210,10 @@ void Sorcerer::TickDomain() {
     else if (this->CounterDomainActive()) {
         active_counter_time++;
         if (active_counter_time == max_counter_time) {
-            std::println("{}'s {} is about to shatter", this->GetName(), this->GetCounterDomain()->GetDomainName());
+            std::println("{}'s {}{}{} is about to shatter", this->GetName(),Color::Cyan, this->GetCounterDomain()->GetDomainName(),Color::Clear);
         }
         else if (active_counter_time > max_counter_time) {
-            std::println("{}'s {} has been shattered", this->GetName(), this->GetCounterDomain()->GetDomainName());
+            std::println("{}'s {}{}{} has been {}shattered{}!", this->GetName(), Color::Cyan, this->GetCounterDomain()->GetDomainName(),Color::Clear, Color::Red, Color::Clear);
             this->DeactivateCounterDomain();
             active_counter_time = 0;
         }
@@ -222,18 +231,18 @@ void Sorcerer::ActivateDomain() {
         return;
 	}
     else if (is_strained) {
-        std::println("Your technique is burnt out and cannot be used yet");
+        std::println("Your technique is {}burnt out{} and cannot be used yet", Color::Red, Color::Clear);
         return;
     }
     else if (total_domain_uses >= domain_limit) {
         this->DamageBypass(50.0);
         this->SetStunState(true);
-        std::println("You have overused your domain! You take 50 damage and are stunned for the next turn.");
+        std::println("{}You have overused your domain! You take 50 damage and are stunned for the next turn.{}", Color::Red, Color::Clear);
         return;
     }
     domain_active = true;
     total_domain_uses++;
-    std::println("\n********Domain Expansion********\n*******{}*******\n", this->GetDomain()->GetDomainName());
+    std::println("\n********{}Domain Expansion{}********\n" "*******{}*******\n", Color::Purple, Color::Clear,this->GetDomain()->GetDomainName());
     if (technique) {
         technique->Set(Technique::Status::DomainBoost);
     }
@@ -333,7 +342,7 @@ void Sorcerer::RecoverTechniqueBurnout(Technique* t) {
         if (technique_burnout_time >= max_technique_burnout_time) {
             t->Set(Technique::Status::Usable);
             technique_burnout_time = 0;
-            std::println("{}'s cursed technique has recovered from burnout!", this->GetName());
+            std::println("{}'s {}cursed technique{} has{} recovered from burnout{}!", this->GetName(),Color::Cyan,Color::Clear, Color::Green, Color::Clear);
         }
     }
     if (technique_burnout_time != 0 && !t->BurntOut()) technique_burnout_time = 0;
@@ -342,7 +351,7 @@ void Sorcerer::RecoverTechniqueBurnout(Technique* t) {
 void Sorcerer::CursedToolChoice(int choice) {
     if (choice == 0) {
         if (cursed_tool != nullptr) {
-            std::println("{} put {} away.", this->GetName(), cursed_tool->GetName());
+            std::println("{}{} put {} away.{}",Color::BrightRed, this->GetName(), cursed_tool->GetName(),Color::Clear);
             inventory_curse.push_back(std::move(cursed_tool));
             cursed_tool = nullptr;
         }
@@ -357,16 +366,16 @@ void Sorcerer::CursedToolChoice(int choice) {
         cursed_tool = std::move(inventory_curse[inv_index]);
         inventory_curse.erase(inventory_curse.begin() + inv_index);
 
-        std::println("{} equipped {}!", this->GetName(), cursed_tool->GetName());
+        std::println("{}{} equipped {}!{}", Color::Cyan,this->GetName(), cursed_tool->GetName(),Color::Clear);
     }
     else {
-        std::println("Invalid tool choice.");
+        std::println("{}Invalid tool choice.{}",Color::Red, Color::Clear);
     }
 }
 
 void Sorcerer::EquipToolByName(const std::string& weaponName) {
     for (int i = 0; i < inventory_curse.size(); ++i) {
-        if (inventory_curse[i]->GetName() == weaponName) {
+        if (inventory_curse[i]->GetSimpleName() == weaponName) {
             CursedToolChoice(i + 1); 
             return;
         }

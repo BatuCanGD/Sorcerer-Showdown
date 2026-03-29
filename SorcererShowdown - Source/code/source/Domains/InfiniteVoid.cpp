@@ -21,7 +21,7 @@ void InfiniteVoid::OnSureHit(Character& target) {
     std::println("{} got hit by {}'s SureHit!", target.GetName(), this->GetDomainName());
 }
 std::string InfiniteVoid::GetDomainName() const {
-    return "Infinite Void";
+    return "\033[34mInfinite Void\033[0m";
 }
 
 double InfiniteVoid::GetUseCost() const {

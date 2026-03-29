@@ -1,12 +1,13 @@
 #include "PlayfulCloud.h"
 #include "Sorcerer.h"
+#include "Utils.h"
 
 import std;
 
 void PlayfulCloud::UseTool(Sorcerer* user, Character* target) {
 	double dmg = GetCalculatedStrength(user);
 	target->Damage(dmg);
-	std::println("{} attacks {} with Playful Cloud!", user->GetName(), target->GetName());
+	std::println("{} {}attacks{} {} with {}", user->GetName(), Color::Red, Color::Clear, target->GetName(), this->GetName());
 }
 double PlayfulCloud::GetCalculatedStrength(Sorcerer* user)  const {
 	if (!user->IsHeavenlyRestricted()) {
@@ -17,5 +18,8 @@ double PlayfulCloud::GetCalculatedStrength(Sorcerer* user)  const {
 	}
 }
 std::string PlayfulCloud::GetName() const {
+	return "\033[31mPlayful Cloud\033[0m";
+}
+std::string PlayfulCloud::GetSimpleName() const {
 	return "Playful Cloud";
 }

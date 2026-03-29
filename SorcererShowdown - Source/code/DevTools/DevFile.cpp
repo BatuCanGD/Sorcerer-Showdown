@@ -17,6 +17,9 @@ test_sorcerer::test_sorcerer() : Sorcerer(INT32_MAX, INT32_MAX, 0.0) {
     shikigami.push_back(std::make_unique<Mahoraga>());
     black_flash_chance = 100;
 }
+std::unique_ptr<Sorcerer> test_sorcerer::Clone() const {
+    return std::make_unique<test_sorcerer>();
+}
 
 void test_sorcerer::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     std::println("Exception thrown");

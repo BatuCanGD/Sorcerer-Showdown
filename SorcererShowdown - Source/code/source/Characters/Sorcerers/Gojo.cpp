@@ -13,9 +13,12 @@ Gojo::Gojo() : Sorcerer(800.0, 4000.0, 40.0) {
     SetSixEyes(true);
     black_flash_chance = 15;
 }
+std::unique_ptr<Sorcerer> Gojo::Clone() const {
+    return std::make_unique<Gojo>();
+}
 
 std::string Gojo::GetName() const {
-    return "Gojo";
+    return "\033[96mGojo\033[0m";
 }
 
 void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {

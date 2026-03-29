@@ -14,5 +14,5 @@ double HollowWickerBasket::GetUseCost() const {
 void HollowWickerBasket::OnSureHit(Character&) {}
 
 std::string HollowWickerBasket::GetDomainName() const {
-    return "Hollow Wicker Basket";
+    return "\033[95mHollow Wicker Basket\033[0m";
 }

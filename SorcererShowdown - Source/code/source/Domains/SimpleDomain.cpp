@@ -10,7 +10,7 @@ SimpleDomain::SimpleDomain() : Domain(INT32_MAX, 3, 3) {
 void SimpleDomain::OnSureHit(Character&) {}
 
 std::string SimpleDomain::GetDomainName() const {
-    return "Simple Domain";
+    return "\033[36mSimple Domain\033[0m";
 }
 
 double SimpleDomain::GetUseCost() const {

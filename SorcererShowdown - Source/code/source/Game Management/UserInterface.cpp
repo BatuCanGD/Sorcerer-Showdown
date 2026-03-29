@@ -31,38 +31,65 @@ void UserInterface::DisplaySorcererStatus(Sorcerer* s) {
 	else {
 		std::println("-------------{}'s Turn-------------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
 	}
+	double hp = s->GetCharacterHealth();
+	double max_hp = s->GetCharacterMaxHealth();
+	std::string hp_color = Color::Green;
 
-	std::print("Health: {:.1f} | ", s->GetCharacterHealth());
-
-	if (!s->IsHeavenlyRestricted()) {
-		std::print("Cursed Energy: {:.1f} | RCT: [{}] | DA: [{}]",
-			s->GetCharacterCE(),
-			s->GetRCTstatus(),
-			s->GetDAstatus());
+	if (!s->HPMoreThanMax(0.10)) {
+		hp_color = Color::Red;
 	}
+	else if (!s->HPMoreThanMax(0.33)) {
+		hp_color = Color::BrightRed;
+	}
+	else if (!s->HPMoreThanMax(0.66)) {
+		hp_color = Color::Yellow;
+	}
+	else {
+		hp_color = Color::Green;
+	}
+	
+
+	std::print("Health: [{}{:.1f}/{:.1f}{}] | ",hp_color, hp, max_hp, Color::Clear);
+	
+	if (!s->IsHeavenlyRestricted()) {
+		double ce = s->GetCharacterCE();
+		double max_ce = s->GetCharacterMaxCE();
+		std::string ce_color = Color::Cyan;
+
+		if (!s->CEMoreThanMax(0.10)) {
+			ce_color = Color::DimGray;
+		}
+		else {
+			ce_color = Color::Cyan;
+		}
+
+		std::print("Cursed Energy: [{}{:.1f}/{:.1f}{}] | RCT: [{}] | DA: [{}]",
+			ce_color, ce, max_ce, Color::Clear, s->GetRCTstatus(), s->GetDAstatus());
+	}
+
 	std::println("");
 
 	if (s->GetDomain() != nullptr) {
-		std::print("Domain: {} [{}]   ",
+		std::print("Domain: [{}] [{}]   ",
 			s->GetDomain()->GetDomainName(),
-			s->DomainActive() ? "Active" : "Inactive");
+			s->GetDomainStatus());
+	
 	}
 	if (s->GetTechnique() != nullptr) {
-		std::println("Technique: {} [{}]",
+		std::println("Technique: [{}] [{}]",
 			s->GetTechnique()->GetTechniqueName(),
 			s->GetTechnique()->GetStringStatus());
 	}
 	if (s->GetCounterDomain() != nullptr) {
-		std::print("{}: [{}]   ",
+		std::print("Counter: {} [{}]    ",
 			s->GetCounterDomain()->GetDomainName(),
-			s->CounterDomainActive() ? "Active" : "Inactive");
+			s->GetCounterStatus());
 	}
-
 
 	if (!s->GetCursedTools().empty() || s->GetTool() != nullptr) {
 		std::print("Inventory: ");
 		if (s->GetCursedTools().empty()) {
-			std::println("[Empty]");
+			std::println("[{}Empty{}]",Color::DimGray,Color::Clear);
 		}
 		else {
 			for (const auto& t : s->GetCursedTools()) {
@@ -70,10 +97,10 @@ void UserInterface::DisplaySorcererStatus(Sorcerer* s) {
 			}
 			std::println("");
 		}
-		std::print("Current Tool: ");
+		std::print("Current Tool");
 
 		if (s->GetTool() != nullptr) {
-			std::println(" {}", s->GetTool()->GetName());
+			std::println(" [{}]", s->GetTool()->GetName());
 		}
 		else {
 			std::println(" None");
@@ -92,22 +119,34 @@ void UserInterface::DisplaySorcererStatus(Sorcerer* s) {
 		Technique* tech = s->GetTechnique();
 		Specials* special = s->GetSpecial();
 
-		std::string techdisplay = (tech == nullptr) ? "1 - Technique [None] " : std::format("1 - Technique [{}] ", tech->GetTechniqueName());
+		std::string techdisplay = (tech == nullptr) ? std::format("1 - Technique [{}None{}] ",Color::DimGray, Color::Clear) : std::format("1 - Technique [{}] ", tech->GetTechniqueName());
 		std::string fightdisplay = "2 - Fight";
-		std::string specdisplay = (special == nullptr) ? "3 - Special [None] " : std::format("3 - Special [{}] ", special->GetSpecialSimplifiedName());
-		std::string domaindisplay = (domain == nullptr && counter == nullptr) ? "4 - Domain [Locked]" : "4 - Domain Actions";
+		std::string specdisplay = (special == nullptr) ? std::format("3 - Special [{}None{}] ",Color::DimGray, Color::Clear) : std::format("3 - Special [{}] ", special->GetSpecialSimplifiedName());
+		std::string domaindisplay = (domain == nullptr && counter == nullptr) ? std::format("4 - Domain [{}Locked{}]",Color::DimGray, Color::Clear) : "4 - Domain Actions";
 		std::string tauntdisplay = "5 - Taunt";
-		std::string rctdisplay = s->IsHeavenlyRestricted() ? "6 - Reverse Cursed Technique [Locked]" : std::format("6 - Reverse Cursed Technique [{}]", s->GetRCTstatus());
-		std::string ampdisplay = s->IsHeavenlyRestricted() ? "7 - Domain Amplification [Locked]" : std::format("7 - Domain Amplification [{}]", s->GetDAstatus());		
-		std::string tooldisplay = (s->GetCursedTools().empty() && s->GetTool() == nullptr) ? "8 - Cursed Tools [None]" : "8 - Cursed Tools";
-		std::string setdisplay = (tech == nullptr) ? "9 - Technique Settings [Locked]" : "9 - Technique Settings";
-		std::string shikigamidisplay = (s->GetShikigami().empty()) ? "10 - Shikigami [None]" : "10 - Shikigami";
+		std::string rctdisplay = s->IsHeavenlyRestricted() ? std::format("6 - Reverse Cursed Technique [{}Locked{}]",Color::DimGray, Color::Clear) : std::format("6 - Reverse Cursed Technique [{}]", s->GetRCTstatus());
+		std::string ampdisplay = s->IsHeavenlyRestricted() ? std::format("7 - Domain Amplification [{}Locked{}]",Color::DimGray, Color::Clear) : std::format("7 - Domain Amplification [{}]",s->GetDAstatus());
+		std::string tooldisplay = (s->GetCursedTools().empty() && s->GetTool() == nullptr) ? std::format("8 - Cursed Tools [{}None{}]",Color::DimGray, Color::Clear) : "8 - Cursed Tools";
+		std::string setdisplay = (tech == nullptr) ? std::format("9 - Technique Settings [{}Locked{}]",Color::DimGray, Color::Clear) : "9 - Technique Settings";
+		std::string shikigamidisplay = (s->GetShikigami().empty()) ? std::format("10 - Shikigami [{}None{}]",Color::DimGray, Color::Clear) : "10 - Shikigami";
 
+		int col_width = 35;
+		std::println("  {} | {} | {}",
+			ANSIPadding(techdisplay, col_width),
+			ANSIPadding(fightdisplay, col_width),
+			ANSIPadding(specdisplay, col_width));
 
-		std::println("  {:<35} | {:<35} | {:<35} ", techdisplay, fightdisplay, specdisplay);
-		std::println("  {:<35} | {:<35} | {:<35} ", domaindisplay, tauntdisplay, rctdisplay);
-		std::println("  {:<35} | {:<35} | {:<35} ", ampdisplay, tooldisplay, setdisplay);
-		std::println("  {:<35} |", shikigamidisplay);
+		std::println("  {} | {} | {}",
+			ANSIPadding(domaindisplay, col_width),
+			ANSIPadding(tauntdisplay, col_width),
+			ANSIPadding(rctdisplay, col_width));
+
+		std::println("  {} | {} | {}",
+			ANSIPadding(ampdisplay, col_width),
+			ANSIPadding(tooldisplay, col_width),
+			ANSIPadding(setdisplay, col_width));
+
+		std::println("  {} |", ANSIPadding(shikigamidisplay, col_width));
 		
 
 		std::print("\n=> ");

@@ -68,7 +68,7 @@ Technique* Copy::GetActive() const {
 std::string Copy::GetTechniqueName() const {
     if (Technique* t = GetActive())
         return std::format("Copy [{}]", t->GetTechniqueName());
-    return "Copy [None]";
+    return "\033[95mCopy\033[0m [\033[2;90mNone\033[0m]";
 }
 
 void Copy::Chant() {

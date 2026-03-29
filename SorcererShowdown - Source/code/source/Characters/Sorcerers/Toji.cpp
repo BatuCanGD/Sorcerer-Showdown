@@ -15,8 +15,12 @@ Toji::Toji() : Sorcerer(1300.0, -1, -1) {
     black_flash_chance = 0;
 }
 
+std::unique_ptr<Sorcerer> Toji::Clone() const {
+    return std::make_unique<Toji>();
+}
+
 std::string Toji::GetName() const {
-    return "Toji Fushiguro";
+    return "\033[33mToji Fushiguro\033[0m";
 }
 
 void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
@@ -36,7 +40,10 @@ void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         }
     }
 
-    if (!ignored) return;
+    if (!ignored) {
+        std::println("Cant find a proper sorcerer to fight these days");
+        return;
+    }
 
     int tntroll = GetRandomNumber(1, 20);
     if (tntroll <= 10) {
@@ -46,19 +53,23 @@ void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     auto* limitless = dynamic_cast<Limitless*>(ignored->GetTechnique());
 
     if (limitless && limitless->CheckInfinity()) {
-        if (!this->GetTool() || this->GetTool()->GetName() != "The Inverted Spear of Heaven") {
+        if (!this->GetTool() || this->GetTool()->GetSimpleName() != "The Inverted Spear of Heaven") {
             this->EquipToolByName("The Inverted Spear of Heaven");
             return;
         }
     }
     else {
-        if (!this->GetTool() || this->GetTool()->GetName() != "Playful Cloud") {
+        if (!this->GetTool() || this->GetTool()->GetSimpleName() != "Playful Cloud") {
             this->EquipToolByName("Playful Cloud");
             return;
         }
     }
-
-    this->GetTool()->UseTool(this, ignored);
+    if (cursed_tool) {
+        this->GetTool()->UseTool(this, ignored);
+    }
+    else {
+        this->Attack(ignored);
+    }
 }
 
 bool Toji::CanBeHit() const {

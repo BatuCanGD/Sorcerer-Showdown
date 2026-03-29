@@ -22,7 +22,7 @@ void AuthenticMutualLove::OnSureHit(Character& target) {
 }
 
 std::string AuthenticMutualLove::GetDomainName() const {
-    return "Authentic Mutual Love";
+    return "\033[95mAuthentic Mutual Love\033[0m";
 }
 
 double AuthenticMutualLove::GetUseCost() const {

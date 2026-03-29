@@ -11,7 +11,7 @@ void Rika::OnShikigamiTurn(Sorcerer* user) {
     }
     if (IsActivePhysically()) {
         if (active_turn_amount > 5) {
-            std::println("the queen of curses has reached her time limit\nRika orimoto trudges back into the shadows!");
+            std::println("the queen of curses has reached her time limit\n{} trudges back into the shadows!", this->GetName());
             this->Withdraw();
             RikaCooldownRegeneration(user);
             return;
@@ -61,5 +61,5 @@ bool Rika::CanBeHit() const {
 }
 
 std::string Rika::GetName() const {
-    return "Rika";
+    return "\033[91mRika\033[0m";
 }

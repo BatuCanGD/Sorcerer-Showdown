@@ -6,13 +6,13 @@ import std;
 Agito::Agito() : Shikigami(150.0, 500.0, 20.0) {}
 
 std::string Agito::GetName() const {
-    return "Agito";
+    return "\033[95mAgito\033[0m";
 }
 
 void Agito::PassiveSupport(Sorcerer* user) {
     if (IsActive()) {
         user->Regen(passive_heal_amount);
-        std::println("Agito has healed {}", user->GetName());
+        std::println("{} has healed {}",this->GetName(), user->GetName());
     }
 }
 
@@ -22,7 +22,7 @@ void Agito::OnShikigamiTurn(Sorcerer* user) {
         return;
     }
     if (user->GetCharacterCE() < summon_amount) {
-        std::println("Agito cannot maintain its support due to insufficient Cursed Energy! It withdraws back into the shadows");
+        std::println("{} cannot maintain its support due to insufficient Cursed Energy! It withdraws back into the shadows",this->GetName());
         this->Withdraw();
         return;
     }

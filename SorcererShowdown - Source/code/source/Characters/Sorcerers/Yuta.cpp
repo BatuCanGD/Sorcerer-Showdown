@@ -20,8 +20,12 @@ Yuta::Yuta() : Sorcerer(800.0, 6000.0, 30.0) {
     black_flash_chance = 10;
 }
 
+std::unique_ptr<Sorcerer> Yuta::Clone() const {
+    return std::make_unique<Yuta>();
+}
+
 std::string Yuta::GetName() const {
-    return "Yuta Okkotsu";
+    return "\033[95mYuta Okkotsu\033[0m";
 }
 
 void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {

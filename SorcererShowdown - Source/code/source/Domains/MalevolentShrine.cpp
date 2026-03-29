@@ -16,7 +16,7 @@ void MalevolentShrine::OnSureHit(Character& target) {
     std::println("{} got hit by {}'s SureHit!", target.GetName(), this->GetDomainName());
 }
 std::string MalevolentShrine::GetDomainName() const {
-    return "Malevolent Shrine";
+    return "\033[31mMalevolent Shrine\033[0m";
 }
 
 double MalevolentShrine::GetUseCost() const {

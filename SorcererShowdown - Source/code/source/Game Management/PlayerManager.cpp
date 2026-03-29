@@ -278,7 +278,7 @@ Sorcerer* PlayerManager::TargetSelector(const std::vector<std::unique_ptr<Sorcer
 		std::string stunned = current.IsCharacterStunned() ? " (Stunned)" : "";
 		std::string name = current.GetName();
 		std::string t_status = (tech == nullptr) ? "" : std::format("| Technique status: [{}] ", tech->GetStringStatus());
-		std::string d_status = (domain == nullptr) ? "" : std::format("| Domain status: [{}] ", current.DomainActive() ? "Active" : "Inactive");
+		std::string d_status = (domain == nullptr) ? "" : std::format("| Domain status: [{}] ", current.GetDomainStatus());
 		std::string ce_display = current.IsHeavenlyRestricted() ? "Heavenly Restricted" : std::format("{:.1f} CE", cursed_energy);
 
 		if (battlefield[i].get() == player) {

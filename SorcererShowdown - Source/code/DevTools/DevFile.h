@@ -11,6 +11,7 @@ class Domain;
 class test_sorcerer : public Sorcerer {
 public:
 	test_sorcerer();
+	std::unique_ptr<Sorcerer> Clone() const override;
 	std::string GetName() const override;
 	void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) override;
 	bool CanBeHit() const override;
