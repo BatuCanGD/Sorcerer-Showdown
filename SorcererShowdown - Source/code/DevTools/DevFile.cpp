@@ -30,6 +30,8 @@ bool test_sorcerer::CanBeHit() const {
     return true;
 }
 
+// Domain
+
 KillEveryoneDomain::KillEveryoneDomain() : Domain(10000000.0, 10000000.0, 1000.0) {}
 
 void KillEveryoneDomain::OnSureHit(Character& target) {

@@ -52,6 +52,11 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         }
     }
 
+    int tntroll = GetRandomNumber(1, 20);
+    if (tntroll <= 9) {
+        this->Taunt(strongest);
+    }
+
     int droll = GetRandomNumber(1, 100);
     if (droll <= 30 && domain_users.empty() && !limitless->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
         this->ActivateDomain();

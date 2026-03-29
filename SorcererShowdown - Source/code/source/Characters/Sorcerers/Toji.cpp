@@ -38,6 +38,11 @@ void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
 
     if (!ignored) return;
 
+    int tntroll = GetRandomNumber(1, 20);
+    if (tntroll <= 10) {
+        this->Taunt(ignored);
+    }
+
     auto* limitless = dynamic_cast<Limitless*>(ignored->GetTechnique());
 
     if (limitless && limitless->CheckInfinity()) {

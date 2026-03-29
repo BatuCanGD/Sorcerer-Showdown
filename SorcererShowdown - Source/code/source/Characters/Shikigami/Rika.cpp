@@ -6,6 +6,9 @@ import std;
 Rika::Rika() : Shikigami(INT32_MAX, 100000.0, 3000.0) {}
 
 void Rika::OnShikigamiTurn(Sorcerer* user) {
+    if (IsPartiallyActive()) {
+        this->Manifest();
+    }
     if (IsActivePhysically()) {
         if (active_turn_amount > 5) {
             std::println("the queen of curses has reached her time limit\nRika orimoto trudges back into the shadows!");

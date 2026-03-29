@@ -113,6 +113,11 @@ void UserInterface::DisplaySorcererStatus(Sorcerer* s) {
 		std::print("\n=> ");
 	}
 }
+void UserInterface::ContinuePrompt() {
+	std::println("Press Enter to continue...");
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	std::cin.get();
+}
 
 void UserInterface::ClearScreen() {
 	std::print("\033[2J\033[H");

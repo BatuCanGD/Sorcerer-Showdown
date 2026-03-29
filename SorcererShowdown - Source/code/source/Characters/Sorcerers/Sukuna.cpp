@@ -57,6 +57,11 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         }
     }
 
+    int tntroll = GetRandomNumber(1, 20);
+    if (tntroll <= 11) {
+        this->Taunt(weakest);
+    }
+
     Mahoraga* makora = nullptr;
     Agito* agito = nullptr;
 

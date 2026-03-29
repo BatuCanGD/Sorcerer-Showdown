@@ -113,6 +113,8 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 }
 
 bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield, bool spectator_mode) {
+	std::println("\n\n============ END OF TURN SUMMARY ============");
+
 	auto [removed_begin, removed_end] = std::ranges::remove_if(battlefield, [](const auto& s) {
 		if (s->GetCharacterHealth() <= 0.0) {
 			std::println("{} has been defeated and is removed from the battlefield!", s->GetName());

@@ -45,7 +45,7 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     Sorcerer* strongest = nullptr;
     std::vector<Sorcerer*> domain_users;
 
-    if (!(this->HPMoreThanMax(0.40) || this->CEMoreThanMax(0.20)) && !(rika->GetActiveTime() > 5) && !rika->IsActivePhysically()) {
+    if (!(this->HPMoreThanMax(0.40) || this->CEMoreThanMax(0.20)) && !((rika->GetActiveTime() > 5) && rika->IsActivePhysically())) {
         std::println("Come, Rika.");
         rika->Manifest();
     }
@@ -61,6 +61,11 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
             strongesthealth = perceived_health;
             strongest = s.get();
         }
+    }
+
+    int tntroll = GetRandomNumber(1, 20);
+    if (tntroll <= 4) {
+        this->Taunt(strongest);
     }
 
     if (domain_users.size() > 0) {
