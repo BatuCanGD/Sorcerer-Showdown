@@ -11,7 +11,7 @@ protected:
 	static constexpr double blue_output = 20.0 + base_output;
 	static constexpr double red_output = 40.0 + base_output;
 	static constexpr double purple_output = 90.0 + base_output;
-	static constexpr double unlpurple_output = 2000.0 + base_output;
+	static constexpr double unlpurple_output = 1500.0;
 public:
 	std::unique_ptr<Technique> Clone() const override;
 
@@ -29,9 +29,9 @@ public:
 	int GetUsedPurpleAmount()const;
 	
 	void UseUnlimitedHollowPurple(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield);
-	void BlueTechniqueDamageTarget(Sorcerer* user, Character* target);
-	void RedTechniqueDamageTarget(Sorcerer* user, Character* target);
-	void PurpleTechniqueDamageTarget(Sorcerer* user, Character* target);
+	void UseBlue(Sorcerer* user, Character* target);
+	void UseRed(Sorcerer* user, Character* target);
+	void UsePurple(Sorcerer* user, Character* target);
 	void UseTheLimitlessTechnique(LimitlessType choice, Sorcerer* s, Character* c);
 	std::string GetTechniqueName() const override;
 	void TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;

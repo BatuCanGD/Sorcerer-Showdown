@@ -16,9 +16,9 @@ public:
 	bool WorldCuttingSlashUnlocked() const;
 	std::string GetTechniqueName() const override;
 
-	void CleaveTechniqueDamageTarget(Sorcerer* user, Character* target);
-	void DismantleTechniqueDamageTarget(Sorcerer* user, Character* target);
-	void WorldCuttingSlashToTarget(Sorcerer* user, Character* target);
+	void UseCleave(Sorcerer* user, Character* target);
+	void UseDismantle(Sorcerer* user, Character* target);
+	void UseTheWorldCuttingSlash(Sorcerer* user, Character* target);
 	void UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c);
 	void TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
 	void TechniqueSetting(Sorcerer*, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
