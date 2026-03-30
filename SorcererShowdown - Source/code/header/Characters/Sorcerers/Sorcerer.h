@@ -59,6 +59,7 @@ protected:
 public:
 	virtual ~Sorcerer();
 	Sorcerer(double hp, double ce, double re);
+	virtual std::unique_ptr<Sorcerer> Clone() const = 0;
 
 	Shikigami* ChooseShikigami(size_t) const;
 	Technique* GetTechnique() const;
@@ -88,6 +89,8 @@ public:
 
 	std::string GetRCTstatus() const;
 	std::string GetDAstatus() const;
+	std::string GetDomainStatus() const;
+	std::string GetCounterStatus() const;
 
 	void UseRCT();
 	bool DomainAmplificationActive() const;
