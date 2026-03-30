@@ -113,13 +113,7 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 		}
 		UserInterface::ClearScreen();
 	}
-
-	if (spec_mode) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return spec_mode;
 }
 
 bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield, bool spectator_mode) {
@@ -232,12 +226,20 @@ bool BattleManager::IsBattleOver(bool game_over ,bool player_found,bool spectato
 		std::println("\nYou have been defeated! Game Over.");
 		return true;
 	}
-	else if ((battlefield.size() == 1 || game_over) && !spectator_mode) {
+	else if (battlefield.size() == 1 && game_over && !spectator_mode) {
 		std::println("\nCongratulations! You have defeated all other sorcerers and won the battle!");
 		return true;
 	}
 	else if (battlefield.size() == 1 && spectator_mode){
 		std::println("The battle has ended, only one remains");
+		return true;
+	}
+	else if (battlefield.size() == 0) {
+		if (spectator_mode) {
+			std::println("Every sorcerer has been wiped off the battlefield!");
+			return true;
+		}
+		std::println("You and everyone else has been wiped off the battlefield, its a draw!");
 		return true;
 	}
 	return false;

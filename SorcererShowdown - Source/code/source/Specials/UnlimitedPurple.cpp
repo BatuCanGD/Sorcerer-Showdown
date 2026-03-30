@@ -11,12 +11,12 @@ void UnlimitedPurple::PerformSpecial(Sorcerer* user) {
 	if (Limitless* limitless = dynamic_cast<Limitless*>(user->GetTechnique())) {
 		if (limitless->GetUsedBlueAmount() >= 10 && limitless->GetUsedRedAmount() >= 10 && limitless->GetUsedPurpleAmount() >= 3) {
 			if (!limitless->UnlimitedHollowAllowed()) {
-				std::println("{}UNLIMITED HOLLOW PURPLE IS NOW POSSIBLE!{}",Color::Purple,Color::Clear);
+				std::println("\n{}=== UNLIMITED HOLLOW PURPLE IS NOW POSSIBLE! ==={}",Color::Purple,Color::Clear);
 				limitless->SetUnlimitedHollow(true);
 			}
 		}
 		else {
-			std::println("{}Unlimited Hollow Purple fails to manifest, the technique of the user needs to be used more!{}",Color::DimGray,Color::Clear);
+			std::println("\n{}Unlimited Hollow Purple fails to manifest, the technique of the user needs to be used more!{}",Color::DimGray,Color::Clear);
 		}
 	}
 }

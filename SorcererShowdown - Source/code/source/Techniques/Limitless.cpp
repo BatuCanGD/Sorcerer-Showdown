@@ -85,7 +85,7 @@ void Limitless::UseUnlimitedHollowPurple(Sorcerer* user, const std::vector<std::
     std::println("{}===== !UNLIMITED HOLLOW PURPLE! ====={}", Color::Purple, Color::Clear);
     for (const auto& s : battlefield) {
         if (s.get() == user) {
-            s->DamageBypass(unlpurple_output * 0.25);
+            s->DamageBypass(unlpurple_output * 0.15);
             if (s->GetCharacterHealth() <= 0.0) {
                 std::println("The {}Unlimited Hollow Purple{} was too strong for {} himself",Color::Purple,Color::Clear ,s->GetName());
             }
@@ -95,7 +95,7 @@ void Limitless::UseUnlimitedHollowPurple(Sorcerer* user, const std::vector<std::
             continue;
         }
         s->DamageBypass(unlpurple_output);
-        std::println("{} got blown to smithereens!", s->GetName());
+        std::println("{} got hit by Unlimited Hollow Purple for {}{:.1f} damage!{}", s->GetName(), Color::Red, unlpurple_output , Color::Clear);
     }
 }
 
