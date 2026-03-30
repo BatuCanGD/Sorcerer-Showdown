@@ -24,7 +24,7 @@ void PlayerManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 		Sorcerer* target = TargetSelector(battlefield, &s);
 
 		if (target) {
-			s.GetTechnique()->TechniqueMenu(&s, target);
+			s.GetTechnique()->TechniqueMenu(&s, target, battlefield);
 		}
 		break;
 	}

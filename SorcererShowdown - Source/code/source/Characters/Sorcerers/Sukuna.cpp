@@ -115,7 +115,7 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         if (makora && makora->IsActive()) {
             makora->Withdraw();
         }
-        if (shrine->GetChantPower() < 3.0) {
+        if (!shrine->FullyChanted()) {
             shrine->Chant();
             return;
         }
@@ -149,7 +149,7 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     else {
         this->SetAmplification(false);
     }
-    if (roll <= 25) {
+    if (roll <= 25 && !shrine->FullyChanted()) {
         shrine->Chant();
         return;
     }

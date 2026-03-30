@@ -1,6 +1,7 @@
 #include "Gojo.h"
 #include "Limitless.h"
 #include "InfiniteVoid.h"
+#include "UnlimitedPurple.h"
 #include "SimpleDomain.h"
 #include "Utils.h"
 
@@ -10,6 +11,7 @@ Gojo::Gojo() : Sorcerer(800.0, 4000.0, 40.0) {
     domain = std::make_unique<InfiniteVoid>();
     counter_domain = std::make_unique<SimpleDomain>();
     technique = std::make_unique<Limitless>();
+    special = std::make_unique<UnlimitedPurple>();
     SetSixEyes(true);
     black_flash_chance = 15;
 }
@@ -55,6 +57,13 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         }
     }
 
+    if (limitless->GetUsedRedAmount() >= 10 && limitless->GetUsedBlueAmount() >= 10 && limitless->GetUsedPurpleAmount() >= 3) {
+        if (!limitless->UnlimitedHollowAllowed()) {
+            this->GetSpecial()->PerformSpecial(this);
+            return;
+        }
+    }
+
     int tntroll = GetRandomNumber(1, 20);
     if (tntroll <= 9) {
         this->Taunt(strongest);
@@ -82,8 +91,12 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         int roll = GetRandomNumber(1, 100);
         int croll = GetRandomNumber(1, 10);
 
-        if (croll <= 4 && limitless->GetChantPower() < 3.0) {
+        if ((croll <= 4 && !limitless->FullyChanted()) || (limitless->UnlimitedHollowAllowed() && !limitless->FullyChanted())) {
             limitless->Chant();
+            return;
+        }
+        if (limitless->FullyChanted() && limitless->UnlimitedHollowAllowed()) {
+            limitless->UseUnlimitedHollowPurple(this, battlefield);
             return;
         }
 

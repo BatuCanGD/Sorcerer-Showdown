@@ -11,7 +11,12 @@ import std;
 
 Sorcerer::~Sorcerer() = default;
 
-Sorcerer::Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {}
+int Sorcerer::global_id_counter = 0;
+
+Sorcerer::Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {
+    global_id_counter++;
+    unique_id = global_id_counter;
+}
 
 bool Sorcerer::DomainActive() const {
     return domain_active;
@@ -186,8 +191,11 @@ void Sorcerer::Attack(Character* target) {
     target->Damage(final_damage);
 
     if (is_black_flash) {
-        std::println("\n*** {}BLACK FLASH!{} ***",Color::Red,Color::Clear);
+        std::println("\n*** {}BLACK FLASH!{} ***", Color::Red, Color::Clear);
         std::println("{} landed a {}BlackFlash{} on {}!", this->GetName(), Color::Red, Color::Clear, target->GetName());
+        if (technique && (technique->BurntOut() || technique->Usable())) {
+            this->GetTechnique()->Set(Technique::Status::DomainBoost);
+        }
     }
     else {
         std::println("{} landed a {}heavy strike{} on {}!", this->GetName(),Color::BrightRed,Color::Clear, target->GetName());
@@ -452,4 +460,12 @@ void Sorcerer::Taunt(Character* taunted) { // pure aura
             std::println("I'll make you wish you were never born {}!", taunted->GetName());
         }
     }
+}
+
+int Sorcerer::GetID() const {
+    return unique_id;
+}
+
+std::string Sorcerer::GetNameWithID()const {
+    return std::format("{} ({})", this->GetName(), unique_id);
 }

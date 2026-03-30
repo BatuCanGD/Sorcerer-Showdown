@@ -56,13 +56,13 @@ bool Shrine::WorldCuttingSlashUnlocked() const {
     return world_cutting_slash_allowed;
 }
 
-void Shrine::TechniqueMenu(Sorcerer* user, Character* target) {
+void Shrine::TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     if (user->DomainAmplificationActive()) {
         std::println("You cannot use your innate technique due to domain amplification!");
         return;
     }
     if (world_cutting_slash_allowed) {
-        std::println("1 - Use Dismantle | 2 - Use Cleave || 3 - Use the World Cutting Slash");
+        std::println("1 - Use Dismantle | 2 - Use Cleave || 3 - {}Use the World Cutting Slash{}",Color::Red,Color::Clear);
     }
     else {
         std::println("1 - Use Dismantle | 2 - Use Cleave");

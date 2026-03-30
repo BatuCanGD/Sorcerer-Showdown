@@ -50,6 +50,8 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 	sorcerers.push_back(std::make_unique<Toji>());
 	sorcerers.push_back(std::make_unique<test_sorcerer>());
 	
+	Sorcerer::ResetGlobalID();
+
 	while (choosing) {
 		std::println("Choose your sorcerer and the amount of opponents you want to fight!");
 		if (!spec_mode) {
@@ -88,6 +90,7 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 		else if (c == -1 && !battlefield.empty()) {
 			sorcerer_counts[battlefield.back()->GetName()]--;
 			battlefield.pop_back();
+			Sorcerer::AddGlobalID(-1);
 		}
 		else if (c == -2) {
 			if (spec_mode) {
@@ -120,11 +123,11 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 }
 
 bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield, bool spectator_mode) {
-	std::println("\n\n{}============ END OF TURN SUMMARY ============{}",Color::Yellow,Color::Clear);
+	std::println("{}=============== TURN AFTERMATH ==============={}", Color::BrightRed, Color::Clear);
 
 	auto [removed_begin, removed_end] = std::ranges::remove_if(battlefield, [](const auto& s) {
 		if (s->GetCharacterHealth() <= 0.0) {
-			std::println("{}{} has been defeated and is removed from the battlefield!{}",Color::Red, s->GetName(),Color::Clear);
+			std::println("{}{} has been defeated and is removed from the battlefield!{}",Color::Red, s->GetNameWithID(),Color::Clear);
 			return true;
 		}
 		return false;
@@ -147,13 +150,13 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& batt
 
 		double damage_taken = c->GetCharacterPreviousHealth() - c->GetCharacterHealth();
 		if (damage_taken > 0) {
-			std::println("{} took {}{:.1f} damage{} this turn",c->GetName(),Color::Red,  damage_taken,Color::Clear);
+			std::println("{} took {}{:.1f} damage{} this turn",c->GetNameWithID(),Color::Red,  damage_taken,Color::Clear);
 			c->UseRCT();
 			if (c->GetCharacterHealth() >= c->GetCharacterPreviousHealth()) {
-				std::println("{} {}healed the damage back!{}",c->GetName(),Color::Green, Color::Clear);
+				std::println("{} {}healed the damage back!{}",c->GetNameWithID(),Color::Green, Color::Clear);
 			}
 			else if (c->GetCharacterHealth() > (c->GetCharacterPreviousHealth() - damage_taken)) {
-				std::println("{} {}partially healed their wounds.{}",c->GetName(),Color::Yellow,Color::Clear);
+				std::println("{} {}partially healed their wounds.{}",c->GetNameWithID(),Color::Yellow,Color::Clear);
 			}
 		}
 		else {
@@ -170,6 +173,8 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& batt
 }
 
 void BattleManager::DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+	std::println("\n\n{}================= END OF TURN SUMMARY ================={}", Color::Yellow, Color::Clear); // this is here now because its just 1 line away from manage end of turn
+	std::println("{}============= DOMAINS AND CLASHES ============{}", Color::BrightMagenta, Color::Clear);
 	std::vector<Sorcerer*> active_domains;
 	for (const auto& s : battlefield) {
 		if (s->GetDomain() == nullptr) continue;

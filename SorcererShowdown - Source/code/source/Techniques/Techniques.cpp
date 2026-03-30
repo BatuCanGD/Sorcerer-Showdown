@@ -26,6 +26,10 @@ double Technique::GetTechniqueOutput() const {
     }
 }
 
+bool Technique::FullyChanted()const {
+    return chant == ChantLevel::Four;
+}
+
 std::string Technique::GetStringStatus() const {
     switch (state) {
 	case Status::Usable:      return "\033[32mUsable\033[0m";

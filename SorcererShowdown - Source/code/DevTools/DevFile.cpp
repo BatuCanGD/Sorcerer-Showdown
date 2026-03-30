@@ -4,6 +4,7 @@
 #include "SimpleDomain.h"
 #include "DevFile.h"
 #include "ShikigamiList.h"
+#include "CursedToolList.h"
 
 import std;
 
@@ -15,6 +16,9 @@ test_sorcerer::test_sorcerer() : Sorcerer(INT32_MAX, INT32_MAX, 0.0) {
     shikigami.push_back(std::make_unique<Rika>());
     shikigami.push_back(std::make_unique<Agito>());
     shikigami.push_back(std::make_unique<Mahoraga>());
+    inventory_curse.push_back(std::make_unique<Katana>());
+    inventory_curse.push_back(std::make_unique<InvertedSpearofHeaven>());
+    inventory_curse.push_back(std::make_unique<PlayfulCloud>());
     black_flash_chance = 100;
 }
 std::unique_ptr<Sorcerer> test_sorcerer::Clone() const {
@@ -32,8 +36,6 @@ std::string test_sorcerer::GetName() const {
 bool test_sorcerer::CanBeHit() const {
     return true;
 }
-
-// Domain
 
 KillEveryoneDomain::KillEveryoneDomain() : Domain(10000000.0, 10000000.0, 1000.0) {}
 

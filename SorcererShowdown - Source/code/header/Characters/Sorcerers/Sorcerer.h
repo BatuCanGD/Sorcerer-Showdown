@@ -13,6 +13,9 @@ class Specials;
 
 class Sorcerer : public Character {
 protected:
+	static int global_id_counter;
+	int unique_id;
+
 	std::unique_ptr<Domain> domain = nullptr;
 	std::unique_ptr<Domain> counter_domain = nullptr; // frankenstein of a class
 	std::unique_ptr<Technique> technique = nullptr;
@@ -121,6 +124,11 @@ public:
 	void RecoverBurnout();
 	void RecoverTechniqueBurnout(Technique*);
 	
+	int GetID() const;
+	std::string GetNameWithID() const;
+	static void ResetGlobalID() { global_id_counter = 0; }
+	static void AddGlobalID(int i) { global_id_counter += i; }
+
 	void Taunt(Character* target);
 	bool CanBeHit() const override;
 };

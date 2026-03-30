@@ -14,7 +14,7 @@ public:
 	Technique* GetActive() const;
 	void Set(Status s) override;
 
-	void TechniqueMenu(Sorcerer* user, Character* target) override;
+	void TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
 	void TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
 	void Chant() override;
 	std::string GetTechniqueName() const override;

@@ -9,6 +9,7 @@ void Limitless::BlueTechniqueDamageTarget(Sorcerer* user, Character* target) {
     println("{} uses {}Blue{} on {}!", user->GetName(),Color::Blue,Color::Clear, target->GetName());
     double dmg = CalculateDamage(user, blue_output * GetChantPower());
     target->Damage(dmg);
+    blue_used_amount++;
     chant = ChantLevel::Zero;
 }
 
@@ -17,6 +18,7 @@ void Limitless::RedTechniqueDamageTarget(Sorcerer* user, Character* target) {
     println("{} uses {}Red{} on {}!", user->GetName(),Color::Red,Color::Clear, target->GetName());
     double dmg = CalculateDamage(user, red_output * GetChantPower());
     target->Damage(dmg);
+    red_used_amount++;
     chant = ChantLevel::Zero;
 }
 
@@ -25,6 +27,7 @@ void Limitless::PurpleTechniqueDamageTarget(Sorcerer* user, Character* target) {
     println("{} hits {} with a {}Hollow Purple!{}", user->GetName(), target->GetName(), Color::Purple,Color::Clear);
     double dmg = CalculateDamage(user, purple_output * GetChantPower());
     target->Damage(dmg);
+    purple_used_amount++;
     chant = ChantLevel::Zero;
 }
 
@@ -48,12 +51,52 @@ std::string Limitless::GetTechniqueName() const {
     return "\033[36mLimitless\033[0m";
 }
 
+void Limitless::SetUnlimitedHollow(bool t) {
+    unlimited_hollow_purple_allowed = t;
+}
+
+bool Limitless::UnlimitedHollowAllowed() const {
+    return unlimited_hollow_purple_allowed;
+}
+
 void Limitless::SetInfinity(bool s) {
     Infinity = s;
 }
 
 bool Limitless::CheckInfinity() const {
     return Infinity;
+}
+
+int Limitless::GetUsedBlueAmount() const {
+    return blue_used_amount;
+}
+int Limitless::GetUsedRedAmount() const {
+    return red_used_amount;
+}
+int Limitless::GetUsedPurpleAmount() const {
+    return purple_used_amount;
+}
+
+void Limitless::UseUnlimitedHollowPurple(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+    if (chant != ChantLevel::Four) {
+        std::println("the Unlimited Hollow Purple doesnt have enough output, chant to its maximum output and potential!");
+        return;
+    }
+    std::println("{}===== !UNLIMITED HOLLOW PURPLE! ====={}", Color::Purple, Color::Clear);
+    for (const auto& s : battlefield) {
+        if (s.get() == user) {
+            s->DamageBypass(unlpurple_output * 0.25);
+            if (s->GetCharacterHealth() <= 0.0) {
+                std::println("The {}Unlimited Hollow Purple{} was too strong for {} himself",Color::Purple,Color::Clear ,s->GetName());
+            }
+            else {
+                std::println("{} took the hit and received{} {} damage!{}",s->GetName(), Color::Red, unlpurple_output * 0.25, Color::Clear);
+            }
+            continue;
+        }
+        s->DamageBypass(unlpurple_output);
+        std::println("{} got blown to smithereens!", s->GetName());
+    }
 }
 
 void Limitless::InfinityNerf(Sorcerer* user) {
@@ -76,15 +119,27 @@ void Limitless::InfinityNerf(Sorcerer* user) {
     }
 }
 
-void Limitless::TechniqueMenu(Sorcerer* user, Character* target) {
+void Limitless::TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     if (user->DomainAmplificationActive()) {
         std::println("{}You cannot use your innate technique due to domain amplification!{}", Color::Red, Color::Clear);
         return;
     }
-    std::println("1 - Use Blue | 2 - Use Red | 3 - Use Purple");
+    if (unlimited_hollow_purple_allowed) {
+        std::println("1 - Use Blue | 2 - Use Red | 3 - Use Purple | 4 - {}Nuke the Battlefield{}",Color::Red,Color::Clear);
+    }
+    else {
+        std::println("1 - Use Blue | 2 - Use Red | 3 - Use Purple");
+    }
+
     std::print("=> ");
     size_t choice = GetValidInput();
-    UseTheLimitlessTechnique(static_cast<LimitlessType>(choice), user, target);
+    if (choice == 4 && unlimited_hollow_purple_allowed) {
+        UseUnlimitedHollowPurple(user, battlefield);
+    }
+    else {
+        UseTheLimitlessTechnique(static_cast<LimitlessType>(choice), user, target);
+    }
+
 }
 
 void Limitless::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {

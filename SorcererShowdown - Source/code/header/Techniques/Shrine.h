@@ -20,7 +20,7 @@ public:
 	void DismantleTechniqueDamageTarget(Sorcerer* user, Character* target);
 	void WorldCuttingSlashToTarget(Sorcerer* user, Character* target);
 	void UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c);
-	void TechniqueMenu(Sorcerer* user, Character* target) override;
+	void TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
 	void TechniqueSetting(Sorcerer*, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
 	void Chant() override;
 };

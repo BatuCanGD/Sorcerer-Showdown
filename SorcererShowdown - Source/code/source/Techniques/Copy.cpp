@@ -76,7 +76,7 @@ void Copy::Chant() {
     else std::println("No technique active to chant for!");
 }
 
-void Copy::TechniqueMenu(Sorcerer* user, Character* target) {
+void Copy::TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     if (user->DomainAmplificationActive()) {
         std::println("You cannot use your innate technique due to domain amplification!");
         return;
@@ -86,7 +86,7 @@ void Copy::TechniqueMenu(Sorcerer* user, Character* target) {
         std::println("No technique used! Use Technique Settings to copy or switch to one first.");
         return;
     }
-    t->TechniqueMenu(user, target);
+    t->TechniqueMenu(user, target, battlefield);
 }
 
 void Copy::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {

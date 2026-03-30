@@ -26,10 +26,10 @@ void UserInterface::ShowBattleEntry(const std::vector<std::unique_ptr<Sorcerer>>
 
 void UserInterface::DisplaySorcererStatus(Sorcerer* s) {
 	if (s->IsThePlayer()) {
-		std::println("-------------Player's ({}'s) Turn-------------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
+		std::println("-------------Player's ({}'s) Turn-------------- {}", s->GetNameWithID(), s->IsCharacterStunned() ? "(Stunned)" : "");
 	}
 	else {
-		std::println("-------------{}'s Turn-------------- {}", s->GetName(), s->IsCharacterStunned() ? "(Stunned)" : "");
+		std::println("-------------{}'s Turn-------------- {}", s->GetNameWithID(), s->IsCharacterStunned() ? "(Stunned)" : "");
 	}
 	double hp = s->GetCharacterHealth();
 	double max_hp = s->GetCharacterMaxHealth();
@@ -103,7 +103,7 @@ void UserInterface::DisplaySorcererStatus(Sorcerer* s) {
 			std::println(" [{}]", s->GetTool()->GetName());
 		}
 		else {
-			std::println(" None");
+			std::println(" [{}None{}]",Color::DimGray,Color::Clear);
 		}
 	}
 	if (s->IsThePlayer() && s->IsCharacterStunned()) {
