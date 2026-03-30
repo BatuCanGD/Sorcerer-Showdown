@@ -8,24 +8,27 @@ void Shrine::SetWCS(bool s) {
     world_cutting_slash_allowed = s;
 }
 
-void Shrine::CleaveTechniqueDamageTarget(Sorcerer* user, Character* target) {
-    println("{} uses {}Cleave{} on {}!", user->GetName(),Color::Red,Color::Clear, target->GetName());
+void Shrine::UseCleave(Sorcerer* user, Character* target) {
+    Sorcerer* s = static_cast<Sorcerer*>(target);
+    println("{} uses {}Cleave{} on {}!", user->GetNameWithID(),Color::Red,Color::Clear, s->GetNameWithID());
     double dmg = CalculateDamage(user, cleave_output * GetChantPower());
     target->Damage(dmg);
     chant = ChantLevel::Zero;
 }
-void Shrine::DismantleTechniqueDamageTarget(Sorcerer* user, Character* target) {
-    println("{} uses {}Dismantle{} on {}!", user->GetName(),Color::Red,Color::Clear, target->GetName());
+void Shrine::UseDismantle(Sorcerer* user, Character* target) {
+    Sorcerer* s = static_cast<Sorcerer*>(target);
+    println("{} uses {}Dismantle{} on {}!", user->GetNameWithID(),Color::Red,Color::Clear, s->GetNameWithID());
     double dmg = CalculateDamage(user, slash_output * GetChantPower());
     target->Damage(dmg);
     chant = ChantLevel::Zero;
 }
-void Shrine::WorldCuttingSlashToTarget(Sorcerer* user, Character* target) {
+void Shrine::UseTheWorldCuttingSlash(Sorcerer* user, Character* target) {
     if (this->chant != ChantLevel::Four) {
         std::println("{} hasn't completed the incantations! {}The slash fails to divide the world...{}", user->GetName(), Color::Red,Color::Clear);
         return;
     }
-    println("{} uses the {}World Cutting Slash{} on {}!", user->GetName(),Color::Red,Color::Clear, target->GetName());
+    Sorcerer* s = static_cast<Sorcerer*>(target);
+    println("{} uses the {}World Cutting Slash{} on {}!", user->GetNameWithID(),Color::Red,Color::Clear, s->GetNameWithID());
     double dmg = CalculateDamage(user, wcs_output * GetChantPower());
     target->DamageBypass(dmg);
     chant = ChantLevel::Zero;
@@ -34,14 +37,14 @@ void Shrine::WorldCuttingSlashToTarget(Sorcerer* user, Character* target) {
 void Shrine::UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c) {
     switch (choice) {
     case ShrineType::Dismantle:
-        Shrine::DismantleTechniqueDamageTarget(s, c);
+        Shrine::UseDismantle(s, c);
         break;
     case ShrineType::Cleave:
-        Shrine::CleaveTechniqueDamageTarget(s, c);
+        Shrine::UseCleave(s, c);
         break;
     case ShrineType::WCS:
         if (!world_cutting_slash_allowed) return;
-        Shrine::WorldCuttingSlashToTarget(s, c);
+        Shrine::UseTheWorldCuttingSlash(s, c);
         break;
     default:
         std::println("Invalid input. No technique used.");

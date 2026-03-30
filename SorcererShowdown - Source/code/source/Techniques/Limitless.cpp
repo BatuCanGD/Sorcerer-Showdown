@@ -4,27 +4,30 @@
 
 import std;
 
-void Limitless::BlueTechniqueDamageTarget(Sorcerer* user, Character* target) {
+void Limitless::UseBlue(Sorcerer* user, Character* target) {
     if (chant == ChantLevel::Four) std::println("{}\"MAXIMUM OUTPUT: BLUE!\"{}", Color::Blue, Color::Clear);
-    println("{} uses {}Blue{} on {}!", user->GetName(),Color::Blue,Color::Clear, target->GetName());
+    Sorcerer* s = static_cast<Sorcerer*>(target);
+    println("{} uses {}Blue{} on {}!", user->GetNameWithID(),Color::Blue,Color::Clear, s->GetNameWithID());
     double dmg = CalculateDamage(user, blue_output * GetChantPower());
     target->Damage(dmg);
     blue_used_amount++;
     chant = ChantLevel::Zero;
 }
 
-void Limitless::RedTechniqueDamageTarget(Sorcerer* user, Character* target) {
+void Limitless::UseRed(Sorcerer* user, Character* target) {
     if (chant == ChantLevel::Four) std::println("{}\"MAXIMUM OUTPUT: RED!\"{}",Color::Red, Color::Clear);
-    println("{} uses {}Red{} on {}!", user->GetName(),Color::Red,Color::Clear, target->GetName());
+    Sorcerer* s = static_cast<Sorcerer*>(target);
+    println("{} uses {}Red{} on {}!", user->GetNameWithID(),Color::Red,Color::Clear, s->GetNameWithID());
     double dmg = CalculateDamage(user, red_output * GetChantPower());
     target->Damage(dmg);
     red_used_amount++;
     chant = ChantLevel::Zero;
 }
 
-void Limitless::PurpleTechniqueDamageTarget(Sorcerer* user, Character* target) {
+void Limitless::UsePurple(Sorcerer* user, Character* target) {
     if (chant == ChantLevel::Four) std::println("{}\"HOLLOW PURPLE!\"{}",Color::Purple,Color::Clear);
-    println("{} hits {} with a {}Hollow Purple!{}", user->GetName(), target->GetName(), Color::Purple,Color::Clear);
+    Sorcerer* s = static_cast<Sorcerer*>(target);
+    println("{} hits {} with a {}Hollow Purple!{}", user->GetNameWithID(), s->GetNameWithID(), Color::Purple,Color::Clear);
     double dmg = CalculateDamage(user, purple_output * GetChantPower());
     target->Damage(dmg);
     purple_used_amount++;
@@ -34,13 +37,13 @@ void Limitless::PurpleTechniqueDamageTarget(Sorcerer* user, Character* target) {
 void Limitless::UseTheLimitlessTechnique(LimitlessType choice, Sorcerer* s, Character* c) {
     switch (choice) {
     case LimitlessType::Blue:
-        Limitless::BlueTechniqueDamageTarget(s, c);
+        Limitless::UseBlue(s, c);
         break;
     case LimitlessType::Red:
-        Limitless::RedTechniqueDamageTarget(s, c);
+        Limitless::UseRed(s, c);
         break;
     case LimitlessType::Purple:
-        Limitless::PurpleTechniqueDamageTarget(s, c);
+        Limitless::UsePurple(s, c);
         break;
     default:
         std::println("Invalid input. No technique used.");
@@ -87,22 +90,22 @@ void Limitless::UseUnlimitedHollowPurple(Sorcerer* user, const std::vector<std::
         if (s.get() == user) {
             s->DamageBypass(unlpurple_output * 0.15);
             if (s->GetCharacterHealth() <= 0.0) {
-                std::println("The {}Unlimited Hollow Purple{} was too strong for {} himself",Color::Purple,Color::Clear ,s->GetName());
+                std::println("The {}Unlimited Hollow Purple{} was too strong for {} himself",Color::Purple,Color::Clear ,s->GetNameWithID());
             }
             else {
-                std::println("{} took the hit and received{} {} damage!{}",s->GetName(), Color::Red, unlpurple_output * 0.25, Color::Clear);
+                std::println("{} took the hit and received{} {} damage!{}",s->GetNameWithID(), Color::Red, unlpurple_output * 0.25, Color::Clear);
             }
             continue;
         }
         s->DamageBypass(unlpurple_output);
-        std::println("{} got hit by Unlimited Hollow Purple for {}{:.1f} damage!{}", s->GetName(), Color::Red, unlpurple_output , Color::Clear);
+        std::println("{} got hit by Unlimited Hollow Purple for {}{:.1f} damage!{}", s->GetNameWithID(), Color::Red, unlpurple_output , Color::Clear);
     }
 }
 
 void Limitless::InfinityNerf(Sorcerer* user) {
     if (this->BurntOut()) {
         if (CheckInfinity()) {
-            std::println("{}{}'s Infinity shatters due to technique burnout!{}",Color::Cyan, user->GetName(), Color::Clear);
+            std::println("{}{}'s Infinity shatters due to technique burnout!{}",Color::Cyan, user->GetNameWithID(), Color::Clear);
             SetInfinity(false);
         }
         return;
@@ -110,7 +113,7 @@ void Limitless::InfinityNerf(Sorcerer* user) {
     if (this->CheckInfinity()) {
         double maintain_cost = 100.0;
         if (user->GetCharacterCE() < maintain_cost) {
-            std::println("{}{}'s concentration wavers due to low CE!{}{} Infinity is deactivated.{}",Color::Red,user->GetName(),Color::Clear,Color::Cyan,Color::Clear);
+            std::println("{}{}'s concentration wavers due to low CE!{}{} Infinity is deactivated.{}",Color::Red,user->GetNameWithID(),Color::Clear,Color::Cyan,Color::Clear);
             SetInfinity(false);
         }
         else {

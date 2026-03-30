@@ -56,16 +56,17 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
             domain_users.push_back(target.get());
         }
     }
+    int tntroll = GetRandomNumber(1, 100);
 
-    if (limitless->GetUsedRedAmount() >= 10 && limitless->GetUsedBlueAmount() >= 10 && limitless->GetUsedPurpleAmount() >= 3) {
+    if ((limitless->GetUsedRedAmount() >= 15 && limitless->GetUsedBlueAmount() >= 15 && limitless->GetUsedPurpleAmount() >= 5) && tntroll >= 70) {
         if (!limitless->UnlimitedHollowAllowed()) {
             this->GetSpecial()->PerformSpecial(this);
             return;
         }
     }
 
-    int tntroll = GetRandomNumber(1, 20);
-    if (tntroll <= 9) {
+
+    if (tntroll <= 45) {
         this->Taunt(strongest);
     }
 

@@ -19,8 +19,9 @@ bool BattleManager::GameEndCheck(const std::vector<std::unique_ptr<Sorcerer>>& b
 			if (sc->IsThePlayer()) player_found = true;
 		}
 	}
-	if (spectator_mode && alive_sorcerers <= 1) return true;
-	if (!spectator_mode && (!player_found || alive_sorcerers == 1)) return true;
+
+	if (!spectator_mode && !player_found) return true;
+	if (alive_sorcerers <= 1) return true;
 	return false;
 }
 
@@ -163,6 +164,7 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& batt
 		c->RecoverTechniqueBurnout(c->GetTechnique());
 		c->TickZone();
 	}
+	std::println("{}======================================================={}", Color::Yellow, Color::Clear);
 	return player_alive;
 }
 
@@ -218,28 +220,34 @@ void BattleManager::DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>
 }
 
 bool BattleManager::IsBattleOver(bool game_over ,bool player_found,bool spectator_mode, std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
-	if (!player_found && battlefield.size() == 1 && !spectator_mode) {
-		std::println("\nYou have been defeated by {}! Game Over.", battlefield[0]->GetName());
-		return true;
-	}
-	else if (!player_found && !spectator_mode) {
-		std::println("\nYou have been defeated! Game Over.");
-		return true;
-	}
-	else if (battlefield.size() == 1 && game_over && !spectator_mode) {
-		std::println("\nCongratulations! You have defeated all other sorcerers and won the battle!");
-		return true;
-	}
-	else if (battlefield.size() == 1 && spectator_mode){
-		std::println("The battle has ended, only one remains");
-		return true;
-	}
-	else if (battlefield.size() == 0) {
+	if (!game_over && battlefield.size() > 1 && (player_found || spectator_mode)) return false;
+
+	if (battlefield.empty()) {
 		if (spectator_mode) {
 			std::println("Every sorcerer has been wiped off the battlefield!");
-			return true;
 		}
-		std::println("You and everyone else has been wiped off the battlefield, its a draw!");
+		else {
+			std::println("You and everyone else has been wiped off the battlefield, it's a draw!");
+		}
+		return true;
+	}
+	if (spectator_mode) {
+		if (battlefield.size() == 1) {
+			std::println("The battle has ended, {} is the last one standing!", battlefield[0]->GetNameWithID());
+		}
+		return true;
+	}
+	if (!player_found) {
+		if (battlefield.size() == 1) {
+			std::println("\nYou have been defeated by {}! Game Over.", battlefield[0]->GetNameWithID());
+		}
+		else {
+			std::println("\nYou have been defeated! The battle rages on without you. Game Over.");
+		}
+		return true;
+	}
+	if (player_found && battlefield.size() == 1) {
+		std::println("\nCongratulations! You have defeated all other sorcerers and won the battle!");
 		return true;
 	}
 	return false;

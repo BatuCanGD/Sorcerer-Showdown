@@ -156,11 +156,11 @@ void Sorcerer::UseRCT() {
 }
 
 void Sorcerer::Attack(Character* target) {
-    Sorcerer* target_sorcerer = dynamic_cast<Sorcerer*>(target);
+    Sorcerer* target_sorcerer = static_cast<Sorcerer*>(target);
     if (target_sorcerer) {
         if (Limitless* limitless = dynamic_cast<Limitless*>(target_sorcerer->GetTechnique())) {
             if (limitless->CheckInfinity() && !this->DomainAmplificationActive()) {
-                std::println("{}'s attack was blocked by {}'s {}Infinity{}!", this->GetName(), target->GetName(),Color::Cyan,Color::Clear);
+                std::println("{}'s attack was blocked by {}'s {}Infinity{}!", this->GetNameWithID(), target_sorcerer->GetNameWithID(),Color::Cyan,Color::Clear);
                 return;
             }
         }
@@ -170,7 +170,7 @@ void Sorcerer::Attack(Character* target) {
         double amp_damage = base_attack_damage + ce_addon;
 
         target->DamageBypass(amp_damage);
-        std::println("{} landed a strike on {} using {}domain amplification{}!", this->GetName(), target->GetName(),Color::Yellow,Color::Clear);
+        std::println("{} landed a strike on {} using {}domain amplification{}!", this->GetNameWithID(), target_sorcerer->GetNameWithID(),Color::Yellow,Color::Clear);
         return;
     }
     else if (cursed_tool) {
@@ -192,13 +192,13 @@ void Sorcerer::Attack(Character* target) {
 
     if (is_black_flash) {
         std::println("\n*** {}BLACK FLASH!{} ***", Color::Red, Color::Clear);
-        std::println("{} landed a {}BlackFlash{} on {}!", this->GetName(), Color::Red, Color::Clear, target->GetName());
+        std::println("{} landed a {}BlackFlash{} on {}!", this->GetNameWithID(), Color::Red, Color::Clear, target_sorcerer->GetNameWithID());
         if (technique && (technique->BurntOut() || technique->Usable())) {
             this->GetTechnique()->Set(Technique::Status::DomainBoost);
         }
     }
     else {
-        std::println("{} landed a {}heavy strike{} on {}!", this->GetName(),Color::BrightRed,Color::Clear, target->GetName());
+        std::println("{} landed a {}heavy strike{} on {}!", this->GetNameWithID(),Color::BrightRed,Color::Clear, target_sorcerer->GetNameWithID());
     }
 }
 
@@ -359,7 +359,7 @@ void Sorcerer::RecoverTechniqueBurnout(Technique* t) {
 void Sorcerer::CursedToolChoice(int choice) {
     if (choice == 0) {
         if (cursed_tool != nullptr) {
-            std::println("{}{} put {} away.{}",Color::BrightRed, this->GetName(), cursed_tool->GetName(),Color::Clear);
+            std::println("{}{} put {} away.{}",Color::BrightRed, this->GetNameWithID(), cursed_tool->GetName(),Color::Clear);
             inventory_curse.push_back(std::move(cursed_tool));
             cursed_tool = nullptr;
         }
@@ -374,7 +374,7 @@ void Sorcerer::CursedToolChoice(int choice) {
         cursed_tool = std::move(inventory_curse[inv_index]);
         inventory_curse.erase(inventory_curse.begin() + inv_index);
 
-        std::println("{}{} equipped {}!{}", Color::Cyan,this->GetName(), cursed_tool->GetName(),Color::Clear);
+        std::println("{}{} equipped {}!{}", Color::Cyan,this->GetNameWithID(), cursed_tool->GetName(),Color::Clear);
     }
     else {
         std::println("{}Invalid tool choice.{}",Color::Red, Color::Clear);
@@ -393,6 +393,7 @@ void Sorcerer::EquipToolByName(const std::string& weaponName) {
 
 void Sorcerer::Taunt(Character* taunted) { // pure aura
     if (!taunted) return;
+    Sorcerer* s = static_cast<Sorcerer*>(taunted);
     const double healthy_threshold = 0.70;
     const double injured_threshold = 0.40;
     const double critical_threshold = 0.20;
@@ -402,62 +403,62 @@ void Sorcerer::Taunt(Character* taunted) { // pure aura
     if (this->HPMoreThanMax(healthy_threshold)) {
         switch (taunt_type) {
         case 1:
-            std::println("I'm surprised you've even managed to scratch me this much {}!", taunted->GetName());
+            std::println("I'm surprised you've even managed to scratch me this much {}!", s->GetNameWithID());
             break;
         case 2:
-            std::println("Is that all you've got, {}? I expected more from you!", taunted->GetName());
+            std::println("Is that all you've got, {}? I expected more from you!", s->GetNameWithID());
             break;
         case 3:
-            std::println("You're not even worth my time, {}!", taunted->GetName());
+            std::println("You're not even worth my time, {}!", s->GetNameWithID());
             break;
         default:
-            std::println("You should just give up now, {}!", taunted->GetName());
+            std::println("You should just give up now, {}!", s->GetNameWithID());
         }
     }
     else if (this->HPMoreThanMax(injured_threshold)) {
         switch (taunt_type) {
         case 1:
-            std::println("You're starting to annoy me, {}. Keep it up and I'll make you regret it!", taunted->GetName());
+            std::println("You're starting to annoy me, {}. Keep it up and I'll make you regret it!", s->GetNameWithID());
             break;
         case 2:
-            std::println("You're not doing too bad, {}. But don't get too confident just yet!", taunted->GetName());
+            std::println("You're not doing too bad, {}. But don't get too confident just yet!", s->GetNameWithID());
             break;
         case 3:
-            std::println("Huh, you're actually putting up a fight, {}. I might have to take you more seriously!", taunted->GetName());
+            std::println("Huh, you're actually putting up a fight, {}. I might have to take you more seriously!", s->GetNameWithID());
             break;
         default:
-            std::println("You're not bad, {}. But I'm still better!", taunted->GetName());
+            std::println("You're not bad, {}. But I'm still better!", s->GetNameWithID());
 
         }
     }
     else if (this->HPMoreThanMax(critical_threshold)) {
         switch (taunt_type) {
         case 1:
-            std::println("You're really starting to piss me off, {}. I'll make you regret your actions!", taunted->GetName());
+            std::println("You're really starting to piss me off, {}. I'll make you regret your actions!", s->GetNameWithID());
             break;
         case 2:
-            std::println("You're actually pretty strong, but it won't be enough to defeat me, {}!", taunted->GetName());
+            std::println("You're actually pretty strong, but it won't be enough to defeat me, {}!", s->GetNameWithID());
             break;
         case 3:
-            std::println("You're really starting to get on my nerves, {}. I might have to end this quickly!", taunted->GetName());
+            std::println("You're really starting to get on my nerves, {}. I might have to end this quickly!", s->GetNameWithID());
             break;
         default:
-            std::println("You think a few hits will stop me, {}? Im just getting warmed up!", taunted->GetName());
+            std::println("You think a few hits will stop me, {}? Im just getting warmed up!", s->GetNameWithID());
         }
     }
     else {
         switch (taunt_type) {
         case 1:
-            std::println("You think this is over, {}? I'll drag you to the grave with me!", taunted->GetName());
+            std::println("You think this is over, {}? I'll drag you to the grave with me!", s->GetNameWithID());
             break;
         case 2:
-            std::println("Blood for blood, {}! You won't leave this place alive!", taunted->GetName());
+            std::println("Blood for blood, {}! You won't leave this place alive!", s->GetNameWithID());
             break;
         case 3:
-            std::println("You're really starting to piss me off, {}. I might have to end this quickly!", taunted->GetName());
+            std::println("You're really starting to piss me off, {}. I might have to end this quickly!", s->GetNameWithID());
             break;
         default:
-            std::println("I'll make you wish you were never born {}!", taunted->GetName());
+            std::println("I'll make you wish you were never born {}!", s->GetNameWithID());
         }
     }
 }

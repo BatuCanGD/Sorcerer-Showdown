@@ -119,7 +119,7 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
             shrine->Chant();
             return;
         }
-        shrine->WorldCuttingSlashToTarget(this, weakest);
+        shrine->UseTheWorldCuttingSlash(this, weakest);
         return;
     }
     if (domain_users.empty() && roll <= 40 && (!this->DomainActive() && !shrine->BurntOut() && this->GetDomainUses() < 5)) {
