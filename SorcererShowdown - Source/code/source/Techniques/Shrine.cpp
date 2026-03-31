@@ -37,14 +37,14 @@ void Shrine::UseTheWorldCuttingSlash(Sorcerer* user, Character* target) {
 void Shrine::UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c) {
     switch (choice) {
     case ShrineType::Dismantle:
-        Shrine::UseDismantle(s, c);
+        UseDismantle(s, c);
         break;
     case ShrineType::Cleave:
-        Shrine::UseCleave(s, c);
+        UseCleave(s, c);
         break;
     case ShrineType::WCS:
         if (!world_cutting_slash_allowed) return;
-        Shrine::UseTheWorldCuttingSlash(s, c);
+        UseTheWorldCuttingSlash(s, c);
         break;
     default:
         std::println("Invalid input. No technique used.");
@@ -53,6 +53,9 @@ void Shrine::UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c) {
 
 std::string Shrine::GetTechniqueName() const {
     return "\033[31mShrine\033[0m";
+}
+std::string Shrine::GetTechniqueSimpleName() const {
+    return "Shrine";
 }
 
 bool Shrine::WorldCuttingSlashUnlocked() const {

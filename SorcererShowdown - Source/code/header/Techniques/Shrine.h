@@ -14,13 +14,16 @@ public:
 
 	void SetWCS(bool s);
 	bool WorldCuttingSlashUnlocked() const;
-	std::string GetTechniqueName() const override;
 
 	void UseCleave(Sorcerer* user, Character* target);
 	void UseDismantle(Sorcerer* user, Character* target);
 	void UseTheWorldCuttingSlash(Sorcerer* user, Character* target);
+
 	void UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c);
 	void TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
 	void TechniqueSetting(Sorcerer*, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
+
+	std::string GetTechniqueName() const override;
+	std::string GetTechniqueSimpleName() const override;
 	void Chant() override;
 };

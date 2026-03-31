@@ -26,7 +26,10 @@ public:
 	double GetTechniqueOutput() const;
 	double CalculateDamage(Sorcerer* user, double cost) const;
 	std::string GetStringStatus() const;
+
 	virtual std::string GetTechniqueName() const = 0;
+	virtual std::string GetTechniqueSimpleName() const = 0;
+
 	virtual void Chant() = 0;
 	virtual void TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) = 0;
 	virtual void TechniqueSetting(Sorcerer*, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) = 0;

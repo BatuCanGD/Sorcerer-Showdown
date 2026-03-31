@@ -37,13 +37,13 @@ void Limitless::UsePurple(Sorcerer* user, Character* target) {
 void Limitless::UseTheLimitlessTechnique(LimitlessType choice, Sorcerer* s, Character* c) {
     switch (choice) {
     case LimitlessType::Blue:
-        Limitless::UseBlue(s, c);
+        UseBlue(s, c);
         break;
     case LimitlessType::Red:
-        Limitless::UseRed(s, c);
+        UseRed(s, c);
         break;
     case LimitlessType::Purple:
-        Limitless::UsePurple(s, c);
+        UsePurple(s, c);
         break;
     default:
         std::println("Invalid input. No technique used.");
@@ -52,6 +52,9 @@ void Limitless::UseTheLimitlessTechnique(LimitlessType choice, Sorcerer* s, Char
 
 std::string Limitless::GetTechniqueName() const {
     return "\033[36mLimitless\033[0m";
+}
+std::string Limitless::GetTechniqueSimpleName() const {
+    return "Limitless";
 }
 
 void Limitless::SetUnlimitedHollow(bool t) {

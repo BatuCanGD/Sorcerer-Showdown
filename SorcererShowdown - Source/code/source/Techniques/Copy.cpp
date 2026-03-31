@@ -70,6 +70,9 @@ std::string Copy::GetTechniqueName() const {
         return std::format("Copy [{}]", t->GetTechniqueName());
     return "\033[95mCopy\033[0m [\033[2;90mNone\033[0m";
 }
+std::string Copy::GetTechniqueSimpleName() const {
+    return "Copy";
+}
 
 void Copy::Chant() {
     if (Technique* t = GetActive()) t->Chant();

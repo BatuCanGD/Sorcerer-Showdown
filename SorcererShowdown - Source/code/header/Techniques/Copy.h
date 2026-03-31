@@ -16,6 +16,8 @@ public:
 
 	void TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
 	void TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
+
 	void Chant() override;
 	std::string GetTechniqueName() const override;
+	std::string GetTechniqueSimpleName() const override;
 };
