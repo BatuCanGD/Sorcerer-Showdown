@@ -25,14 +25,25 @@ void Mahoraga::Adapt() {
         InfStage = InfinityAdaptation::None;
     }
 
-    switch (InfStage) {
-    case InfinityAdaptation::None: break;
-    case InfinityAdaptation::FirstSpin: std::println("{} has started to adapt space itself!", this->GetName()); break;
-    case InfinityAdaptation::SecondSpin: std::println("{} is on its second spin to adapt space itself!", this->GetName()); break;
-    case InfinityAdaptation::ThirdSpin: std::println("{} is on its final spin to adapt space itself!", this->GetName()); break;
-    case InfinityAdaptation::FourthSpin: std::println("{} has adapted to space itself!",this->GetName()); break;
-    default:
-        break;
+}
+
+void Mahoraga::PrintStatus(Sorcerer* s) const {
+    if (PrevState != InfStage) {
+        switch (InfStage) {
+        case InfinityAdaptation::None: break;
+        case InfinityAdaptation::FirstSpin: std::println("{}'s {} has started to adapt space itself!", s->GetNameWithID(), this->GetName()); break;
+        case InfinityAdaptation::SecondSpin: std::println("{}'s {} is on its second spin to adapt space itself!", s->GetNameWithID(), this->GetName()); break;
+        case InfinityAdaptation::ThirdSpin: std::println("{}'s {} is on its final spin to adapt space itself!",s->GetNameWithID(), this->GetName()); break;
+        case InfinityAdaptation::FourthSpin: std::println("{}'s {} has adapted to space itself!", s->GetNameWithID(), this->GetName()); break;
+        default:
+            break;
+        }
+    }
+}
+
+void Mahoraga::UpdatePreviousState() {
+    if (PrevState != InfStage) {
+        PrevState = InfStage;
     }
 }
 
@@ -46,16 +57,21 @@ void Mahoraga::OnShikigamiTurn(Sorcerer* user) {
         return;
     }
     if (user->GetCharacterCE() < keep_active_cost) {
-        std::println("{} cannot maintain its active state due to insufficient {}Cursed Energy!{} It withdraws back into the shadows",this->GetName(), Color::Cyan,Color::Clear);
+        std::println("{} cannot maintain its active state due to {}'s insufficient {}Cursed Energy!{} It withdraws back into the shadows",this->GetName(), user->GetNameWithID(), Color::Cyan, Color::Clear);
         this->Withdraw();
         return;
     }
     this->ActiveTimeIncrementor();
     this->Adapt();
+    this->PrintStatus(user);
+    this->UpdatePreviousState();
     user->SpendCE(keep_active_cost);
 }
 std::string Mahoraga::GetName() const {
     return "\033[33mMahoraga\033[0m";
+}
+std::string Mahoraga::GetSimpleName() const {
+    return "Mahoraga";
 }
 
 bool Mahoraga::CanBeHit() const {

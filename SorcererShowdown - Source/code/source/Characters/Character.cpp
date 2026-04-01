@@ -112,7 +112,3 @@ void Character::ClearStunTime() {
 		stun_duration--;
 	}
 }
-
-std::string Character::GetName()const {
-	return "Character";
-}

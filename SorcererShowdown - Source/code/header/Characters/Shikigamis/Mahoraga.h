@@ -14,10 +14,15 @@ protected:
 		FourthSpin
 	};
 	InfinityAdaptation InfStage = InfinityAdaptation::None;
+	InfinityAdaptation PrevState = InfStage;
 public:
 	void Adapt();
 	bool FullyAdapted()const;
 	void OnShikigamiTurn(Sorcerer*) override;
+	void PrintStatus(Sorcerer*) const;
+	void UpdatePreviousState();
+
+	std::string GetSimpleName() const override;
 	std::string GetName() const override;
 	bool CanBeHit() const override;
 };

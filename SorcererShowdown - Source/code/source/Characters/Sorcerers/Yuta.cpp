@@ -27,6 +27,9 @@ std::unique_ptr<Sorcerer> Yuta::Clone() const {
 std::string Yuta::GetName() const {
     return "\033[95mYuta Okkotsu\033[0m";
 }
+std::string Yuta::GetSimpleName() const {
+    return "Yuta Okkotsu";
+}
 
 void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     if (this->IsCharacterStunned()) {

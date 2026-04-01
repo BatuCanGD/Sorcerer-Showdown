@@ -27,6 +27,9 @@ std::unique_ptr<Sorcerer> Sukuna::Clone() const {
 std::string Sukuna::GetName() const {
     return "\033[31mSukuna\033[0m";
 }
+std::string Sukuna::GetSimpleName() const {
+    return "Sukuna";
+}
 
 void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     if (this->IsCharacterStunned()) {
@@ -49,15 +52,33 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     double weakesthealth = INT32_MAX;
     Sorcerer* weakest = nullptr;
     std::vector<Sorcerer*> domain_users;
+    bool limitless_found = false;
+
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
         double perceived_health = target->GetCharacterHealth() + GetRandomNumber(-100, 100);
         if (target->DomainActive()) {
             domain_users.push_back(target.get());
         }
-        if (perceived_health < weakesthealth || !weakest) {
-            weakesthealth = perceived_health;
+        bool target_has_limitless = (target->GetTechnique() && target->GetTechnique()->GetTechniqueSimpleName() == "Limitless");
+
+        if (!weakest) {
             weakest = target.get();
+            weakesthealth = perceived_health;
+            limitless_found = target_has_limitless;
+        }
+        else if (target_has_limitless && !limitless_found) {
+            weakest = target.get();
+            weakesthealth = perceived_health;
+            limitless_found = true;
+        }
+        else if (target_has_limitless && limitless_found && perceived_health < weakesthealth) {
+            weakest = target.get();
+            weakesthealth = perceived_health;
+        }
+        else if (!limitless_found && perceived_health < weakesthealth) {
+            weakest = target.get();
+            weakesthealth = perceived_health;
         }
     }
 
@@ -70,10 +91,10 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     Agito* agito = nullptr;
 
     for (const auto& s : shikigami) {
-        if (s->GetName() == "Mahoraga") {
+        if (s->GetSimpleName() == "Mahoraga") {
             makora = dynamic_cast<Mahoraga*>(s.get());
         }
-        else if (s->GetName() == "Agito") {
+        else if (s->GetSimpleName() == "Agito") {
             agito = dynamic_cast<Agito*>(s.get());
         }
     }
@@ -104,14 +125,14 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         if (!this->CEMoreThanMax(0.30) && agito->IsActive()) {
             agito->Withdraw();
         }
-        else if (!agito->IsActive() && this->HPMoreThanMax(0.50) && this->CEMoreThanMax(0.30)) {
+        else if (!(agito->IsActive() && this->HPMoreThanMax(0.50)) && this->CEMoreThanMax(0.30)) {
             agito->Manifest();
         }
     }
 
     int roll = GetRandomNumber(1, 100);
 
-    if (shrine->WorldCuttingSlashUnlocked() && this->CEMoreThanMax(0.16)) {
+    if (shrine->WorldCuttingSlashUnlocked() && this->CEMoreThanMax(0.16) && roll >= 75) {
         if (makora && makora->IsActive()) {
             makora->Withdraw();
         }
@@ -119,8 +140,6 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
             shrine->Chant();
             return;
         }
-        shrine->UseTheWorldCuttingSlash(this, weakest);
-        return;
     }
     if (domain_users.empty() && roll <= 40 && (!this->DomainActive() && !shrine->BurntOut() && this->GetDomainUses() < 5)) {
         this->ActivateDomain();
@@ -146,15 +165,20 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
             return;
         }
     }
-    else {
+
+    if (this->DomainAmplificationActive()) {
         this->SetAmplification(false);
     }
+  
     if (roll <= 25 && !shrine->FullyChanted()) {
         shrine->Chant();
         return;
     }
-
     if (this->CEMoreThanMax(0.20)) {
+        if (shrine->FullyChanted()) {
+            shrine->UseTheWorldCuttingSlash(this, weakest);
+            return;
+        }
         if (weakest->GetCharacterHealth() < weakest->GetCharacterMaxHealth() * 0.25 && roll <= 15) {
             shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, weakest);
             return;

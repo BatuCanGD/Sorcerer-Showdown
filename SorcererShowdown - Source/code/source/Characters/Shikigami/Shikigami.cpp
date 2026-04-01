@@ -8,6 +8,10 @@ import std;
 Shikigami::Shikigami(double hp, double ce, double re) : Character(hp, ce, re) {
 }
 
+std::string Shikigami::GetSimpleName() const {
+    return "Shikigami";
+}
+
 void Shikigami::PartiallyManifest() {
     shikigami_state = State::Partial;
 }

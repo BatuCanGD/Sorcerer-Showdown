@@ -15,6 +15,8 @@ public:
 	void OnShikigamiTurn(Sorcerer*) override;
 	void SaveUserCursedEnergy(Sorcerer*);
 	void RikaCooldownRegeneration(Sorcerer*);
+
+	std::string GetSimpleName() const override;
 	std::string GetName() const override;
 	bool CanBeHit() const override;
 };

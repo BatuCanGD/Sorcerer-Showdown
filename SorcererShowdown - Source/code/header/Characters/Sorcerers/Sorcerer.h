@@ -118,6 +118,7 @@ public:
 	
 	void CleanupShikigami();
 	
+	std::string GetSimpleName() const override;
 	std::string GetName() const override;
 
 	virtual void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) = 0;

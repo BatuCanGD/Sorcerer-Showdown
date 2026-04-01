@@ -1,6 +1,6 @@
 #include "Sorcerer.h"
-#include "Shrine.h"
-#include "WorldCuttingSlash.h"
+#include "Limitless.h"
+#include "UnlimitedPurple.h"
 #include "SimpleDomain.h"
 #include "DevFile.h"
 #include "ShikigamiList.h"
@@ -9,8 +9,8 @@
 import std;
 
 test_sorcerer::test_sorcerer() : Sorcerer(INT32_MAX, INT32_MAX, 0.0) {
-    technique = std::make_unique<Shrine>();
-    special = std::make_unique<WorldCuttingSlash>();
+    technique = std::make_unique<Limitless>();
+    special = std::make_unique<UnlimitedPurple>();
     domain = std::make_unique<KillEveryoneDomain>();
     counter_domain = std::make_unique<SimpleDomain>();
     shikigami.push_back(std::make_unique<Rika>());

@@ -63,3 +63,6 @@ bool Rika::CanBeHit() const {
 std::string Rika::GetName() const {
     return "\033[91mRika\033[0m";
 }
+std::string Rika::GetSimpleName() const {
+    return "Rika";
+}

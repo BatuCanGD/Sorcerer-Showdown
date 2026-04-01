@@ -193,9 +193,6 @@ void Sorcerer::Attack(Character* target) {
     if (is_black_flash) {
         std::println("\n*** {}BLACK FLASH!{} ***", Color::Red, Color::Clear);
         std::println("{} landed a {}BlackFlash{} on {}!", this->GetNameWithID(), Color::Red, Color::Clear, target_sorcerer->GetNameWithID());
-        if (technique && (technique->BurntOut() || technique->Usable())) {
-            this->GetTechnique()->Set(Technique::Status::DomainBoost);
-        }
     }
     else {
         std::println("{} landed a {}heavy strike{} on {}!", this->GetNameWithID(),Color::BrightRed,Color::Clear, target_sorcerer->GetNameWithID());
@@ -469,4 +466,8 @@ int Sorcerer::GetID() const {
 
 std::string Sorcerer::GetNameWithID()const {
     return std::format("{} ({})", this->GetName(), unique_id);
+}
+
+std::string Sorcerer::GetSimpleName() const {
+    return "Sorcerer";
 }

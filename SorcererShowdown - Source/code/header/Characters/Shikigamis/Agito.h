@@ -10,6 +10,8 @@ protected:
 public:
 	void PassiveSupport(Sorcerer* user);
 	void OnShikigamiTurn(Sorcerer*) override;
+
+	std::string GetSimpleName() const override;
 	std::string GetName() const override;
 	bool CanBeHit() const override;
 };

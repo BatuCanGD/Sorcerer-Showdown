@@ -22,6 +22,9 @@ std::unique_ptr<Sorcerer> Gojo::Clone() const {
 std::string Gojo::GetName() const {
     return "\033[96mGojo\033[0m";
 }
+std::string Gojo::GetSimpleName() const {
+    return "Gojo";
+}
 
 void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     if (this->IsCharacterStunned()) {
@@ -44,17 +47,35 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     double strongesthealth = -1.0;
     Sorcerer* strongest = nullptr;
     std::vector<Sorcerer*> domain_users;
+    bool shrine_found = false;
 
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
         double perceived_health = target->GetCharacterHealth() + GetRandomNumber(-100, 100);
-        if (perceived_health > strongesthealth || !strongest) {
-            strongesthealth = perceived_health;
-            strongest = target.get();
-        }
         if (target->DomainActive()) {
             domain_users.push_back(target.get());
         }
+
+        bool target_has_shrine = (target->GetTechnique() && target->GetTechnique()->GetTechniqueSimpleName() == "Shrine");
+        if (!strongest) {
+            strongest = target.get();
+            strongesthealth = perceived_health;
+            shrine_found = target_has_shrine;
+        }
+        else if (target_has_shrine && !shrine_found) {
+            strongest = target.get();
+            strongesthealth = perceived_health;
+            shrine_found = true;
+        }
+        else if (target_has_shrine && shrine_found && perceived_health > strongesthealth) {
+            strongest = target.get();
+            strongesthealth = perceived_health;
+        }
+        else if (!shrine_found && perceived_health > strongesthealth) {
+            strongest = target.get();
+            strongesthealth = perceived_health;
+        }
+
     }
     int tntroll = GetRandomNumber(1, 100);
 

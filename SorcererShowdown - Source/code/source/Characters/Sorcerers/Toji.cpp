@@ -22,6 +22,9 @@ std::unique_ptr<Sorcerer> Toji::Clone() const {
 std::string Toji::GetName() const {
     return "\033[33mToji Fushiguro\033[0m";
 }
+std::string Toji::GetSimpleName() const {
+    return "Toji Fushiguro";
+}
 
 void Toji::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     if (this->IsCharacterStunned()) {

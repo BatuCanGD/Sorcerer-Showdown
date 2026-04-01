@@ -26,6 +26,8 @@ public:
 	bool IsActivePhysically() const;
 	virtual void OnShikigamiTurn(Sorcerer*) = 0;		
 	std::string GetShikigamiStatus() const;
+
+	std::string GetSimpleName() const override;
 	std::string GetName() const override;
 	bool CanBeHit() const override;
 };

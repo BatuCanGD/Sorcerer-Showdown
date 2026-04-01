@@ -52,6 +52,7 @@ public:
 	bool IsCharacterStunned() const;
 	bool IsHeavenlyRestricted() const;
 
-	virtual std::string GetName() const;
+	virtual std::string GetSimpleName() const = 0;
+	virtual std::string GetName() const = 0;
 	virtual bool CanBeHit() const = 0;
 };
