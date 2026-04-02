@@ -17,5 +17,6 @@ namespace Color {
 }
 
 int GetValidInput();
+double GetPreciseInput();
 int GetRandomNumber(int min, int max);
 std::string ANSIPadding(const std::string& string, size_t length);

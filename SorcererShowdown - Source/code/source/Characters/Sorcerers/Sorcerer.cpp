@@ -131,12 +131,34 @@ void Sorcerer::TickShikigami() {
 }
 
 std::string Sorcerer::GetDAstatus() const {
-    if (domain_amplification_active) return "\033[36mActive\033[0m";
-    else return "\033[31mInactive\033[0m";
+    if (domain_amplification_active) return std::format("{}Active{}", Color::Cyan, Color::Clear);
+    return std::format("{}Inactive{}", Color::Red, Color::Clear); 
 }
 std::string Sorcerer::GetCounterStatus() const {
-    if (counter_domain_active) return "\033[35mActive\033[0m";
-    else return "\033[31mInactive\033[0m";
+    if (counter_domain_active) return std::format("{}Active{}", Color::Purple, Color::Clear);
+    return std::format("{}Inactive{}", Color::Red, Color::Clear);
+}
+
+std::string Sorcerer::GetReinforcementStatus() const {
+    std::string currentcolor = Color::Yellow;
+    std::string clear = Color::Clear;
+
+    if (current_ce_reinforcement < 50.0) {
+        currentcolor = Color::Red;
+    }
+    else if (current_ce_reinforcement < 100.0) {
+        currentcolor = Color::Yellow;
+    }
+    else if (current_ce_reinforcement < 150.0) {
+        currentcolor = Color::Green;
+    }
+    else if (current_ce_reinforcement < 200.0) {
+        currentcolor = Color::Blue;
+    }
+    else {
+        currentcolor = Color::Purple;
+    }
+    return std::format("{}{:.1f}/{:.1f}{}",currentcolor,current_ce_reinforcement,max_ce_reinforcement, clear);
 }
 
 void Sorcerer::UseRCT() {
@@ -470,4 +492,35 @@ std::string Sorcerer::GetNameWithID()const {
 
 std::string Sorcerer::GetSimpleName() const {
     return "Sorcerer";
+}
+
+double Sorcerer::GetReinforcement() const {
+    return current_ce_reinforcement;
+}
+double Sorcerer::GetMaxReinforcement()const {
+    return max_ce_reinforcement;
+}
+double Sorcerer::GetDamageReinforcement()const {
+    return 1.0 + ((current_ce_reinforcement / max_ce_reinforcement) * 2);
+}
+
+void Sorcerer::SetCurrentReinforcement(double r) {
+    current_ce_reinforcement = std::clamp(r, 0.0, max_ce_reinforcement);
+}
+void Sorcerer::SetMaxReinforcement(double max) {
+    max_ce_reinforcement = max;
+}
+void Sorcerer::AddReinforcement(double r) {
+    current_ce_reinforcement = std::clamp(current_ce_reinforcement + r, 0.0, max_ce_reinforcement);
+}
+
+void Sorcerer::TickReinforcement() {
+    if (this->IsHeavenlyRestricted()) return;
+    if (current_ce_reinforcement <= 0.0) return;
+    double maintain_cost = current_ce_reinforcement;
+    this->SpendCE(maintain_cost);
+    if (this->GetCharacterCE() < this->GetReinforcement()) {
+        current_ce_reinforcement = 0.0;
+        std::println("{}'s CE reinforcement collapsed due to exhaustion!",this->GetNameWithID());
+    }
 }

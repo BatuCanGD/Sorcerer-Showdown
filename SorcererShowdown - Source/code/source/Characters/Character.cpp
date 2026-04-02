@@ -39,7 +39,8 @@ void Character::SetCursedEnergyRegen(double c) {
 
 void Character::Damage(double h) {
 	if (CanBeHit() && !is_invulnerable) {
-		health = std::max(health - h, 0.0);
+		auto s = static_cast<Sorcerer*>(this);
+		health = std::max(health - (h / s->GetDamageReinforcement()), 0.0);
 	}
 }
 void Character::DamageBypass(double h) {

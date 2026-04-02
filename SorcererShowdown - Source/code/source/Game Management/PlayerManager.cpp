@@ -80,6 +80,9 @@ void PlayerManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 	case 10:
 		PlayerShikigami(s);
 		break;
+	case 11:
+		PlayerReinforcement(s);
+		break;
 	default:
 		std::println("Invalid Choice");
 	}
@@ -260,6 +263,35 @@ void PlayerManager::PlayerShikigami(Sorcerer& s) {
 	}
 	else {
 		std::println("Invalid Choice");
+	}
+}
+
+void PlayerManager::PlayerReinforcement(Sorcerer& s) {
+	if (s.IsHeavenlyRestricted()) {
+		std::println("You are heavenly restricted, you dont have any CE to reinforce yourself with!");
+		return;
+	}
+	std::println("more reinforcement means harder hit to your CE spending");
+	std::println("Current: {}", s.GetReinforcementStatus());
+	std::println("1 - Add reinforcement amount 2 - Subtract reinforcement amount  3 - Set reinforcement amount");
+	std::print("=> "); int ch = GetValidInput();
+	if (ch == 1) {
+		std::println("\nWrite out the amount you would like to reinforce by");
+		std::print("=> "); double vl = GetPreciseInput();
+		s.AddReinforcement(vl);
+	}
+	else if (ch == 2) {
+		std::println("\nWrite out the amount you would like reduce reinforcement by");
+		std::print("=> "); double vl = -GetPreciseInput();
+		s.AddReinforcement(vl);
+	}
+	else if (ch == 3) {
+		std::println("\nWrite out the amount that you would like to set the reinforcement to");
+		std::print("=> "); double vl = GetPreciseInput();
+		s.SetCurrentReinforcement(vl);
+	}
+	else {
+		std::println("Invalid Input.");
 	}
 }
 

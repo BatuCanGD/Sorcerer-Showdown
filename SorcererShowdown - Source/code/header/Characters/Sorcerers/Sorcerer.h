@@ -21,30 +21,27 @@ protected:
 	std::unique_ptr<Technique> technique = nullptr;
 	std::unique_ptr<Specials> special = nullptr; // cursed technique extension <- why didnt i think of this name first??
 	std::unique_ptr<CursedTool> cursed_tool = nullptr;
-	
-	std::vector<std::unique_ptr<CursedTool>> inventory_curse; 
+
+	std::vector<std::unique_ptr<CursedTool>> inventory_curse;
 	std::vector<std::unique_ptr<Shikigami>> shikigami;
-	
+
 	bool six_eyes = false;
 
 	double base_attack_damage = 20.0;
+	double current_ce_reinforcement = 50.0;
+	double max_ce_reinforcement = 200.0;
 
 	bool domain_amplification_active = false;
-
 	bool counter_domain_active = false;
 	bool domain_active = false;
-
 	bool is_player = false;
-
 	bool is_strained = false;
 
 	int total_domain_uses = 0;
 	int technique_burnout_time = 0;
 	int burnout_time = 0;
-
 	int active_domain_time = 0;
 	int active_counter_time = 0;
-
 	int black_flash_chance = 5;
 	int the_zone_time = 0;
 
@@ -94,6 +91,7 @@ public:
 	std::string GetDAstatus() const;
 	std::string GetDomainStatus() const;
 	std::string GetCounterStatus() const;
+	std::string GetReinforcementStatus() const;
 
 	void UseRCT();
 	bool DomainAmplificationActive() const;
@@ -115,16 +113,16 @@ public:
 	void EquipToolByName(const std::string& weaponname);
 
 	void Attack(Character*);
-	
+
 	void CleanupShikigami();
-	
+
 	std::string GetSimpleName() const override;
 	std::string GetName() const override;
 
 	virtual void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) = 0;
 	void RecoverBurnout();
 	void RecoverTechniqueBurnout(Technique*);
-	
+
 	int GetID() const;
 	std::string GetNameWithID() const;
 	static void ResetGlobalID() { global_id_counter = 0; }
@@ -132,4 +130,13 @@ public:
 
 	void Taunt(Character* target);
 	bool CanBeHit() const override;
+
+	double GetDamageReinforcement()const; // this for damage checks
+	double GetReinforcement()const; // for the value
+	double GetMaxReinforcement()const;
+
+	void SetMaxReinforcement(double);
+	void SetCurrentReinforcement(double);
+	void AddReinforcement(double);
+	void TickReinforcement();
 };

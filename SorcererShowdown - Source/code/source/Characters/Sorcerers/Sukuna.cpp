@@ -10,7 +10,7 @@
 
 import std;
 
-Sukuna::Sukuna() : Sorcerer(1000.0, 16000.0, 150.0) {
+Sukuna::Sukuna() : Sorcerer(1000.0, 16000.0, 100.0) {
     domain = std::make_unique<MalevolentShrine>();
     counter_domain = std::make_unique<HollowWickerBasket>();
     technique = std::make_unique<Shrine>();

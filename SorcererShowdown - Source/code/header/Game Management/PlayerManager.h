@@ -11,6 +11,7 @@ public:
 	void PlayerDAusage(Sorcerer& s);
 	void PlayerDomainUsage(Sorcerer& s);
 	void PlayerShikigami(Sorcerer& s);
+	void PlayerReinforcement(Sorcerer& s);
 	void GetPlayerTools(Sorcerer& s);
 	Sorcerer* TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>& battlefield, Sorcerer* player);
 

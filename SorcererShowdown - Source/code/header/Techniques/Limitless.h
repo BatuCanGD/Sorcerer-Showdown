@@ -18,7 +18,7 @@ public:
 	enum class LimitlessType { Blue = 1, Red = 2, Purple = 3 };
 
 	void SetInfinity(bool s);
-	void InfinityNerf(Sorcerer*); // drain CE
+	void InfinityNerf(Sorcerer*);
 	bool CheckInfinity() const;
 
 	void SetUnlimitedHollow(bool);
