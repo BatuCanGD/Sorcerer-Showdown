@@ -122,7 +122,7 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Character>>& bat
 
 	auto [removed_begin, removed_end] = std::ranges::remove_if(battlefield, [](const auto& s) {
 		if (s->GetCharacterHealth() <= 0.0) {
-			std::println("{}{} has been defeated and is removed from the battlefield!{}",Color::Red, s->GetNameWithID(),Color::Clear);
+			std::println("{}{} has been defeated and is removed from the battlefield!{}", Color::Red, s->GetNameWithID(), Color::Clear);
 			return true;
 		}
 		return false;
@@ -137,30 +137,29 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Character>>& bat
 				limitless->InfinityNerf(sorc);
 			}
 			sorc->CleanupShikigami();
-			sorc->TickShikigami();		
-
-			double damage_taken = c->GetCharacterPreviousHealth() - c->GetCharacterHealth();
-			if (damage_taken > 0) {
-				std::println("{} took {}{:.1f} damage{} this turn",c->GetNameWithID(),Color::Red,  damage_taken,Color::Clear);
-				sorc->UseRCT();
-				if (c->GetCharacterHealth() >= c->GetCharacterPreviousHealth()) {
-					std::println("{} {}healed the damage back!{}",c->GetNameWithID(),Color::Green, Color::Clear);
-				}
-				else if (c->GetCharacterHealth() > (c->GetCharacterPreviousHealth() - damage_taken)) {
-					std::println("{} {}partially healed their wounds.{}",c->GetNameWithID(),Color::Yellow,Color::Clear);
-				}
-			}
-			else {
-				sorc->UseRCT();
-			}
+			sorc->TickShikigami();
 			sorc->RecoverBurnout();
 			sorc->RecoverTechniqueBurnout(sorc->GetTechnique());
 			sorc->TickZone();
+			sorc->UseRCT();
 		}
+
+		double damage_taken = c->GetCharacterPreviousHealth() - c->GetCharacterHealth();
+		if (damage_taken > 0) {
+			std::println("{} took {}{:.1f} damage{} this turn", c->GetNameWithID(), Color::Red, damage_taken, Color::Clear);
+			if (c->GetCharacterHealth() >= c->GetCharacterPreviousHealth()) {
+				std::println("{} {}healed the damage back!{}", c->GetNameWithID(), Color::Green, Color::Clear);
+			}
+			else if (c->GetCharacterHealth() > (c->GetCharacterPreviousHealth() - damage_taken)) {
+				std::println("{} {}partially healed their wounds.{}", c->GetNameWithID(), Color::Yellow, Color::Clear);
+			}
+		}
+		else {
+		}
+
 		if (c->IsThePlayer() || spectator_mode) {
 			player_alive = true;
 		}
-
 
 		c->UpdatePreviousHP();
 		c->RegenCE();
