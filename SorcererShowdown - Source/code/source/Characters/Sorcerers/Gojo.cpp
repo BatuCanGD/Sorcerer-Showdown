@@ -32,6 +32,9 @@ void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
         return;
     }
     auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
+    if (!limitless->CheckInfinity() && this->CEMoreThanMax(0.03)) {
+        limitless->SetInfinity(true);
+    }
     if ((!this->HPMoreThanMax(0.35) && this->CEMoreThanMax(0.20)) || !limitless->CheckInfinity()) 
     {
         this->BoostRCT();
@@ -44,6 +47,7 @@ void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
     {
         this->DisableRCT();
     }
+
     double strongesthealth = -1.0;
     Character* strongest = nullptr;
     std::vector<Sorcerer*> domain_users;
