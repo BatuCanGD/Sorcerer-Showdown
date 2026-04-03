@@ -5,8 +5,8 @@
 class PhysicallyGifted : public Character {
 protected:
 	double strength;
-	double strength_to_reinforcement_ratio = 300.0;
-	double strength_to_damage_ratio = 30.0;
+	double strength_to_reinforcement_ratio = 500.0;
+	double strength_to_damage_ratio = 35.0;
 public:
 	PhysicallyGifted(double hp, double str);
 	virtual ~PhysicallyGifted() = default;

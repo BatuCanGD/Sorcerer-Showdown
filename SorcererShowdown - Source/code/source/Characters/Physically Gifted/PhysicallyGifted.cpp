@@ -5,6 +5,7 @@ PhysicallyGifted::PhysicallyGifted(double hp, double str)
 {
 	is_heavenly_restricted = true;
 	strength = str;
+
 	max_ce_reinforcement = 0.0;
 	current_ce_reinforcement = 0.0;
 

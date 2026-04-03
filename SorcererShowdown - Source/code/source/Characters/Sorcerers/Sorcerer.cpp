@@ -12,6 +12,8 @@ import std;
 Sorcerer::~Sorcerer() = default;
 
 Sorcerer::Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {
+    current_ce_reinforcement = 50.0;
+    max_ce_reinforcement = 200.0;
     global_id_counter++;
     unique_id = global_id_counter;
 }

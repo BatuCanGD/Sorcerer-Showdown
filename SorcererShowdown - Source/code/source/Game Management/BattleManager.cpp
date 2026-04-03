@@ -132,7 +132,9 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Character>>& bat
 	bool player_alive = false;
 
 	for (const auto& c : battlefield) {
+		double health_before_regen = c->GetCharacterHealth();
 		if (auto sorc = dynamic_cast<Sorcerer*>(c.get())) {
+
 			if (auto limitless = dynamic_cast<Limitless*>(sorc->GetTechnique())) {
 				limitless->InfinityNerf(sorc);
 			}
@@ -143,14 +145,14 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Character>>& bat
 			sorc->TickZone();
 			sorc->UseRCT();
 		}
-
-		double damage_taken = c->GetCharacterPreviousHealth() - c->GetCharacterHealth();
-		if (damage_taken > 0) {
-			std::println("{} took {}{:.1f} damage{} this turn", c->GetNameWithID(), Color::Red, damage_taken, Color::Clear);
+		double total_damage = c->GetCharacterPreviousHealth() - health_before_regen;
+		double healed_amount = c->GetCharacterHealth() - health_before_regen;
+		if (total_damage > 0) {
+			std::println("{} took {}{:.1f} damage{} this turn", c->GetNameWithID(), Color::Red, total_damage, Color::Clear);
 			if (c->GetCharacterHealth() >= c->GetCharacterPreviousHealth()) {
 				std::println("{} {}healed the damage back!{}", c->GetNameWithID(), Color::Green, Color::Clear);
 			}
-			else if (c->GetCharacterHealth() > (c->GetCharacterPreviousHealth() - damage_taken)) {
+			else if (healed_amount > 0) {
 				std::println("{} {}partially healed their wounds.{}", c->GetNameWithID(), Color::Yellow, Color::Clear);
 			}
 		}

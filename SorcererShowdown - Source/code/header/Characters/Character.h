@@ -28,8 +28,8 @@ protected:
 	bool is_heavenly_restricted;
 	bool is_invulnerable = false;
 
-	double current_ce_reinforcement = 50.0;
-	double max_ce_reinforcement = 200.0;
+	double current_ce_reinforcement;
+	double max_ce_reinforcement;
 public:
 	Character(double hp, double ce, double regen);
 

@@ -6,7 +6,7 @@
 
 import std;
 
-Toji::Toji() : PhysicallyGifted(1250.0, 300.0) {
+Toji::Toji() : PhysicallyGifted(1000.0, 450.0) {
     inventory_curse.push_back(std::make_unique<InvertedSpearofHeaven>());
     inventory_curse.push_back(std::make_unique<PlayfulCloud>());
 }
@@ -84,7 +84,7 @@ void Toji::OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>& 
     }
     else {
         std::println("{} strikes {} with his bare hands!", this->GetNameWithID(), target->GetNameWithID());
-        target->Damage(20.0 * this->GetStrengthDamage());
+        target->Damage(10.0 * this->GetStrengthDamage());
     }
 }
 
