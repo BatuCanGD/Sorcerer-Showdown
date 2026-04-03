@@ -3,7 +3,7 @@
 
 class Katana : public CursedTool {
 public:
-	void UseTool(Sorcerer*, Character*) override;
+	void UseTool(Character*, Character*) override;
 	std::string GetName() const override;
 	std::string GetSimpleName() const override;
 };

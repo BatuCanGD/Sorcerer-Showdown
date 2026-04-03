@@ -16,6 +16,8 @@ protected:
 	State shikigami_state = State::Shadow;
 public:
 	Shikigami(double hp, double ce, double re);
+	std::unique_ptr<Character> Clone() const override;
+
 	void PartiallyManifest();
 	void Manifest();
 	void Withdraw();
@@ -23,9 +25,10 @@ public:
 	int GetActiveTime() const;
 	bool IsActive() const;
 	bool IsPartiallyActive() const;
-	bool IsActivePhysically() const;
-	virtual void OnShikigamiTurn(Sorcerer*) = 0;		
+	bool IsActivePhysically() const;	
 	std::string GetShikigamiStatus() const;
+
+	bool IsShikigami() const override;
 
 	std::string GetSimpleName() const override;
 	std::string GetName() const override;

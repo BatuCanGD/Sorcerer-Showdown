@@ -6,6 +6,12 @@ import std;
 // --- Base Shikigami  ---
 
 Shikigami::Shikigami(double hp, double ce, double re) : Character(hp, ce, re) {
+    current_ce_reinforcement = 0.0;
+    max_ce_reinforcement = 0.0;
+}
+
+std::unique_ptr<Character> Shikigami::Clone() const {
+    return nullptr;
 }
 
 std::string Shikigami::GetSimpleName() const {
@@ -53,6 +59,10 @@ std::string Shikigami::GetShikigamiStatus() const {
     case State::Full: return "Physically Manifested";
     default: return "Dormant";
     }
+}
+
+bool Shikigami::IsShikigami() const {
+    return true;
 }
 
 std::string Shikigami::GetName() const {

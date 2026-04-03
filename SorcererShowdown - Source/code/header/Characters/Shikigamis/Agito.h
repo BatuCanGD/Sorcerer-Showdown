@@ -8,8 +8,10 @@ protected:
 	const double passive_heal_amount = 35.0;
 	const double summon_amount = 150.0;
 public:
-	void PassiveSupport(Sorcerer* user);
-	void OnShikigamiTurn(Sorcerer*) override;
+	std::unique_ptr<Character> Clone() const override;
+
+	void PassiveSupport(Character* user);
+	void OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>&) override;
 
 	std::string GetSimpleName() const override;
 	std::string GetName() const override;

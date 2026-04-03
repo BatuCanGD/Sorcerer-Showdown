@@ -21,11 +21,11 @@ test_sorcerer::test_sorcerer() : Sorcerer(INT32_MAX, INT32_MAX, 0.0) {
     inventory_curse.push_back(std::make_unique<PlayfulCloud>());
     black_flash_chance = 100;
 }
-std::unique_ptr<Sorcerer> test_sorcerer::Clone() const {
+std::unique_ptr<Character> test_sorcerer::Clone() const {
     return std::make_unique<test_sorcerer>();
 }
 
-void test_sorcerer::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+void test_sorcerer::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
     std::println("Exception thrown");
     std::println("Access violation reading location 0x000000000000000C.");
 }

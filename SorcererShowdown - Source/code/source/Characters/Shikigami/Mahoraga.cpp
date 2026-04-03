@@ -27,7 +27,7 @@ void Mahoraga::Adapt() {
 
 }
 
-void Mahoraga::PrintStatus(Sorcerer* s) const {
+void Mahoraga::PrintStatus(Character* s) const {
     if (PrevState != InfStage) {
         switch (InfStage) {
         case InfinityAdaptation::None: break;
@@ -51,7 +51,7 @@ bool Mahoraga::FullyAdapted() const {
     return InfStage == InfinityAdaptation::FourthSpin;
 }
 
-void Mahoraga::OnShikigamiTurn(Sorcerer* user) {
+void Mahoraga::OnCharacterTurn(Character* user, std::vector<std::unique_ptr<Character>>&) {
     if (!IsActive()) {
         this->Regen(shadow_health_regen);
         return;
@@ -79,4 +79,8 @@ bool Mahoraga::CanBeHit() const {
         return true;
     }
     return false;
+}
+
+std::unique_ptr<Character> Mahoraga::Clone() const {
+    return std::make_unique<Mahoraga>();
 }

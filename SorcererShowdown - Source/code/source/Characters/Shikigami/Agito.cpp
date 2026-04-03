@@ -12,14 +12,14 @@ std::string Agito::GetSimpleName() const {
     return "Agito";
 }
 
-void Agito::PassiveSupport(Sorcerer* user) {
+void Agito::PassiveSupport(Character* user) {
     if (IsActive()) {
         user->Regen(passive_heal_amount);
         std::println("{} has healed {}",this->GetName(), user->GetNameWithID());
     }
 }
 
-void Agito::OnShikigamiTurn(Sorcerer* user) {
+void Agito::OnCharacterTurn(Character* user, std::vector<std::unique_ptr<Character>>& battlefield) {
     if (!IsActive()) {
         this->Regen(shadow_health_regen);
         return;
@@ -39,4 +39,8 @@ bool Agito::CanBeHit() const {
         return true;
     }
     return false;
+}
+
+std::unique_ptr<Character> Agito::Clone() const {
+    return std::make_unique<Agito>();
 }

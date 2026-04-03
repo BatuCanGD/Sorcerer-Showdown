@@ -20,7 +20,7 @@ Yuta::Yuta() : Sorcerer(800.0, 6000.0, 30.0) {
     black_flash_chance = 10;
 }
 
-std::unique_ptr<Sorcerer> Yuta::Clone() const {
+std::unique_ptr<Character> Yuta::Clone() const {
     return std::make_unique<Yuta>();
 }
 
@@ -31,7 +31,7 @@ std::string Yuta::GetSimpleName() const {
     return "Yuta Okkotsu";
 }
 
-void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+void Yuta::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
     if (this->IsCharacterStunned()) {
         std::println("{} is stunned and their turn will be skipped", this->GetName());
         return;
@@ -41,7 +41,7 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     if (!this->HPMoreThanMax(0.40) || rika->IsActivePhysically()) {
         this->BoostRCT();
     }
-    else if (!(this->HPMoreThanMax(0.70))) {
+    else if (!(this->HPMoreThanMax(0.55))) {
         this->EnableRCT();
     }
     else {
@@ -49,7 +49,7 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     }
 
     double strongesthealth = -1.0;
-    Sorcerer* strongest = nullptr;
+    Character* strongest = nullptr;
     std::vector<Sorcerer*> domain_users;
 
     if (!(this->HPMoreThanMax(0.40) || this->CEMoreThanMax(0.20)) && !((rika->GetActiveTime() > 5) && rika->IsActivePhysically())) {
@@ -59,10 +59,12 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
 
     for (const auto& s : battlefield) {
         if (s.get() == this) continue;
-
-        if (s->DomainActive()) {
-            domain_users.push_back(s.get());
+        if (auto sorcerer = dynamic_cast<Sorcerer*>(s.get())) {
+            if (sorcerer->DomainActive()) {
+                domain_users.push_back(sorcerer);
+            }
         }
+
         double perceived_health = s->GetCharacterHealth() + GetRandomNumber(-100, 100);
         if (!strongest || perceived_health > strongesthealth) {
             strongesthealth = perceived_health;
@@ -90,10 +92,15 @@ void Yuta::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
     }
 
     if (strongest) {
-        auto limitless = dynamic_cast<Limitless*>(strongest->GetTechnique());
-
-        if (limitless && limitless->CheckInfinity()) {
-            this->SetAmplification(true);
+        auto* sorcerer_target = dynamic_cast<Sorcerer*>(strongest);
+        if (sorcerer_target) {
+            auto* limitless = dynamic_cast<Limitless*>(sorcerer_target->GetTechnique());
+            if (limitless && limitless->CheckInfinity()) {
+                this->SetAmplification(true);
+            }
+            else {
+                this->SetAmplification(false);
+            }
         }
         else {
             this->SetAmplification(false);

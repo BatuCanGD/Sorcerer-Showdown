@@ -28,14 +28,14 @@ public:
 	int GetUsedRedAmount()const;
 	int GetUsedPurpleAmount()const;
 	
-	void UseUnlimitedHollowPurple(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield);
+	void UseUnlimitedHollowPurple(Sorcerer* user, const std::vector<std::unique_ptr<Character>>& battlefield);
 	void UseBlue(Sorcerer* user, Character* target);
 	void UseRed(Sorcerer* user, Character* target);
 	void UsePurple(Sorcerer* user, Character* target);
 
 	void UseTheLimitlessTechnique(LimitlessType choice, Sorcerer* s, Character* c);
-	void TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
-	void TechniqueSetting(Sorcerer*, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) override;
+	void TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) override;
+	void TechniqueSetting(Sorcerer*, const std::vector<std::unique_ptr<Character>>& battlefield) override;
 
 	void Chant() override;
 	std::string GetTechniqueName() const override;

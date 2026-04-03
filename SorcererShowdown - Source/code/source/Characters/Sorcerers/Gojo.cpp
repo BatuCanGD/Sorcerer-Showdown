@@ -15,7 +15,7 @@ Gojo::Gojo() : Sorcerer(800.0, 4000.0, 40.0) {
     SetSixEyes(true);
     black_flash_chance = 15;
 }
-std::unique_ptr<Sorcerer> Gojo::Clone() const {
+std::unique_ptr<Character> Gojo::Clone() const {
     return std::make_unique<Gojo>();
 }
 
@@ -26,7 +26,7 @@ std::string Gojo::GetSimpleName() const {
     return "Gojo";
 }
 
-void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
     if (this->IsCharacterStunned()) {
         std::println("{} is stunned and their turn will be skipped", this->GetName());
         return;
@@ -45,30 +45,32 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         this->DisableRCT();
     }
     double strongesthealth = -1.0;
-    Sorcerer* strongest = nullptr;
+    Character* strongest = nullptr;
     std::vector<Sorcerer*> domain_users;
     bool shrine_found = false;
 
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
         double perceived_health = target->GetCharacterHealth() + GetRandomNumber(-100, 100);
-        if (target->DomainActive()) {
-            domain_users.push_back(target.get());
+
+        auto sorcerer = dynamic_cast<Sorcerer*>(target.get());
+        if (sorcerer && sorcerer->DomainActive()) {
+            domain_users.push_back(sorcerer);
         }
 
-        bool target_has_shrine = (target->GetTechnique() && target->GetTechnique()->GetTechniqueSimpleName() == "Shrine");
+        bool target_has_shrine = sorcerer && (sorcerer->GetTechnique() && sorcerer->GetTechnique()->GetTechniqueSimpleName() == "Shrine");
         if (!strongest) {
             strongest = target.get();
             strongesthealth = perceived_health;
             shrine_found = target_has_shrine;
         }
         else if (target_has_shrine && !shrine_found) {
-            strongest = target.get();
+            strongest = sorcerer;
             strongesthealth = perceived_health;
             shrine_found = true;
         }
         else if (target_has_shrine && shrine_found && perceived_health > strongesthealth) {
-            strongest = target.get();
+            strongest = sorcerer;
             strongesthealth = perceived_health;
         }
         else if (!shrine_found && perceived_health > strongesthealth) {
@@ -134,12 +136,16 @@ void Gojo::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
         return;
     }
     else if (strongest) {
-        Limitless* str = dynamic_cast<Limitless*>(strongest->GetTechnique());
-
-        if (str && str->CheckInfinity()) SetAmplification(true);
-        else SetAmplification(false);
-
+        if (auto src = dynamic_cast<Sorcerer*>(strongest)){
+            if (auto str = dynamic_cast<Limitless*>(src->GetTechnique())) {
+                if (str && str->CheckInfinity()) SetAmplification(true);
+                else SetAmplification(false);
+            }
+        }
         this->Attack(strongest);
+        if (domain_amplification_active) {
+            SetAmplification(false);
+        }
     }
 
 }

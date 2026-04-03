@@ -11,8 +11,6 @@ import std;
 
 Sorcerer::~Sorcerer() = default;
 
-int Sorcerer::global_id_counter = 0;
-
 Sorcerer::Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {
     global_id_counter++;
     unique_id = global_id_counter;
@@ -45,15 +43,8 @@ Specials* Sorcerer::GetSpecial() const {
     return special.get();
 }
 
-CursedTool* Sorcerer::GetTool() const {
-    return cursed_tool.get();
-}
-
 const std::vector<std::unique_ptr<Shikigami>>& Sorcerer::GetShikigami() const {
     return shikigami;
-}
-const std::vector<std::unique_ptr<CursedTool>>& Sorcerer::GetCursedTools() const {
-    return inventory_curse;
 }
 
 void Sorcerer::SetAmplification(bool t) {
@@ -125,8 +116,9 @@ void Sorcerer::TickZone() {
 }
 
 void Sorcerer::TickShikigami() {
+    std::vector<std::unique_ptr<Character>> empty;
     for (const auto& s : shikigami) {
-        s->OnShikigamiTurn(this);
+        s->OnCharacterTurn(this, empty);
     }
 }
 
@@ -178,7 +170,7 @@ void Sorcerer::UseRCT() {
 }
 
 void Sorcerer::Attack(Character* target) {
-    Sorcerer* target_sorcerer = static_cast<Sorcerer*>(target);
+    Sorcerer* target_sorcerer = dynamic_cast<Sorcerer*>(target);
     if (target_sorcerer) {
         if (Limitless* limitless = dynamic_cast<Limitless*>(target_sorcerer->GetTechnique())) {
             if (limitless->CheckInfinity() && !this->DomainAmplificationActive()) {
@@ -192,7 +184,7 @@ void Sorcerer::Attack(Character* target) {
         double amp_damage = base_attack_damage + ce_addon;
 
         target->DamageBypass(amp_damage);
-        std::println("{} landed a strike on {} using {}domain amplification{}!", this->GetNameWithID(), target_sorcerer->GetNameWithID(),Color::Yellow,Color::Clear);
+        std::println("{} landed a strike on {} using {}domain amplification{}!", this->GetNameWithID(), target->GetNameWithID(),Color::Yellow,Color::Clear);
         return;
     }
     else if (cursed_tool) {
@@ -214,10 +206,10 @@ void Sorcerer::Attack(Character* target) {
 
     if (is_black_flash) {
         std::println("\n*** {}BLACK FLASH!{} ***", Color::Red, Color::Clear);
-        std::println("{} landed a {}BlackFlash{} on {}!", this->GetNameWithID(), Color::Red, Color::Clear, target_sorcerer->GetNameWithID());
+        std::println("{} landed a {}BlackFlash{} on {}!", this->GetNameWithID(), Color::Red, Color::Clear, target->GetNameWithID());
     }
     else {
-        std::println("{} landed a {}heavy strike{} on {}!", this->GetNameWithID(),Color::BrightRed,Color::Clear, target_sorcerer->GetNameWithID());
+        std::println("{} landed a {}heavy strike{} on {}!", this->GetNameWithID(),Color::BrightRed,Color::Clear, target->GetNameWithID());
     }
 }
 
@@ -319,14 +311,6 @@ std::string Sorcerer::GetName() const {
     return "Sorcerer";
 }
 
-bool Sorcerer::IsThePlayer() const {
-    return is_player;
-}
-
-void Sorcerer::SetAsPlayer(bool p) {
-    is_player = p;
-}
-
 void Sorcerer::DomainDrain() {
     if (DomainActive()) {
         this->SpendCE(this->GetDomain()->GetUseCost());
@@ -340,6 +324,11 @@ bool Sorcerer::CanBeHit() const {
 bool Sorcerer::DomainAmplificationActive() const {
     return domain_amplification_active;
 }
+
+bool Sorcerer::IsaSorcerer()const {
+    return true;
+}
+
 
 void Sorcerer::CleanupShikigami() {
     auto [removed_begin, removed_end] = std::ranges::remove_if(shikigami, [](const auto& s) {
@@ -375,152 +364,10 @@ void Sorcerer::RecoverTechniqueBurnout(Technique* t) {
     if (technique_burnout_time != 0 && !t->BurntOut()) technique_burnout_time = 0;
 }
 
-void Sorcerer::CursedToolChoice(int choice) {
-    if (choice == 0) {
-        if (cursed_tool != nullptr) {
-            std::println("{}{} put {} away.{}",Color::BrightRed, this->GetNameWithID(), cursed_tool->GetName(),Color::Clear);
-            inventory_curse.push_back(std::move(cursed_tool));
-            cursed_tool = nullptr;
-        }
-        return;
-    }
-
-    int inv_index = choice - 1;
-    if (inv_index >= 0 && inv_index < inventory_curse.size()) {
-        if (cursed_tool != nullptr) {
-            inventory_curse.push_back(std::move(cursed_tool));
-        }
-        cursed_tool = std::move(inventory_curse[inv_index]);
-        inventory_curse.erase(inventory_curse.begin() + inv_index);
-
-        std::println("{}{} equipped {}!{}", Color::Cyan,this->GetNameWithID(), cursed_tool->GetName(),Color::Clear);
-    }
-    else {
-        std::println("{}Invalid tool choice.{}",Color::Red, Color::Clear);
-    }
-}
-
-void Sorcerer::EquipToolByName(const std::string& weaponName) {
-    for (int i = 0; i < inventory_curse.size(); ++i) {
-        if (inventory_curse[i]->GetSimpleName() == weaponName) {
-            CursedToolChoice(i + 1); 
-            return;
-        }
-    }
-}
-
-
-void Sorcerer::Taunt(Character* taunted) { // pure aura
-    if (!taunted) return;
-    Sorcerer* s = static_cast<Sorcerer*>(taunted);
-    const double healthy_threshold = 0.70;
-    const double injured_threshold = 0.40;
-    const double critical_threshold = 0.20;
-
-    int taunt_type = GetRandomNumber(1, 4);
-
-    if (this->HPMoreThanMax(healthy_threshold)) {
-        switch (taunt_type) {
-        case 1:
-            std::println("I'm surprised you've even managed to scratch me this much {}!", s->GetNameWithID());
-            break;
-        case 2:
-            std::println("Is that all you've got, {}? I expected more from you!", s->GetNameWithID());
-            break;
-        case 3:
-            std::println("You're not even worth my time, {}!", s->GetNameWithID());
-            break;
-        default:
-            std::println("You should just give up now, {}!", s->GetNameWithID());
-        }
-    }
-    else if (this->HPMoreThanMax(injured_threshold)) {
-        switch (taunt_type) {
-        case 1:
-            std::println("You're starting to annoy me, {}. Keep it up and I'll make you regret it!", s->GetNameWithID());
-            break;
-        case 2:
-            std::println("You're not doing too bad, {}. But don't get too confident just yet!", s->GetNameWithID());
-            break;
-        case 3:
-            std::println("Huh, you're actually putting up a fight, {}. I might have to take you more seriously!", s->GetNameWithID());
-            break;
-        default:
-            std::println("You're not bad, {}. But I'm still better!", s->GetNameWithID());
-
-        }
-    }
-    else if (this->HPMoreThanMax(critical_threshold)) {
-        switch (taunt_type) {
-        case 1:
-            std::println("You're really starting to piss me off, {}. I'll make you regret your actions!", s->GetNameWithID());
-            break;
-        case 2:
-            std::println("You're actually pretty strong, but it won't be enough to defeat me, {}!", s->GetNameWithID());
-            break;
-        case 3:
-            std::println("You're really starting to get on my nerves, {}. I might have to end this quickly!", s->GetNameWithID());
-            break;
-        default:
-            std::println("You think a few hits will stop me, {}? Im just getting warmed up!", s->GetNameWithID());
-        }
-    }
-    else {
-        switch (taunt_type) {
-        case 1:
-            std::println("You think this is over, {}? I'll drag you to the grave with me!", s->GetNameWithID());
-            break;
-        case 2:
-            std::println("Blood for blood, {}! You won't leave this place alive!", s->GetNameWithID());
-            break;
-        case 3:
-            std::println("You're really starting to piss me off, {}. I might have to end this quickly!", s->GetNameWithID());
-            break;
-        default:
-            std::println("I'll make you wish you were never born {}!", s->GetNameWithID());
-        }
-    }
-}
-
-int Sorcerer::GetID() const {
-    return unique_id;
-}
-
-std::string Sorcerer::GetNameWithID()const {
-    return std::format("{} ({})", this->GetName(), unique_id);
-}
-
 std::string Sorcerer::GetSimpleName() const {
     return "Sorcerer";
 }
 
-double Sorcerer::GetReinforcement() const {
-    return current_ce_reinforcement;
-}
-double Sorcerer::GetMaxReinforcement()const {
-    return max_ce_reinforcement;
-}
-double Sorcerer::GetDamageReinforcement()const {
-    return 1.0 + ((current_ce_reinforcement / max_ce_reinforcement) * 2);
-}
-
-void Sorcerer::SetCurrentReinforcement(double r) {
-    current_ce_reinforcement = std::clamp(r, 0.0, max_ce_reinforcement);
-}
-void Sorcerer::SetMaxReinforcement(double max) {
-    max_ce_reinforcement = max;
-}
-void Sorcerer::AddReinforcement(double r) {
-    current_ce_reinforcement = std::clamp(current_ce_reinforcement + r, 0.0, max_ce_reinforcement);
-}
-
-void Sorcerer::TickReinforcement() {
-    if (this->IsHeavenlyRestricted()) return;
-    if (current_ce_reinforcement <= 0.0) return;
-    double maintain_cost = current_ce_reinforcement;
-    this->SpendCE(maintain_cost);
-    if (this->GetCharacterCE() < this->GetReinforcement()) {
-        current_ce_reinforcement = 0.0;
-        std::println("{}'s CE reinforcement collapsed due to exhaustion!",this->GetNameWithID());
-    }
+std::unique_ptr<Character> Sorcerer::Clone() const {
+    return nullptr;
 }

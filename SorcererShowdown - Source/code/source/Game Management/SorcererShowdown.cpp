@@ -10,10 +10,10 @@ int main() { // main
 	PlayerManager player;
 	UserInterface interface;
 
-	std::vector<std::unique_ptr<Sorcerer>> battlefield;
-	std::map<std::string, int> sorcerer_counts;
+	std::vector<std::unique_ptr<Character>> battlefield;
+	std::map<std::string, int> fighter_counts;
 
-	bool spectator_mode = manager.SetupBattlefield(battlefield, sorcerer_counts);
+	bool spectator_mode = manager.SetupBattlefield(battlefield, fighter_counts);
 	bool skip_turns = manager.SkipTurnFullyCheck();
 	interface.ShowBattleEntry(battlefield);
 	
@@ -36,7 +36,7 @@ int main() { // main
 				std::println("\n");
 				interface.DisplaySorcererStatus(s.get());
 				std::println("\n");
-				s->OnSorcererTurn(battlefield);
+				s->OnCharacterTurn(s.get(), battlefield);
 				std::println("\n");
 			}
 

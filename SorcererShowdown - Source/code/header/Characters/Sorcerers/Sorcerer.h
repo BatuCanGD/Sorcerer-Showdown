@@ -7,34 +7,25 @@
 
 class Shikigami;
 class Technique;
-class CursedTool;
 class Domain;
 class Specials;
 
 class Sorcerer : public Character {
 protected:
-	static int global_id_counter;
-	int unique_id;
-
 	std::unique_ptr<Domain> domain = nullptr;
 	std::unique_ptr<Domain> counter_domain = nullptr; // frankenstein of a class
 	std::unique_ptr<Technique> technique = nullptr;
-	std::unique_ptr<Specials> special = nullptr; // cursed technique extension <- why didnt i think of this name first??
-	std::unique_ptr<CursedTool> cursed_tool = nullptr;
+	std::unique_ptr<Specials> special = nullptr; 
 
-	std::vector<std::unique_ptr<CursedTool>> inventory_curse;
 	std::vector<std::unique_ptr<Shikigami>> shikigami;
 
 	bool six_eyes = false;
 
 	double base_attack_damage = 20.0;
-	double current_ce_reinforcement = 50.0;
-	double max_ce_reinforcement = 200.0;
 
 	bool domain_amplification_active = false;
 	bool counter_domain_active = false;
 	bool domain_active = false;
-	bool is_player = false;
 	bool is_strained = false;
 
 	int total_domain_uses = 0;
@@ -59,24 +50,19 @@ protected:
 public:
 	virtual ~Sorcerer();
 	Sorcerer(double hp, double ce, double re);
-	virtual std::unique_ptr<Sorcerer> Clone() const = 0;
+	std::unique_ptr<Character> Clone() const override;
 
 	Shikigami* ChooseShikigami(size_t) const;
 	Technique* GetTechnique() const;
 	Specials* GetSpecial() const;
-	CursedTool* GetTool() const;
 	Domain* GetCounterDomain() const;
 	Domain* GetDomain() const;
 
 	const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
-	const std::vector<std::unique_ptr<CursedTool>>& GetCursedTools() const;
 
 	void SetAmplification(bool);
 	void SetSixEyes(bool);
 	bool HasSixEyes() const;
-
-	bool IsThePlayer() const;
-	void SetAsPlayer(bool);
 
 	void SpendCE(double ce) override;
 	void SpendCEdirect(double ce);
@@ -109,9 +95,6 @@ public:
 	void TickZone();
 	void TickShikigami();
 
-	void CursedToolChoice(int);
-	void EquipToolByName(const std::string& weaponname);
-
 	void Attack(Character*);
 
 	void CleanupShikigami();
@@ -119,24 +102,9 @@ public:
 	std::string GetSimpleName() const override;
 	std::string GetName() const override;
 
-	virtual void OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>&) = 0;
 	void RecoverBurnout();
 	void RecoverTechniqueBurnout(Technique*);
 
-	int GetID() const;
-	std::string GetNameWithID() const;
-	static void ResetGlobalID() { global_id_counter = 0; }
-	static void AddGlobalID(int i) { global_id_counter += i; }
-
-	void Taunt(Character* target);
+	bool IsaSorcerer() const override;
 	bool CanBeHit() const override;
-
-	double GetDamageReinforcement()const; // this for damage checks
-	double GetReinforcement()const; // for the value
-	double GetMaxReinforcement()const;
-
-	void SetMaxReinforcement(double);
-	void SetCurrentReinforcement(double);
-	void AddReinforcement(double);
-	void TickReinforcement();
 };

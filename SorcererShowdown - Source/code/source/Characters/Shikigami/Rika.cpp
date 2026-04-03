@@ -5,7 +5,7 @@ import std;
 
 Rika::Rika() : Shikigami(INT32_MAX, 100000.0, 3000.0) {}
 
-void Rika::OnShikigamiTurn(Sorcerer* user) {
+void Rika::OnCharacterTurn(Character* user, std::vector<std::unique_ptr<Character>>& battlefield) {
     if (IsPartiallyActive()) {
         this->Manifest();
     }
@@ -29,7 +29,7 @@ void Rika::OnShikigamiTurn(Sorcerer* user) {
     }
 }
 
-void Rika::RikaCooldownRegeneration(Sorcerer* user) {
+void Rika::RikaCooldownRegeneration(Character* user) {
     if (!IsActivePhysically() && value_saved) {
         if (active_turn_amount > 5) {
             active_cooldown--;
@@ -46,7 +46,7 @@ void Rika::RikaCooldownRegeneration(Sorcerer* user) {
     }
 }
 
-void Rika::SaveUserCursedEnergy(Sorcerer* user) {
+void Rika::SaveUserCursedEnergy(Character* user) {
     if (value_saved) return;
     user_ce = user->GetCharacterMaxCE();
     user_regen = user->GetCEregen();
@@ -65,4 +65,8 @@ std::string Rika::GetName() const {
 }
 std::string Rika::GetSimpleName() const {
     return "Rika";
+}
+
+std::unique_ptr<Character> Rika::Clone() const {
+    return nullptr;
 }

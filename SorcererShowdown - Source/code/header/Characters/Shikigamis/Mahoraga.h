@@ -16,10 +16,12 @@ protected:
 	InfinityAdaptation InfStage = InfinityAdaptation::None;
 	InfinityAdaptation PrevState = InfStage;
 public:
+	std::unique_ptr<Character> Clone() const override;
+
 	void Adapt();
 	bool FullyAdapted()const;
-	void OnShikigamiTurn(Sorcerer*) override;
-	void PrintStatus(Sorcerer*) const;
+	void OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>&) override;
+	void PrintStatus(Character*) const;
 	void UpdatePreviousState();
 
 	std::string GetSimpleName() const override;

@@ -20,7 +20,7 @@ Sukuna::Sukuna() : Sorcerer(1000.0, 16000.0, 100.0) {
     black_flash_chance = 10;
 }
 
-std::unique_ptr<Sorcerer> Sukuna::Clone() const {
+std::unique_ptr<Character> Sukuna::Clone() const {
     return std::make_unique<Sukuna>();
 }
 
@@ -31,7 +31,7 @@ std::string Sukuna::GetSimpleName() const {
     return "Sukuna";
 }
 
-void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
     if (this->IsCharacterStunned()) {
         std::println("{} is stunned and their turn will be skipped", this->GetName());
         return;
@@ -50,17 +50,19 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
     }
 
     double weakesthealth = INT32_MAX;
-    Sorcerer* weakest = nullptr;
+    Character* weakest = nullptr;
     std::vector<Sorcerer*> domain_users;
     bool limitless_found = false;
 
     for (const auto& target : battlefield) {
         if (target.get() == this) continue;
         double perceived_health = target->GetCharacterHealth() + GetRandomNumber(-100, 100);
-        if (target->DomainActive()) {
-            domain_users.push_back(target.get());
+
+        auto sorcerer = dynamic_cast<Sorcerer*>(target.get());
+        if (sorcerer && sorcerer->DomainActive()) {
+            domain_users.push_back(sorcerer);
         }
-        bool target_has_limitless = (target->GetTechnique() && target->GetTechnique()->GetTechniqueSimpleName() == "Limitless");
+        bool target_has_limitless = sorcerer && (sorcerer->GetTechnique() && sorcerer->GetTechnique()->GetTechniqueSimpleName() == "Limitless");
 
         if (!weakest) {
             weakest = target.get();
@@ -68,12 +70,12 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
             limitless_found = target_has_limitless;
         }
         else if (target_has_limitless && !limitless_found) {
-            weakest = target.get();
+            weakest = sorcerer;
             weakesthealth = perceived_health;
             limitless_found = true;
         }
         else if (target_has_limitless && limitless_found && perceived_health < weakesthealth) {
-            weakest = target.get();
+            weakest = sorcerer;
             weakesthealth = perceived_health;
         }
         else if (!limitless_found && perceived_health < weakesthealth) {
@@ -157,12 +159,15 @@ void Sukuna::OnSorcererTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield)
         this->DeactivateCounterDomain();
         return;
     }
-    
-    if (auto* limitless = dynamic_cast<Limitless*>(weakest->GetTechnique())) {
-        if (limitless->CheckInfinity()) {
-            this->SetAmplification(true);
-            this->Attack(weakest);
-            return;
+
+
+    if (auto sorcerer = dynamic_cast<Sorcerer*>(weakest)) {
+        if (auto* limitless = dynamic_cast<Limitless*>(sorcerer->GetTechnique())) {
+            if (limitless->CheckInfinity()) {
+                this->SetAmplification(true);
+                this->Attack(weakest);
+                return;
+            }
         }
     }
 

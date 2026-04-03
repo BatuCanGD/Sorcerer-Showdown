@@ -3,16 +3,17 @@
 #include <memory>
 
 class Sorcerer;
+class Character;
 
 class PlayerManager {
 public:
-	void OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield);
-	void PlayerRCTusage(Sorcerer& s);
-	void PlayerDAusage(Sorcerer& s);
-	void PlayerDomainUsage(Sorcerer& s);
-	void PlayerShikigami(Sorcerer& s);
-	void PlayerReinforcement(Sorcerer& s);
-	void GetPlayerTools(Sorcerer& s);
-	Sorcerer* TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>& battlefield, Sorcerer* player);
+	void OnPlayerTurn(Character& s, const std::vector<std::unique_ptr<Character>>& battlefield);
+	void PlayerRCTusage(Character& s);
+	void PlayerDAusage(Character& s);
+	void PlayerDomainUsage(Character& s);
+	void PlayerShikigami(Character& s);
+	void PlayerReinforcement(Character& s);
+	void GetPlayerTools(Character& s);
+	Character* TargetSelector(const std::vector<std::unique_ptr<Character>>& battlefield, Character* player);
 
 };

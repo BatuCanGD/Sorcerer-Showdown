@@ -9,38 +9,43 @@
 
 import std;
 
-void PlayerManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr<Character>>& battlefield) {
 	int plrch = GetValidInput();
+	auto p_sorcerer = dynamic_cast<Sorcerer*>(&s);
 	switch (plrch) {
 	case 1: {
-		if (s.GetTechnique() == nullptr) {
+		if (!s.IsaSorcerer()) {
+			std::println("You cant use techniques!");
+			return;
+		}
+		else if (p_sorcerer && p_sorcerer->GetTechnique() == nullptr) {
 			std::println("You don't have a technique to use!");
 			break;
 		}
-		else if (s.GetTechnique()->BurntOut()) {
+		else if (p_sorcerer->GetTechnique()->BurntOut()) {
 			std::println("Your technique is burnt out, you cant use it yet!");
 			break;
 		}
-		Sorcerer* target = TargetSelector(battlefield, &s);
+		Character* target = TargetSelector(battlefield, &s);
 
 		if (target) {
-			s.GetTechnique()->TechniqueMenu(&s, target, battlefield);
+			p_sorcerer->GetTechnique()->TechniqueMenu(p_sorcerer, target, battlefield);
 		}
 		break;
 	}
 	case 2: {
-		if (Sorcerer* target = TargetSelector(battlefield, &s)) {
+		if (Character* target = TargetSelector(battlefield, &s)) {
 			std::println("{} engages in close combat with {}!", s.GetName(), target->GetName());
-			s.Attack(target);
+			p_sorcerer->Attack(target);
 		}
 		break;
 	}
 	case 3: {
-		if (s.GetSpecial() == nullptr) {
+		if (p_sorcerer->GetSpecial() == nullptr) {
 			std::println("You dont have a Special move to use");
 			return;
 		}
-		s.GetSpecial()->PerformSpecial(&s);
+		p_sorcerer->GetSpecial()->PerformSpecial(p_sorcerer);
 		break;
 	}
 	case 4: {
@@ -48,14 +53,14 @@ void PlayerManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 		break;
 	}
 	case 5: {
-		if (Sorcerer* target = TargetSelector(battlefield, &s)) {
-			s.Taunt(target);
+		if (Character* target = TargetSelector(battlefield, &s)) {
+			p_sorcerer->Taunt(target);
 		}
 		break;
 	}
 	case 6:
-		if (s.IsHeavenlyRestricted()) {
-			std::println("You cant use Reverse Cursed Technique because you are heavenly restricted!");
+		if (!s.IsaSorcerer()) {
+			std::println("You cant use Reverse Cursed Technique!");
 			return;
 		}
 		else if (s.GetCharacterMaxCE() < 500.0f) {
@@ -65,22 +70,28 @@ void PlayerManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 		PlayerRCTusage(s);
 		break;
 	case 7:
-		if (s.IsHeavenlyRestricted()) {
-			std::println("You cant use Domain Amplification because you are heavenly restricted!");
+		if (!s.IsaSorcerer()) {
+			std::println("You cant use Domain Amplification.");
 			return;
 		}
 		PlayerDAusage(s);
 		break;
 	case 8:
+		if (!s.IsaSorcerer()) return;
 		GetPlayerTools(s);
 		break;
 	case 9:
-		s.GetTechnique()->TechniqueSetting(&s, battlefield);
+		if (!s.IsaSorcerer()) return;
+		if (p_sorcerer && p_sorcerer->GetTechnique() != nullptr) {
+			p_sorcerer->GetTechnique()->TechniqueSetting(p_sorcerer, battlefield);
+		}
 		break;
 	case 10:
+		if (!s.IsaSorcerer()) return;
 		PlayerShikigami(s);
 		break;
 	case 11:
+		if (!s.IsaSorcerer()) return;
 		PlayerReinforcement(s);
 		break;
 	default:
@@ -88,60 +99,68 @@ void PlayerManager::OnPlayerTurn(Sorcerer& s, const std::vector<std::unique_ptr<
 	}
 }
 
-void PlayerManager::PlayerDomainUsage(Sorcerer& s) {
-	if (s.GetDomain() == nullptr && s.GetCounterDomain() == nullptr) {
+void PlayerManager::PlayerDomainUsage(Character& s) {
+	auto p_sorcerer = static_cast<Sorcerer*>(&s);
+
+	if (!p_sorcerer) {
+		std::println("Placeholder, you cant access here");
+		return;
+	}
+
+	if (p_sorcerer->GetDomain() == nullptr && p_sorcerer->GetCounterDomain() == nullptr) {
 		std::println("You dont have a domain and a counter to a domain");
 		return;
 	}
-	if (s.GetDomain() != nullptr) {
-		std::println("Domain Status: [{}]", s.DomainActive() ? "Active" : "Inactive");
+	if (p_sorcerer->GetDomain() != nullptr) {
+		std::println("Domain Status: [{}]", p_sorcerer->DomainActive() ? "Active" : "Inactive");
 	}
-	if (s.GetCounterDomain() != nullptr) {
-		std::println("{} Status: [{}]", s.GetCounterDomain()->GetDomainName(), s.CounterDomainActive() ? "Active" : "Inactive");
+	if (p_sorcerer->GetCounterDomain() != nullptr) {
+		std::println("{} Status: [{}]", p_sorcerer->GetCounterDomain()->GetDomainName(), p_sorcerer->CounterDomainActive() ? "Active" : "Inactive");
 	}
-	if (s.GetDomain() != nullptr) {
+	if (p_sorcerer->GetDomain() != nullptr) {
 		std::print("1 - Activate Domain | 2 - Disable Domain ");
 	}
-	if (s.GetCounterDomain() != nullptr) {
-		std::println("\n3 - Activate {} | 4 - Disable {} ", s.GetCounterDomain()->GetDomainName(), s.GetCounterDomain()->GetDomainName());
+	if (p_sorcerer->GetCounterDomain() != nullptr) {
+		std::println("\n3 - Activate {} | 4 - Disable {} ", p_sorcerer->GetCounterDomain()->GetDomainName(), p_sorcerer->GetCounterDomain()->GetDomainName());
 	}
 	std::print("=> ");
 	int ch = GetValidInput();
 	switch (ch) {
 	case 1:
-		if (s.GetDomain() == nullptr) {
+		if (p_sorcerer->GetDomain() == nullptr) {
 			std::println("You dont have a domain");
 			break;
 		}
-		s.ActivateDomain();
+		p_sorcerer->ActivateDomain();
 		break;
 	case 2:
-		if (s.GetDomain() == nullptr) {
+		if (p_sorcerer->GetDomain() == nullptr) {
 			std::println("You dont have a domain");
 			break;
 		}
-		s.DeactivateDomain();
+		p_sorcerer->DeactivateDomain();
 		break;
 	case 3:
-		if (s.GetCounterDomain() == nullptr) {
+		if (p_sorcerer->GetCounterDomain() == nullptr) {
 			std::println("You dont have a counter domain");
 			break;
 		}
-		s.ActivateCounterDomain();
+		p_sorcerer->ActivateCounterDomain();
 		break;
 	case 4:
-		if (s.GetCounterDomain() == nullptr) {
+		if (p_sorcerer->GetCounterDomain() == nullptr) {
 			std::println("You dont have a counter domain");
 			break;
 		}
-		s.DeactivateCounterDomain();
+		p_sorcerer->DeactivateCounterDomain();
 		break;
 	default:
 		std::println("Invalid Input");
 	}
 }
 
-void PlayerManager::GetPlayerTools(Sorcerer& s) {
+void PlayerManager::GetPlayerTools(Character& s) {
+	auto p_sorcerer = dynamic_cast<Sorcerer*>(&s);
 	int count = 1;
 	std::println("Available Tools:");
 	for (const auto& tool : s.GetCursedTools()) {
@@ -160,20 +179,21 @@ void PlayerManager::GetPlayerTools(Sorcerer& s) {
 	s.CursedToolChoice(choice);
 }
 
-void PlayerManager::PlayerRCTusage(Sorcerer& s) {
+void PlayerManager::PlayerRCTusage(Character& s) {
+	auto p_sorcerer = static_cast<Sorcerer*>(&s);
 	std::println("1-Enable RCT, 2-Boost RCT, 3-Disable RCT");
 	int choice = GetValidInput();
 	switch (choice) {
 	case 1:
-		s.EnableRCT();
+		p_sorcerer->EnableRCT();
 		std::println("You have started using RCT");
 		break;
 	case 2:
-		s.BoostRCT();
+		p_sorcerer->BoostRCT();
 		std::println("You have started pumping RCT at maximum output");
 		break;
 	case 3:
-		s.DisableRCT();
+		p_sorcerer->DisableRCT();
 		std::println("You have disabled RCT");
 		break;
 	default:
@@ -181,34 +201,36 @@ void PlayerManager::PlayerRCTusage(Sorcerer& s) {
 	}
 }
 
-void PlayerManager::PlayerDAusage(Sorcerer& s) {
+void PlayerManager::PlayerDAusage(Character& s) {
+	auto p_sorcerer = static_cast<Sorcerer*>(&s);
 	std::println("1-On, 2-Off\n=>");
 	int choice = GetValidInput();
 
 	switch (choice) {
 	case 1:
-		s.SetAmplification(true);
+		p_sorcerer->SetAmplification(true);
 		break;
 	case 2:
-		s.SetAmplification(false);
+		p_sorcerer->SetAmplification(false);
 		break;
 	}
 }
 
-void PlayerManager::PlayerShikigami(Sorcerer& s) {
-	if (s.GetShikigami().empty()) {
+void PlayerManager::PlayerShikigami(Character& s) {
+	auto p = static_cast<Sorcerer*>(&s);
+	if (p->GetShikigami().empty()) {
 		std::println("You dont have any shikigami to use");
 		return;
 	}
 	int count = 1;
-	for (const auto& sh : s.GetShikigami()) {
+	for (const auto& sh : p->GetShikigami()) {
 		std::println("{}: {} ", count, sh->GetName());
 		count++;
 	}
 	std::println("Choose the shikigami you'd like to use\n=> ");
 	int ch = GetValidInput(); ch--;
-	if (ch >= 0 && ch < s.GetShikigami().size()) {
-		Shikigami* sk = s.ChooseShikigami(ch);
+	if (ch >= 0 && ch < p->GetShikigami().size()) {
+		Shikigami* sk = p->ChooseShikigami(ch);
 		std::println("Chosen Shikigami: {} | [{}]", sk->GetName(), sk->GetShikigamiStatus());
 		if (!sk->IsActivePhysically()) {
 			std::println("1 - Manifest");
@@ -266,13 +288,14 @@ void PlayerManager::PlayerShikigami(Sorcerer& s) {
 	}
 }
 
-void PlayerManager::PlayerReinforcement(Sorcerer& s) {
+void PlayerManager::PlayerReinforcement(Character& s) {
 	if (s.IsHeavenlyRestricted()) {
 		std::println("You are heavenly restricted, you dont have any CE to reinforce yourself with!");
 		return;
 	}
+	auto p = static_cast<Sorcerer*>(&s);
 	std::println("more reinforcement means harder hit to your CE spending");
-	std::println("Current: {}", s.GetReinforcementStatus());
+	std::println("Current: {}", p->GetReinforcementStatus());
 	std::println("1 - Add reinforcement amount 2 - Subtract reinforcement amount  3 - Set reinforcement amount");
 	std::print("=> "); int ch = GetValidInput();
 	if (ch == 1) {
@@ -295,7 +318,7 @@ void PlayerManager::PlayerReinforcement(Sorcerer& s) {
 	}
 }
 
-Sorcerer* PlayerManager::TargetSelector(const std::vector<std::unique_ptr<Sorcerer>>& battlefield, Sorcerer* player) {
+Character* PlayerManager::TargetSelector(const std::vector<std::unique_ptr<Character>>& battlefield, Character* player) {
 	std::println("Choose your target:");
 	for (size_t i = 0; i < battlefield.size(); ++i) {
 		auto& current = *battlefield[i];
@@ -304,13 +327,16 @@ Sorcerer* PlayerManager::TargetSelector(const std::vector<std::unique_ptr<Sorcer
 		double health = current.GetCharacterHealth();
 		double cursed_energy = current.GetCharacterCE();
 
-		Technique* tech = current.GetTechnique();
-		Domain* domain = current.GetDomain();
+		auto sorcerer = dynamic_cast<Sorcerer*>(&current);
+
+		Technique* tech = sorcerer ? sorcerer->GetTechnique() : nullptr;
+		Domain* domain = sorcerer ? sorcerer->GetDomain() : nullptr;
+	
+		std::string t_status = (tech == nullptr) ? "" : std::format("| Technique status: [{}] ", tech->GetStringStatus());
+		std::string d_status = (domain == nullptr) ? "" : std::format("| Domain status: [{}] ", sorcerer->GetDomainStatus());
 
 		std::string stunned = current.IsCharacterStunned() ? " (Stunned)" : "";
 		std::string name = current.GetName();
-		std::string t_status = (tech == nullptr) ? "" : std::format("| Technique status: [{}] ", tech->GetStringStatus());
-		std::string d_status = (domain == nullptr) ? "" : std::format("| Domain status: [{}] ", current.GetDomainStatus());
 		std::string ce_display = current.IsHeavenlyRestricted() ? "Heavenly Restricted" : std::format("{:.1f} CE", cursed_energy);
 
 		if (battlefield[i].get() == player) {

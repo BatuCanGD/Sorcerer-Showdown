@@ -2,10 +2,8 @@
 #include "CursedTool.h"
 
 class PlayfulCloud : public CursedTool {
-private:
-	double GetCalculatedStrength(Sorcerer*) const;
 public:
-	void UseTool(Sorcerer*, Character*) override;
+	void UseTool(Character*, Character*) override;
 	std::string GetName() const override;
 	std::string GetSimpleName() const override;
 };

@@ -9,7 +9,7 @@
 
 import std;
 
-bool BattleManager::GameEndCheck(const std::vector<std::unique_ptr<Sorcerer>>& battlefield, bool spectator_mode) {
+bool BattleManager::GameEndCheck(const std::vector<std::unique_ptr<Character>>& battlefield, bool spectator_mode) {
 	int alive_sorcerers = 0;
 	bool player_found = false;
 
@@ -40,18 +40,18 @@ bool BattleManager::SkipTurnFullyCheck() {
 	}
 }
 
-bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& battlefield, std::map<std::string, int>& sorcerer_counts) {
+bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Character>>& battlefield, std::map<std::string, int>& sorcerer_counts) {
 	bool choosing = true; bool spec_mode = false;
 	int c = 0;
 
-	std::vector<std::unique_ptr<Sorcerer>> sorcerers;
-	sorcerers.push_back(std::make_unique<Gojo>());
-	sorcerers.push_back(std::make_unique<Sukuna>());
-	sorcerers.push_back(std::make_unique<Yuta>());
-	sorcerers.push_back(std::make_unique<Toji>());
-	sorcerers.push_back(std::make_unique<test_sorcerer>());
+	std::vector<std::unique_ptr<Character>> characters;
+	characters.push_back(std::make_unique<Gojo>());
+	characters.push_back(std::make_unique<Sukuna>());
+	characters.push_back(std::make_unique<Yuta>());
+	characters.push_back(std::make_unique<Toji>());
+	characters.push_back(std::make_unique<test_sorcerer>());
 	
-	Sorcerer::ResetGlobalID();
+	Character::ResetGlobalID();
 
 	while (choosing) {
 		std::println("Choose your sorcerer and the amount of opponents you want to fight!");
@@ -66,7 +66,7 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 		}
 		std::println("\n");
 		int i = 1;
-		for (const auto& s : sorcerers) {
+		for (const auto& s : characters) {
 			std::println("{}: {}",i, s->GetName());
 			i++;
 		}
@@ -91,7 +91,7 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 		else if (c == -1 && !battlefield.empty()) {
 			sorcerer_counts[battlefield.back()->GetName()]--;
 			battlefield.pop_back();
-			Sorcerer::AddGlobalID(-1);
+			Character::AddGlobalID(-1);
 		}
 		else if (c == -2) {
 			if (spec_mode) {
@@ -102,11 +102,11 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 			}
 		}
 		else {
-			if (c > 0 && c <= sorcerers.size()) {
+			if (c > 0 && c <= characters.size()) {
 				int index = c - 1;
-				std::unique_ptr<Sorcerer> new_sorcerer = sorcerers[index]->Clone();
-				sorcerer_counts[new_sorcerer->GetName()]++;
-				battlefield.push_back(std::move(new_sorcerer));
+				std::unique_ptr<Character> new_character = characters[index]->Clone();
+				sorcerer_counts[new_character->GetName()]++;
+				battlefield.push_back(std::move(new_character));
 			}
 			else {
 				std::println("Invalid selection!");
@@ -117,7 +117,7 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Sorcerer>>& bat
 	return spec_mode;
 }
 
-bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& battlefield, bool spectator_mode) {
+bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Character>>& battlefield, bool spectator_mode) {
 	std::println("{}=============== TURN AFTERMATH ==============={}", Color::BrightRed, Color::Clear);
 
 	auto [removed_begin, removed_end] = std::ranges::remove_if(battlefield, [](const auto& s) {
@@ -132,51 +132,56 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Sorcerer>>& batt
 	bool player_alive = false;
 
 	for (const auto& c : battlefield) {
-		auto limitless = dynamic_cast<Limitless*>(c->GetTechnique());
-		if (limitless) {
-			limitless->InfinityNerf(c.get());
+		if (auto sorc = dynamic_cast<Sorcerer*>(c.get())) {
+			if (auto limitless = dynamic_cast<Limitless*>(sorc->GetTechnique())) {
+				limitless->InfinityNerf(sorc);
+			}
+			sorc->CleanupShikigami();
+			sorc->TickShikigami();		
+
+			double damage_taken = c->GetCharacterPreviousHealth() - c->GetCharacterHealth();
+			if (damage_taken > 0) {
+				std::println("{} took {}{:.1f} damage{} this turn",c->GetNameWithID(),Color::Red,  damage_taken,Color::Clear);
+				sorc->UseRCT();
+				if (c->GetCharacterHealth() >= c->GetCharacterPreviousHealth()) {
+					std::println("{} {}healed the damage back!{}",c->GetNameWithID(),Color::Green, Color::Clear);
+				}
+				else if (c->GetCharacterHealth() > (c->GetCharacterPreviousHealth() - damage_taken)) {
+					std::println("{} {}partially healed their wounds.{}",c->GetNameWithID(),Color::Yellow,Color::Clear);
+				}
+			}
+			else {
+				sorc->UseRCT();
+			}
+			sorc->RecoverBurnout();
+			sorc->RecoverTechniqueBurnout(sorc->GetTechnique());
+			sorc->TickZone();
 		}
 		if (c->IsThePlayer() || spectator_mode) {
 			player_alive = true;
 		}
 
-		c->CleanupShikigami();
-		c->TickShikigami();
 
-		double damage_taken = c->GetCharacterPreviousHealth() - c->GetCharacterHealth();
-		if (damage_taken > 0) {
-			std::println("{} took {}{:.1f} damage{} this turn",c->GetNameWithID(),Color::Red,  damage_taken,Color::Clear);
-			c->UseRCT();
-			if (c->GetCharacterHealth() >= c->GetCharacterPreviousHealth()) {
-				std::println("{} {}healed the damage back!{}",c->GetNameWithID(),Color::Green, Color::Clear);
-			}
-			else if (c->GetCharacterHealth() > (c->GetCharacterPreviousHealth() - damage_taken)) {
-				std::println("{} {}partially healed their wounds.{}",c->GetNameWithID(),Color::Yellow,Color::Clear);
-			}
-		}
-		else {
-			c->UseRCT();
-		}
 		c->UpdatePreviousHP();
 		c->RegenCE();
 		c->ClearStunTime();
-		c->RecoverBurnout();
-		c->RecoverTechniqueBurnout(c->GetTechnique());
-		c->TickZone();
 		c->TickReinforcement();
 	}
 	std::println("{}======================================================={}", Color::Yellow, Color::Clear);
 	return player_alive;
 }
 
-void BattleManager::DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+void BattleManager::DomainCheckAndPerform(std::vector<std::unique_ptr<Character>>& battlefield) {
 	std::println("\n\n{}================= END OF TURN SUMMARY ================={}", Color::Yellow, Color::Clear); // this is here now because its just 1 line away from manage end of turn
 	std::println("{}============= DOMAINS AND CLASHES ============{}", Color::BrightMagenta, Color::Clear);
 	std::vector<Sorcerer*> active_domains;
+
 	for (const auto& s : battlefield) {
-		if (s->GetDomain() == nullptr) continue;
-		if (s->DomainActive()) {
-			active_domains.push_back(s.get());
+		if (auto sorcerers = dynamic_cast<Sorcerer*>(s.get())) {
+			if (sorcerers->GetDomain() == nullptr) continue;
+			if (sorcerers->DomainActive()) {
+				active_domains.push_back(sorcerers);
+			}
 		}
 	}
 
@@ -186,7 +191,7 @@ void BattleManager::DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>
 
 	if (active_domains.size() > 2) {
 		for (const auto& s : active_domains) {
-			s->DeactivateDomain(); // dont forget / domain deactivation burns out the technique too
+			s->DeactivateDomain(); 
 			s->GetDomain()->CollapseDomain();
 		}
 	}
@@ -216,11 +221,13 @@ void BattleManager::DomainCheckAndPerform(std::vector<std::unique_ptr<Sorcerer>>
 		}
 	}
 	for (const auto& s : battlefield) {
-		s->TickDomain();
+		if (auto sr = dynamic_cast<Sorcerer*>(s.get())) {
+			sr->TickDomain();
+		}
 	}
 }
 
-bool BattleManager::IsBattleOver(bool game_over ,bool player_found,bool spectator_mode, std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+bool BattleManager::IsBattleOver(bool game_over ,bool player_found,bool spectator_mode, std::vector<std::unique_ptr<Character>>& battlefield) {
 	if (!game_over && battlefield.size() > 1 && (player_found || spectator_mode)) return false;
 
 	if (battlefield.empty()) {

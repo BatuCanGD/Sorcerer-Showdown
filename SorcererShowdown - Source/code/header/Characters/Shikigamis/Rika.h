@@ -12,9 +12,10 @@ private:
 	int active_cooldown = 5;
 public:
 	Rika();
-	void OnShikigamiTurn(Sorcerer*) override;
-	void SaveUserCursedEnergy(Sorcerer*);
-	void RikaCooldownRegeneration(Sorcerer*);
+	std::unique_ptr<Character> Clone() const override;
+	void OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>&) override;
+	void SaveUserCursedEnergy(Character*);
+	void RikaCooldownRegeneration(Character*);
 
 	std::string GetSimpleName() const override;
 	std::string GetName() const override;

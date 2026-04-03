@@ -6,8 +6,7 @@ import std;
 
 void Limitless::UseBlue(Sorcerer* user, Character* target) {
     if (chant == ChantLevel::Four) std::println("{}\"MAXIMUM OUTPUT: BLUE!\"{}", Color::Blue, Color::Clear);
-    Sorcerer* s = static_cast<Sorcerer*>(target);
-    println("{} uses {}Blue{} on {}!", user->GetNameWithID(),Color::Blue,Color::Clear, s->GetNameWithID());
+    println("{} uses {}Blue{} on {}!", user->GetNameWithID(),Color::Blue,Color::Clear, target->GetNameWithID());
     double dmg = CalculateDamage(user, blue_output * GetChantPower());
     target->Damage(dmg);
     blue_used_amount++;
@@ -16,8 +15,7 @@ void Limitless::UseBlue(Sorcerer* user, Character* target) {
 
 void Limitless::UseRed(Sorcerer* user, Character* target) {
     if (chant == ChantLevel::Four) std::println("{}\"MAXIMUM OUTPUT: RED!\"{}",Color::Red, Color::Clear);
-    Sorcerer* s = static_cast<Sorcerer*>(target);
-    println("{} uses {}Red{} on {}!", user->GetNameWithID(),Color::Red,Color::Clear, s->GetNameWithID());
+    println("{} uses {}Red{} on {}!", user->GetNameWithID(),Color::Red,Color::Clear, target->GetNameWithID());
     double dmg = CalculateDamage(user, red_output * GetChantPower());
     target->Damage(dmg);
     red_used_amount++;
@@ -26,8 +24,7 @@ void Limitless::UseRed(Sorcerer* user, Character* target) {
 
 void Limitless::UsePurple(Sorcerer* user, Character* target) {
     if (chant == ChantLevel::Four) std::println("{}\"HOLLOW PURPLE!\"{}",Color::Purple,Color::Clear);
-    Sorcerer* s = static_cast<Sorcerer*>(target);
-    println("{} hits {} with a {}Hollow Purple!{}", user->GetNameWithID(), s->GetNameWithID(), Color::Purple,Color::Clear);
+    println("{} hits {} with a {}Hollow Purple!{}", user->GetNameWithID(), target->GetNameWithID(), Color::Purple,Color::Clear);
     double dmg = CalculateDamage(user, purple_output * GetChantPower());
     target->Damage(dmg);
     purple_used_amount++;
@@ -83,7 +80,7 @@ int Limitless::GetUsedPurpleAmount() const {
     return purple_used_amount;
 }
 
-void Limitless::UseUnlimitedHollowPurple(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+void Limitless::UseUnlimitedHollowPurple(Sorcerer* user, const std::vector<std::unique_ptr<Character>>& battlefield) {
     if (chant != ChantLevel::Four) {
         std::println("the Unlimited Hollow Purple doesnt have enough output, chant to its maximum output and potential!");
         return;
@@ -125,7 +122,7 @@ void Limitless::InfinityNerf(Sorcerer* user) {
     }
 }
 
-void Limitless::TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+void Limitless::TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) {
     if (user->DomainAmplificationActive()) {
         std::println("{}You cannot use your innate technique due to domain amplification!{}", Color::Red, Color::Clear);
         return;
@@ -148,7 +145,7 @@ void Limitless::TechniqueMenu(Sorcerer* user, Character* target, const std::vect
 
 }
 
-void Limitless::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Sorcerer>>& battlefield) {
+void Limitless::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Character>>& battlefield) {
     std::println("Infinity Status: [{}] | Chant level: [{}]", this->CheckInfinity() ? "\033[36mActive\033[0m" : "\033[31mInactive\033[0m", this->GetStringChantLevel());
     std::println("1 - Turn on Infinity | 2 - Turn off Infinity | 3 - Chant | 4 - Return");
     std::print("=> ");

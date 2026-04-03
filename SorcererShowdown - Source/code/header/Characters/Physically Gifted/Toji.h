@@ -1,9 +1,10 @@
 #pragma once
-#include "Sorcerer.h"
+#include "PhysicallyGifted.h"
 
-class Yuta : public Sorcerer {
+
+class Toji : public PhysicallyGifted {
 public:
-	Yuta();
+	Toji();
 	std::unique_ptr<Character> Clone() const override;
 	std::string GetSimpleName() const override;
 	std::string GetName() const override;
