@@ -228,10 +228,6 @@ void PlayerManager::PlayerDAusage(Character& s) {
 
 void PlayerManager::PlayerShikigami(Character& s) {
 	auto p = static_cast<Sorcerer*>(&s);
-	if (!p) {
-		std::println("You arent able to use shikigami");
-		return;
-	}
 	if (p->GetShikigami().empty()) {
 		std::println("You dont have any shikigami to use");
 		return;
@@ -303,10 +299,6 @@ void PlayerManager::PlayerShikigami(Character& s) {
 }
 
 void PlayerManager::PlayerReinforcement(Character& s) {
-	if (!s.IsaSorcerer()) {
-		std::println("You arent able to reinforce yourself with Cursed Energy!");
-		return;
-	}
 	auto p = static_cast<Sorcerer*>(&s);
 	std::println("more reinforcement means harder hit to your CE spending");
 	std::println("Current: {}", p->GetReinforcementStatus());
