@@ -77,7 +77,7 @@ void Yuta::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
         this->Taunt(strongest);
     }
 
-    if (domain_users.size() > 0) {
+    if (!domain_users.empty()) {
         if (domain_users.size() == 1 && !this->CounterDomainActive() && (this->GetTechnique()->BurntOut() || this->GetDomainUses() >= 5)) {
             this->ActivateCounterDomain();
             return;

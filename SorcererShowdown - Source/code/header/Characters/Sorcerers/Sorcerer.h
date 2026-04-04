@@ -95,7 +95,7 @@ public:
 	void TickZone();
 	void TickShikigami();
 
-	void Attack(Character*);
+	void Attack(Character*) override;
 
 	void CleanupShikigami();
 

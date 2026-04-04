@@ -29,7 +29,7 @@ void Copy::CopyFrom(Sorcerer* target) {
         std::println("Nothing to copy!");
         return;
     }
-    if (target->IsHeavenlyRestricted()) {
+    if (target->IsPhysicallyGifted()) {
         std::println("{} has no cursed technique to copy!", target->GetName());
         return;
     }
@@ -50,7 +50,7 @@ void Copy::CopyFrom(Sorcerer* target) {
     copied_techniques.push_back(std::move(cloned));
 }
 
-void Copy::SwitchCopy(int index) {
+void Copy::SwitchCopy(size_t index) {
     if (index < 0 || index >= copied_techniques.size()) {
         std::println("Invalid choice.");
         return;
@@ -135,7 +135,7 @@ void Copy::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Ch
             break;
         }
         std::println("Enter index: ");
-        int dex = GetValidInput();
+        size_t dex = GetValidInput();
         SwitchCopy(dex);
         break;
     }

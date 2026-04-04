@@ -1,4 +1,9 @@
 #include "PhysicallyGifted.h"
+#include "Limitless.h"
+#include "Sorcerer.h"
+#include "Utils.h"
+
+import std;
 
 PhysicallyGifted::PhysicallyGifted(double hp, double str) 
 	: Character(hp, -1, -1) 
@@ -8,13 +13,31 @@ PhysicallyGifted::PhysicallyGifted(double hp, double str)
 
 	max_ce_reinforcement = 0.0;
 	current_ce_reinforcement = 0.0;
-
-	global_id_counter++;
-	unique_id = global_id_counter;
 }
 
 std::unique_ptr<Character> PhysicallyGifted::Clone() const {
 	return nullptr;
+}
+
+void  PhysicallyGifted::Attack(Character* target) {
+    if (auto* target_sorcerer = dynamic_cast<Sorcerer*>(target)) {
+        if (auto* limitless = dynamic_cast<Limitless*>(target_sorcerer->GetTechnique())) {
+            bool has_spear = cursed_tool && cursed_tool->GetSimpleName() == "The Inverted Spear of Heaven";
+            if (limitless->CheckInfinity() && !has_spear) {
+                std::println("{}'s attack was blocked by {}'s {}Infinity{}!",
+                    this->GetNameWithID(), target_sorcerer->GetNameWithID(), Color::Cyan, Color::Clear);
+                return;
+            }
+        }
+    }
+
+    if (cursed_tool) {
+        cursed_tool->UseTool(this, target);
+    }
+    else {
+        std::println("{} strikes {} with their bare hands!", this->GetNameWithID(), target->GetNameWithID());
+        target->Damage(10.0 * this->GetStrengthDamage());
+    }
 }
 
 bool PhysicallyGifted::IsPhysicallyGifted() const {

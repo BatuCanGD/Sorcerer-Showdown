@@ -9,6 +9,7 @@ class Character {
 protected:
 	static int global_id_counter;
 	int unique_id;
+
 	bool is_player = false;
 
 	double health;
@@ -53,6 +54,8 @@ public:
 	virtual void OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>&);
 	void Taunt(Character* target) const;
 
+	virtual void Attack(Character*);
+
 	void Damage(double h);
 	void DamageBypass(double h);
 	void Regen(double h);
@@ -74,7 +77,6 @@ public:
 	double GetCharacterPreviousHealth() const;
 
 	bool IsCharacterStunned() const;
-	bool IsHeavenlyRestricted() const;
 
 	void CursedToolChoice(int);
 	void EquipToolByName(const std::string& weaponname);
@@ -100,4 +102,7 @@ public:
 	virtual std::string GetSimpleName() const = 0;
 	virtual std::string GetName() const = 0;
 	virtual bool CanBeHit() const = 0;
+
+	void AssignID();
+	virtual bool CanBeAssignedID() const;
 };

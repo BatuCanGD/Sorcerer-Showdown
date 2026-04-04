@@ -12,7 +12,7 @@ void InfiniteVoid::OnSureHit(Character& target) {
         std::println("{} protected himself from the {}'s surehit by using {}!", s->GetName(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
         return;
     }
-    else if (target.IsHeavenlyRestricted()) {
+    else if (target.IsPhysicallyGifted()) {
         std::println("{} couldnt detect {} due to their heavenly restriction\nThe domain's surehit didnt work!", this->GetDomainName(), target.GetName());
         return;
     }

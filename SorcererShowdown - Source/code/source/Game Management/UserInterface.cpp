@@ -51,7 +51,7 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 
 	std::print("Health: [{}{:.1f}/{:.1f}{}] | ",hp_color, hp, max_hp, Color::Clear);
 	
-	if (!s->IsHeavenlyRestricted()) {
+	if (!s->IsPhysicallyGifted()) {
 		double ce = s->GetCharacterCE();
 		double max_ce = s->GetCharacterMaxCE();
 		std::string ce_color = Color::Cyan;
@@ -151,11 +151,11 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 				? std::format("9 - Technique Settings [{}Locked{}]", Color::DimGray, Color::Clear)
 				: "9 - Technique Settings";
 
-			rctd = p_sorcerer->IsHeavenlyRestricted()
+			rctd = p_sorcerer->IsPhysicallyGifted()
 				? std::format("6 - Reverse Cursed Technique [{}Locked{}]", Color::DimGray, Color::Clear)
 				: std::format("6 - Reverse Cursed Technique [{}]", p_sorcerer->GetRCTstatus());
 
-			amplificationd = p_sorcerer->IsHeavenlyRestricted()
+			amplificationd = p_sorcerer->IsPhysicallyGifted()
 				? std::format("7 - Domain Amplification [{}Locked{}]", Color::DimGray, Color::Clear)
 				: std::format("7 - Domain Amplification [{}]", p_sorcerer->GetDAstatus());
 

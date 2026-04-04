@@ -3,7 +3,7 @@
 
 double CursedTool::GetCalculatedStrength(Character* user)  const {
 	if (user->IsPhysicallyGifted()) {
-		auto pg = dynamic_cast<PhysicallyGifted*>(user);
+		auto pg = static_cast<PhysicallyGifted*>(user);
 		return base_tool_damage + (pg->GetStrengthDamage() * 1.25);
 	}
 	else {

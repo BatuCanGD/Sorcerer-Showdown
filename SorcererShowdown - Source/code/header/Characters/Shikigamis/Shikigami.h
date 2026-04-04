@@ -17,6 +17,7 @@ protected:
 public:
 	Shikigami(double hp, double ce, double re);
 	std::unique_ptr<Character> Clone() const override;
+	bool CanBeAssignedID() const override;
 
 	void PartiallyManifest();
 	void Manifest();

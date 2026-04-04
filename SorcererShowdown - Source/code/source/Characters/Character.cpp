@@ -16,6 +16,7 @@ Character::Character(double hp, double ce, double regen)
 	cursed_energy(ce),
 	max_cursed_energy(ce),
 	ce_regen_efficiency(regen){
+	AssignID();
 }
 
 void Character::OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>&) {
@@ -23,6 +24,22 @@ void Character::OnCharacterTurn(Character*, std::vector<std::unique_ptr<Characte
 }
 
 Character::~Character() = default;
+
+bool Character::CanBeAssignedID() const {
+	return true;
+}
+
+void Character::Attack(Character* target) {
+	std::println("Placeholder character class virtual attack function, {}", target->GetName());
+}
+
+void Character::AssignID() {
+	if (CanBeAssignedID()) {
+		global_id_counter++;
+		unique_id = global_id_counter;
+	}
+}
+
 
 bool Character::IsThePlayer() const {
 	return is_player;
@@ -107,9 +124,6 @@ void Character::UpdatePreviousHP() {
 bool Character::IsCharacterStunned() const {
 	return is_stunned;
 }
-bool Character::IsHeavenlyRestricted() const {
-	return is_heavenly_restricted;
-}
 
 bool Character::CEMoreThanMax(double c) const {
 	return this->GetCharacterCE() > this->GetCharacterMaxCE() * c;
@@ -168,7 +182,7 @@ void Character::CursedToolChoice(int choice) {
 		return;
 	}
 
-	int inv_index = choice - 1;
+	size_t inv_index = choice - 1;
 	if (inv_index >= 0 && inv_index < inventory_curse.size()) {
 		if (cursed_tool != nullptr) {
 			inventory_curse.push_back(std::move(cursed_tool));
@@ -205,7 +219,7 @@ void Character::AddReinforcement(double r) {
 }
 
 void Character::TickReinforcement() {
-	if (this->IsHeavenlyRestricted()) return;
+	if (this->IsPhysicallyGifted()) return;
 	if (current_ce_reinforcement <= 0.0) return;
 	double maintain_cost = current_ce_reinforcement;
 	this->SpendCE(maintain_cost);

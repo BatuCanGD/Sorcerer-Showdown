@@ -82,5 +82,5 @@ bool Mahoraga::CanBeHit() const {
 }
 
 std::unique_ptr<Character> Mahoraga::Clone() const {
-    return std::make_unique<Mahoraga>();
+    return nullptr;
 }

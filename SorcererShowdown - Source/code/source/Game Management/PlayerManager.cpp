@@ -27,7 +27,6 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 			break;
 		}
 		Character* target = TargetSelector(battlefield, &s);
-
 		if (target) {
 			p_sorcerer->GetTechnique()->TechniqueMenu(p_sorcerer, target, battlefield);
 		}
@@ -36,11 +35,15 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 	case 2: {
 		if (Character* target = TargetSelector(battlefield, &s)) {
 			std::println("{} engages in close combat with {}!", s.GetName(), target->GetName());
-			p_sorcerer->Attack(target);
+			s.Attack(target);
 		}
 		break;
 	}
 	case 3: {
+		if (!s.IsaSorcerer()) {
+			std::println("You cant Special Moves");
+			return;
+		}
 		if (p_sorcerer->GetSpecial() == nullptr) {
 			std::println("You dont have a Special move to use");
 			return;
@@ -49,12 +52,16 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 		break;
 	}
 	case 4: {
+		if (!s.IsaSorcerer()) {
+			std::println("You cant use domains");
+			return;
+		}
 		PlayerDomainUsage(s);
 		break;
 	}
 	case 5: {
 		if (Character* target = TargetSelector(battlefield, &s)) {
-			p_sorcerer->Taunt(target);
+			s.Taunt(target);
 		}
 		break;
 	}
@@ -77,21 +84,29 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 		PlayerDAusage(s);
 		break;
 	case 8:
-		if (!s.IsaSorcerer()) return;
 		GetPlayerTools(s);
 		break;
 	case 9:
-		if (!s.IsaSorcerer()) return;
+		if (!s.IsaSorcerer()) {
+			std::println("You cant use Techniques");
+			return;
+		}
 		if (p_sorcerer && p_sorcerer->GetTechnique() != nullptr) {
 			p_sorcerer->GetTechnique()->TechniqueSetting(p_sorcerer, battlefield);
 		}
 		break;
 	case 10:
-		if (!s.IsaSorcerer()) return;
+		if (!s.IsaSorcerer()) {
+			std::println("You cant use Shikigami");
+			return;
+		}
 		PlayerShikigami(s);
 		break;
 	case 11:
-		if (!s.IsaSorcerer()) return;
+		if (!s.IsaSorcerer()) {
+			std::println("You cant use Cursed Energy Reinforcement");
+			return;
+		}
 		PlayerReinforcement(s);
 		break;
 	default:
@@ -101,11 +116,6 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 
 void PlayerManager::PlayerDomainUsage(Character& s) {
 	auto p_sorcerer = static_cast<Sorcerer*>(&s);
-
-	if (!p_sorcerer) {
-		std::println("Placeholder, you cant access here");
-		return;
-	}
 
 	if (p_sorcerer->GetDomain() == nullptr && p_sorcerer->GetCounterDomain() == nullptr) {
 		std::println("You dont have a domain and a counter to a domain");
@@ -160,7 +170,6 @@ void PlayerManager::PlayerDomainUsage(Character& s) {
 }
 
 void PlayerManager::GetPlayerTools(Character& s) {
-	auto p_sorcerer = dynamic_cast<Sorcerer*>(&s);
 	int count = 1;
 	std::println("Available Tools:");
 	for (const auto& tool : s.GetCursedTools()) {
@@ -181,6 +190,7 @@ void PlayerManager::GetPlayerTools(Character& s) {
 
 void PlayerManager::PlayerRCTusage(Character& s) {
 	auto p_sorcerer = static_cast<Sorcerer*>(&s);
+
 	std::println("1-Enable RCT, 2-Boost RCT, 3-Disable RCT");
 	int choice = GetValidInput();
 	switch (choice) {
@@ -218,6 +228,10 @@ void PlayerManager::PlayerDAusage(Character& s) {
 
 void PlayerManager::PlayerShikigami(Character& s) {
 	auto p = static_cast<Sorcerer*>(&s);
+	if (!p) {
+		std::println("You arent able to use shikigami");
+		return;
+	}
 	if (p->GetShikigami().empty()) {
 		std::println("You dont have any shikigami to use");
 		return;
@@ -289,8 +303,8 @@ void PlayerManager::PlayerShikigami(Character& s) {
 }
 
 void PlayerManager::PlayerReinforcement(Character& s) {
-	if (s.IsHeavenlyRestricted()) {
-		std::println("You are heavenly restricted, you dont have any CE to reinforce yourself with!");
+	if (!s.IsaSorcerer()) {
+		std::println("You arent able to reinforce yourself with Cursed Energy!");
 		return;
 	}
 	auto p = static_cast<Sorcerer*>(&s);
@@ -337,7 +351,7 @@ Character* PlayerManager::TargetSelector(const std::vector<std::unique_ptr<Chara
 
 		std::string stunned = current.IsCharacterStunned() ? " (Stunned)" : "";
 		std::string name = current.GetName();
-		std::string ce_display = current.IsHeavenlyRestricted() ? "Heavenly Restricted" : std::format("{:.1f} CE", cursed_energy);
+		std::string ce_display = current.IsPhysicallyGifted() ? "Heavenly Restricted" : std::format("{:.1f} CE", cursed_energy);
 
 		if (battlefield[i].get() == player) {
 			std::println("{}: {} (You)",

@@ -42,5 +42,5 @@ bool Agito::CanBeHit() const {
 }
 
 std::unique_ptr<Character> Agito::Clone() const {
-    return std::make_unique<Agito>();
+    return nullptr;
 }

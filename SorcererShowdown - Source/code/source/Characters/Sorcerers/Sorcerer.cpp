@@ -14,8 +14,6 @@ Sorcerer::~Sorcerer() = default;
 Sorcerer::Sorcerer(double hp, double ce, double re) : Character(hp, ce, re) {
     current_ce_reinforcement = 50.0;
     max_ce_reinforcement = 200.0;
-    global_id_counter++;
-    unique_id = global_id_counter;
 }
 
 bool Sorcerer::DomainActive() const {
@@ -173,15 +171,16 @@ void Sorcerer::UseRCT() {
 
 void Sorcerer::Attack(Character* target) {
     Sorcerer* target_sorcerer = dynamic_cast<Sorcerer*>(target);
+    auto self_check = dynamic_cast<Sorcerer*>(this);
     if (target_sorcerer) {
         if (Limitless* limitless = dynamic_cast<Limitless*>(target_sorcerer->GetTechnique())) {
-            if (limitless->CheckInfinity() && !this->DomainAmplificationActive()) {
+            if (limitless->CheckInfinity() && (self_check && self_check->DomainAmplificationActive())) {
                 std::println("{}'s attack was blocked by {}'s {}Infinity{}!", this->GetNameWithID(), target_sorcerer->GetNameWithID(),Color::Cyan,Color::Clear);
                 return;
             }
         }
     }
-    if (domain_amplification_active) {
+    if (self_check && self_check->domain_amplification_active) {
         double ce_addon = std::sqrt(std::max(0.0, this->GetCharacterCE())) * 0.633;
         double amp_damage = base_attack_damage + ce_addon;
 
@@ -189,14 +188,14 @@ void Sorcerer::Attack(Character* target) {
         std::println("{} landed a strike on {} using {}domain amplification{}!", this->GetNameWithID(), target->GetNameWithID(),Color::Yellow,Color::Clear);
         return;
     }
-    else if (cursed_tool) {
+    else if (cursed_tool != nullptr) {
         cursed_tool->UseTool(this, target);
         return;
     }
 
 
     bool is_black_flash = false;
-    if (!this->IsHeavenlyRestricted() && GetRandomNumber(1, 100) <= black_flash_chance) {
+    if (!this->IsPhysicallyGifted() && GetRandomNumber(1, 100) <= black_flash_chance) {
         is_black_flash = true;
         if (this->technique) {
             technique->Set(Technique::Status::DomainBoost);

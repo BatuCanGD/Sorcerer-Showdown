@@ -14,6 +14,10 @@ std::unique_ptr<Character> Shikigami::Clone() const {
     return nullptr;
 }
 
+bool Shikigami::CanBeAssignedID() const {
+    return false;
+}
+
 std::string Shikigami::GetSimpleName() const {
     return "Shikigami";
 }

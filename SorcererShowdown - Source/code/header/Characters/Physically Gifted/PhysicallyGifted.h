@@ -12,6 +12,8 @@ public:
 	virtual ~PhysicallyGifted() = default;
 	std::unique_ptr<Character> Clone() const override;
 
+	void Attack(Character*) override;
+
 	double GetStrength() const;
 	double GetStrengthDamage()const;
 	double GetDamageReinforcement()const override;

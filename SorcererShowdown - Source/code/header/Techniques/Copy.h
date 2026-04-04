@@ -5,12 +5,12 @@ class Copy : public Technique {
 private:
 	std::vector<std::unique_ptr<Technique>> copied_techniques;
 	static constexpr int max_copies = 5;
-	int active_copy = -1;
+	size_t active_copy;
 public:
 	std::unique_ptr<Technique> Clone() const override;
 
 	void CopyFrom(Sorcerer* target);
-	void SwitchCopy(int index);
+	void SwitchCopy(size_t index);
 	Technique* GetActive() const;
 	void Set(Status s) override;
 
