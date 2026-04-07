@@ -5,7 +5,7 @@
 
 import std;
 
-void WorldCuttingSlash::PerformSpecial(Sorcerer* user) {
+void WorldCuttingSlash::PerformSpecial(CurseUser* user) {
 	Technique* currentTech = user->GetTechnique();
 	Shrine* shrinePtr = dynamic_cast<Shrine*>(currentTech);
 

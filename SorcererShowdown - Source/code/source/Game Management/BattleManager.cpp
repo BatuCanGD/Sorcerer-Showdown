@@ -105,6 +105,7 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Character>>& ba
 			if (c > 0 && c <= characters.size()) {
 				int index = c - 1;
 				std::unique_ptr<Character> new_character = characters[index]->Clone();
+				new_character->AssignID();
 				sorcerer_counts[new_character->GetName()]++;
 				battlefield.push_back(std::move(new_character));
 			}
@@ -122,7 +123,7 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Character>>& bat
 
 	auto [removed_begin, removed_end] = std::ranges::remove_if(battlefield, [](const auto& s) {
 		if (s->GetCharacterHealth() <= 0.0) {
-			std::println("{}{} has been defeated and is removed from the battlefield!{}", Color::Red, s->GetNameWithID(), Color::Clear);
+			std::println("{} has been {}defeated and is removed from the battlefield!{}",s->GetNameWithID(), Color::Red,  Color::Clear);
 			return true;
 		}
 		return false;
@@ -133,17 +134,18 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Character>>& bat
 
 	for (const auto& c : battlefield) {
 		double health_before_regen = c->GetCharacterHealth();
-		if (auto sorc = dynamic_cast<Sorcerer*>(c.get())) {
-
-			if (auto limitless = dynamic_cast<Limitless*>(sorc->GetTechnique())) {
-				limitless->InfinityNerf(sorc);
+		if (auto curse_user = dynamic_cast<CurseUser*>(c.get())) {
+			if (auto sorcerer = dynamic_cast<Sorcerer*>(curse_user)) {
+				if (auto limitless = dynamic_cast<Limitless*>(sorcerer->GetTechnique())) {
+					limitless->InfinityNerf(sorcerer);
+				}
+				sorcerer->UseRCT();
 			}
-			sorc->CleanupShikigami();
-			sorc->TickShikigami();
-			sorc->RecoverBurnout();
-			sorc->RecoverTechniqueBurnout(sorc->GetTechnique());
-			sorc->TickZone();
-			sorc->UseRCT();
+			curse_user->CleanupShikigami();
+			curse_user->TickShikigami();
+			curse_user->RecoverBurnout();
+			curse_user->RecoverTechniqueBurnout(curse_user->GetTechnique());
+			curse_user->TickZone();
 		}
 		double total_damage = c->GetCharacterPreviousHealth() - health_before_regen;
 		double healed_amount = c->GetCharacterHealth() - health_before_regen;
@@ -175,13 +177,13 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Character>>& bat
 void BattleManager::DomainCheckAndPerform(std::vector<std::unique_ptr<Character>>& battlefield) {
 	std::println("\n\n{}================= END OF TURN SUMMARY ================={}", Color::Yellow, Color::Clear); // this is here now because its just 1 line away from manage end of turn
 	std::println("{}============= DOMAINS AND CLASHES ============{}", Color::BrightMagenta, Color::Clear);
-	std::vector<Sorcerer*> active_domains;
+	std::vector<CurseUser*> active_domains;
 
 	for (const auto& s : battlefield) {
-		if (auto sorcerers = dynamic_cast<Sorcerer*>(s.get())) {
-			if (sorcerers->GetDomain() == nullptr) continue;
-			if (sorcerers->DomainActive()) {
-				active_domains.push_back(sorcerers);
+		if (auto curse_user = dynamic_cast<CurseUser*>(s.get())) {
+			if (curse_user->GetDomain() == nullptr) continue;
+			if (curse_user->DomainActive()) {
+				active_domains.push_back(curse_user);
 			}
 		}
 	}
@@ -191,6 +193,7 @@ void BattleManager::DomainCheckAndPerform(std::vector<std::unique_ptr<Character>
 	}
 
 	if (active_domains.size() > 2) {
+		std::println("{}====Its a {}-way domain clash!===={}",Color::BrightMagenta, active_domains.size(), Color::Clear);
 		for (const auto& s : active_domains) {
 			s->DeactivateDomain(); 
 			s->GetDomain()->CollapseDomain();
@@ -211,18 +214,19 @@ void BattleManager::DomainCheckAndPerform(std::vector<std::unique_ptr<Character>
 	}
 	///// DOMAIN EFFECTS, WITHOUT CLASH /////
 	if (active_domains.size() == 1) {
-		Sorcerer* domain_user = active_domains[0];
+		CurseUser* domain_user = active_domains[0];
 
 		for (const auto& s : battlefield) {
 			if (s.get() == domain_user) continue;
-			std::println("{} has been caught inside {}",
-				s->GetName(),
+			std::println("{} has been caught inside of {}'s {}",
+				s->GetNameWithID(),
+				domain_user->GetNameWithID(),
 				domain_user->GetDomain()->GetDomainName());
 			domain_user->GetDomain()->OnSureHit(*s);
 		}
 	}
 	for (const auto& s : battlefield) {
-		if (auto sr = dynamic_cast<Sorcerer*>(s.get())) {
+		if (auto sr = dynamic_cast<CurseUser*>(s.get())) {
 			sr->TickDomain();
 		}
 	}

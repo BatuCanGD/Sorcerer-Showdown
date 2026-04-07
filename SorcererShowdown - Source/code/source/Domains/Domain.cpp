@@ -45,7 +45,7 @@ void Domain::DamageDomain(double damage) {
     domain_health = std::max(domain_health - damage, 0.0);
 }
 
-void Domain::ClashDomains(Sorcerer& user1, Sorcerer& user2) {
+void Domain::ClashDomains(CurseUser& user1, CurseUser& user2) {
     Domain* d1 = user1.GetDomain();
     Domain* d2 = user2.GetDomain();
 
@@ -60,16 +60,16 @@ void Domain::ClashDomains(Sorcerer& user1, Sorcerer& user2) {
     else {
         d1->DamageDomain(d2->GetDomainStrength() * 0.5);
         d2->DamageDomain(d1->GetDomainStrength() * 0.5);
-        std::println("The domains of {} and {} are locked in an even struggle!", user1.GetName(), user2.GetName());
+        std::println("The domains of {} and {} are locked in an even struggle!", user1.GetNameWithID(), user2.GetNameWithID());
     }
 
     if (d1->IsDestroyed()) {
-        std::println("{} has been overwhelmed and has collapsed", d1->GetDomainName());
+        std::println("{}'s {} has been overwhelmed and has collapsed", user2.GetNameWithID(), d1->GetDomainName());
         user1.DeactivateDomain();
         d1->CollapseDomain(); 
     }
     else if (d2->IsDestroyed()) {
-        std::println("{} has been overwhelmed and has collapsed", d2->GetDomainName());
+        std::println("{}'s {} has been overwhelmed and has collapsed",user2.GetNameWithID(), d2->GetDomainName());
         user2.DeactivateDomain(); 
         d2->CollapseDomain(); 
     }

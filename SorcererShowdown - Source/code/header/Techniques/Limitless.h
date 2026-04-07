@@ -1,6 +1,9 @@
 #pragma once
 #include "Techniques.h"
 
+class CurseUser;
+class Character;
+
 class Limitless : public Technique { 
 protected:
 	bool Infinity = true;
@@ -18,7 +21,7 @@ public:
 	enum class LimitlessType { Blue = 1, Red = 2, Purple = 3 };
 
 	void SetInfinity(bool s);
-	void InfinityNerf(Sorcerer*);
+	void InfinityNerf(CurseUser*);
 	bool CheckInfinity() const;
 
 	void SetUnlimitedHollow(bool);
@@ -28,14 +31,14 @@ public:
 	int GetUsedRedAmount()const;
 	int GetUsedPurpleAmount()const;
 	
-	void UseUnlimitedHollowPurple(Sorcerer* user, const std::vector<std::unique_ptr<Character>>& battlefield);
-	void UseBlue(Sorcerer* user, Character* target);
-	void UseRed(Sorcerer* user, Character* target);
-	void UsePurple(Sorcerer* user, Character* target);
+	void UseUnlimitedHollowPurple(CurseUser* user, const std::vector<std::unique_ptr<Character>>& battlefield);
+	void UseBlue(CurseUser* user, Character* target);
+	void UseRed(CurseUser* user, Character* target);
+	void UsePurple(CurseUser* user, Character* target);
 
-	void UseTheLimitlessTechnique(LimitlessType choice, Sorcerer* s, Character* c);
-	void TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) override;
-	void TechniqueSetting(Sorcerer*, const std::vector<std::unique_ptr<Character>>& battlefield) override;
+	void UseTheLimitlessTechnique(LimitlessType choice, CurseUser* s, Character* c);
+	void TechniqueMenu(CurseUser* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) override;
+	void TechniqueSetting(CurseUser*, const std::vector<std::unique_ptr<Character>>& battlefield) override;
 
 	void Chant() override;
 	std::string GetTechniqueName() const override;

@@ -1,6 +1,6 @@
 #pragma once
-
 #include "Character.h"
+#include <string>
 
 class PhysicallyGifted : public Character {
 protected:

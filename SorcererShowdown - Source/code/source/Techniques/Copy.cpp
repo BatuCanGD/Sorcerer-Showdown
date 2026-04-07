@@ -1,5 +1,6 @@
 #include "Copy.h"
-#include "Sorcerer.h"
+#include "CurseUser.h"
+#include "Character.h"
 #include "Utils.h"
 
 import std;
@@ -24,7 +25,7 @@ void Copy::Set(Status s) {
     }
 }
 
-void Copy::CopyFrom(Sorcerer* target) {
+void Copy::CopyFrom(CurseUser* target) {
     if (!target || !target->GetTechnique()) {
         std::println("Nothing to copy!");
         return;
@@ -79,7 +80,7 @@ void Copy::Chant() {
     else std::println("No technique active to chant for!");
 }
 
-void Copy::TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) {
+void Copy::TechniqueMenu(CurseUser* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) {
     if (user->DomainAmplificationActive()) {
         std::println("You cannot use your innate technique due to domain amplification!");
         return;
@@ -92,7 +93,7 @@ void Copy::TechniqueMenu(Sorcerer* user, Character* target, const std::vector<st
     t->TechniqueMenu(user, target, battlefield);
 }
 
-void Copy::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Character>>& battlefield) {
+void Copy::TechniqueSetting(CurseUser* user, const std::vector<std::unique_ptr<Character>>& battlefield) {
     std::println("=== Copy Technique Settings ===");
     std::println("Active: {}", GetTechniqueName());
     std::println("Stored copies: {}", copied_techniques.size());
@@ -111,7 +112,7 @@ void Copy::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Ch
 
         for (size_t i = 0; i < battlefield.size(); ++i) {
             if (battlefield[i].get() == user || battlefield[i]->GetCharacterHealth() <= 0) continue;
-            if (auto sorcerer = dynamic_cast<Sorcerer*>(battlefield[i].get())) {
+            if (auto sorcerer = dynamic_cast<CurseUser*>(battlefield[i].get())) {
                 std::println("{} - {}", i, sorcerer->GetName());
             }
 
@@ -120,7 +121,7 @@ void Copy::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Ch
         std::print("=> ");
         size_t tdex = GetValidInput();
         if (tdex < battlefield.size() && battlefield[tdex].get() != user && battlefield[tdex]->GetCharacterHealth() > 0) {
-            if (auto sorcerer = dynamic_cast<Sorcerer*>(battlefield[tdex].get())) {
+            if (auto sorcerer = dynamic_cast<CurseUser*>(battlefield[tdex].get())) {
                 this->CopyFrom(sorcerer);
             }
         }

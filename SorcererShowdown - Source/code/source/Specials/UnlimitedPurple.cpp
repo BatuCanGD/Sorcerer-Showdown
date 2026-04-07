@@ -7,7 +7,7 @@
 
 import std;
 
-void UnlimitedPurple::PerformSpecial(Sorcerer* user) {
+void UnlimitedPurple::PerformSpecial(CurseUser* user) {
 	if (Limitless* limitless = dynamic_cast<Limitless*>(user->GetTechnique())) {
 		if (limitless->GetUsedBlueAmount() >= 15 && limitless->GetUsedRedAmount() >= 15 && limitless->GetUsedPurpleAmount() >= 5) {
 			if (!limitless->UnlimitedHollowAllowed()) {

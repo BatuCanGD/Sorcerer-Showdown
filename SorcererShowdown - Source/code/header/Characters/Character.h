@@ -1,9 +1,9 @@
 #pragma once
-#include "CursedTool.h"
-
 #include <memory>
 #include <string>
 #include <vector>
+
+class CursedTool;
 
 class Character { 
 protected:
@@ -95,6 +95,8 @@ public:
 	static void ResetGlobalID() { global_id_counter = 0; }
 	static void AddGlobalID(int i) { global_id_counter += i; }
 
+	virtual bool IsaCurseUser() const;
+	//virtual bool IsaCursedSpirit() const;
 	virtual bool IsaSorcerer() const;
 	virtual bool IsPhysicallyGifted() const;
 	virtual bool IsShikigami() const;

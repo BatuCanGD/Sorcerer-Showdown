@@ -6,19 +6,19 @@ import std;
 AuthenticMutualLove::AuthenticMutualLove() : Domain(500.0, 100.0, 16.0) {}
 
 void AuthenticMutualLove::OnSureHit(Character& target) {
-    auto* s = dynamic_cast<Sorcerer*>(&target);
+    auto* s = dynamic_cast<CurseUser*>(&target);
     if (clashing) return;
     else if (s && s->CounterDomainActive()) {
-        std::println("{} protected themselves from the copied techniques using {}!", s->GetName(), s->GetCounterDomain()->GetDomainName());
+        std::println("{} protected themselves from the copied techniques using {}!", s->GetNameWithID(), s->GetCounterDomain()->GetDomainName());
         return;
     }
     else if (target.IsPhysicallyGifted()) {
-        std::println("{} couldnt detect {} due to their heavenly restriction\nThe domain's surehit didnt work!", this->GetDomainName(), target.GetName());
+        std::println("{} couldnt detect {} due to their heavenly restriction\nThe domain's surehit didnt work!", this->GetDomainName(), target.GetNameWithID());
         return;
     }
 
     target.DamageBypass(imbued_surehit_damage * DomainRangeMult());
-    std::println("{} got bombarded by a barrage of copied techniques inside {}!", target.GetName(), this->GetDomainName());
+    std::println("{} got bombarded by a barrage of copied techniques inside {}!", target.GetNameWithID(), this->GetDomainName());
 }
 
 std::string AuthenticMutualLove::GetDomainName() const {

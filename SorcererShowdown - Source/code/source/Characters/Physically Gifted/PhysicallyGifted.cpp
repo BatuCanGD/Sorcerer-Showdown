@@ -1,4 +1,5 @@
 #include "PhysicallyGifted.h"
+#include "CursedTool.h"
 #include "Limitless.h"
 #include "Sorcerer.h"
 #include "Utils.h"
@@ -20,12 +21,12 @@ std::unique_ptr<Character> PhysicallyGifted::Clone() const {
 }
 
 void  PhysicallyGifted::Attack(Character* target) {
-    if (auto* target_sorcerer = dynamic_cast<Sorcerer*>(target)) {
-        if (auto* limitless = dynamic_cast<Limitless*>(target_sorcerer->GetTechnique())) {
+    if (auto* target_cuser = dynamic_cast<CurseUser*>(target)) {
+        if (auto* limitless = dynamic_cast<Limitless*>(target_cuser->GetTechnique())) {
             bool has_spear = cursed_tool && cursed_tool->GetSimpleName() == "The Inverted Spear of Heaven";
             if (limitless->CheckInfinity() && !has_spear) {
                 std::println("{}'s attack was blocked by {}'s {}Infinity{}!",
-                    this->GetNameWithID(), target_sorcerer->GetNameWithID(), Color::Cyan, Color::Clear);
+                    this->GetNameWithID(), target_cuser->GetNameWithID(), Color::Cyan, Color::Clear);
                 return;
             }
         }

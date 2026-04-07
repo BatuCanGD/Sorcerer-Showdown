@@ -11,7 +11,7 @@ import std;
 
 void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr<Character>>& battlefield) {
 	int plrch = GetValidInput();
-	auto p_sorcerer = dynamic_cast<Sorcerer*>(&s);
+	auto p_sorcerer = dynamic_cast<CurseUser*>(&s);
 	switch (plrch) {
 	case 1: {
 		if (!s.IsaSorcerer()) {
@@ -115,7 +115,7 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 }
 
 void PlayerManager::PlayerDomainUsage(Character& s) {
-	auto p_sorcerer = static_cast<Sorcerer*>(&s);
+	auto p_sorcerer = static_cast<CurseUser*>(&s);
 
 	if (p_sorcerer->GetDomain() == nullptr && p_sorcerer->GetCounterDomain() == nullptr) {
 		std::println("You dont have a domain and a counter to a domain");
@@ -228,6 +228,7 @@ void PlayerManager::PlayerDAusage(Character& s) {
 
 void PlayerManager::PlayerShikigami(Character& s) {
 	auto p = static_cast<Sorcerer*>(&s);
+
 	if (p->GetShikigami().empty()) {
 		std::println("You dont have any shikigami to use");
 		return;

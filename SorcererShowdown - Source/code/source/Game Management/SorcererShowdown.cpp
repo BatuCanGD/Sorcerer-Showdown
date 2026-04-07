@@ -28,7 +28,7 @@ int main() { // main
 				interface.DisplaySorcererStatus(s.get());
 				if (s->IsCharacterStunned()) continue;
 				std::println("\n");
-				player.OnPlayerTurn(*s, battlefield);
+				player.OnPlayerTurn(*s, battlefield); // devnote: ponder on adding imgui
 				std::println("\n");
 				std::cin.clear();
 			}

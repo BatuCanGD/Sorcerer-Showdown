@@ -16,14 +16,12 @@ Character::Character(double hp, double ce, double regen)
 	cursed_energy(ce),
 	max_cursed_energy(ce),
 	ce_regen_efficiency(regen){
-	AssignID();
 }
+Character::~Character() = default;
 
 void Character::OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>&) {
 	std::println("Base Character Initialized Text");
 }
-
-Character::~Character() = default;
 
 bool Character::CanBeAssignedID() const {
 	return true;
@@ -39,7 +37,6 @@ void Character::AssignID() {
 		unique_id = global_id_counter;
 	}
 }
-
 
 bool Character::IsThePlayer() const {
 	return is_player;
@@ -159,7 +156,9 @@ bool Character::IsShikigami() const {
 bool Character::IsPhysicallyGifted() const {
 	return false;
 }
-
+bool Character::IsaCurseUser() const {
+	return false;
+}
 
 double Character::GetReinforcement() const {
 	return current_ce_reinforcement;
@@ -206,8 +205,6 @@ void Character::EquipToolByName(const std::string& weaponName) {
 	}
 }
 
-
-
 void Character::SetCurrentReinforcement(double r) {
 	current_ce_reinforcement = std::clamp(r, 0.0, max_ce_reinforcement);
 }
@@ -232,6 +229,7 @@ void Character::TickReinforcement() {
 const std::vector<std::unique_ptr<CursedTool>>& Character::GetCursedTools() const {
 	return inventory_curse;
 }
+
 CursedTool* Character::GetTool() const {
 	return cursed_tool.get();
 }

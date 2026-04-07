@@ -2,7 +2,7 @@
 #include <string>
 
 class Character;
-class Sorcerer;
+class CurseUser;
 
 class Domain {
 protected:
@@ -28,7 +28,7 @@ public:
 	double GetDomainRange() const;
 
 	void DamageDomain(double);
-	void ClashDomains(Sorcerer&,Sorcerer&);
+	void ClashDomains(CurseUser&, CurseUser&);
 	void CollapseDomain();
 
 	bool IsDestroyed() const;

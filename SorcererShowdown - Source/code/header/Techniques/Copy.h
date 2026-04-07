@@ -1,6 +1,9 @@
 #pragma once
 #include "Techniques.h"
 
+class CurseUser;
+class Character;
+
 class Copy : public Technique {
 private:
 	std::vector<std::unique_ptr<Technique>> copied_techniques;
@@ -9,13 +12,13 @@ private:
 public:
 	std::unique_ptr<Technique> Clone() const override;
 
-	void CopyFrom(Sorcerer* target);
+	void CopyFrom(CurseUser* target);
 	void SwitchCopy(size_t index);
 	Technique* GetActive() const;
 	void Set(Status s) override;
 
-	void TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) override;
-	void TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Character>>& battlefield) override;
+	void TechniqueMenu(CurseUser* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) override;
+	void TechniqueSetting(CurseUser* user, const std::vector<std::unique_ptr<Character>>& battlefield) override;
 
 	void Chant() override;
 	std::string GetTechniqueName() const override;

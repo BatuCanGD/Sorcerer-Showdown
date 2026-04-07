@@ -1,5 +1,5 @@
 #include "Techniques.h"
-#include "Sorcerer.h"
+#include "CurseUser.h"
 #include "Character.h"
 #include "Utils.h"
 
@@ -49,7 +49,7 @@ bool Technique::BurntOut() const {
     return state == Status::BurntOut;
 }
 
-double Technique::CalculateDamage(Sorcerer* user, double cost) const {
+double Technique::CalculateDamage(CurseUser* user, double cost) const {
     double multiplier = GetTechniqueOutput();
     double currentCE = user->GetCharacterCE();
 

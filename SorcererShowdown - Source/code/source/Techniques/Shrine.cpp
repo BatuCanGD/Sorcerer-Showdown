@@ -1,5 +1,6 @@
 #include "Shrine.h"
-#include "Sorcerer.h"
+#include "CurseUser.h"
+#include "Character.h"
 #include "Utils.h"
 
 import std;
@@ -8,19 +9,19 @@ void Shrine::SetWCS(bool s) {
     world_cutting_slash_allowed = s;
 }
 
-void Shrine::UseCleave(Sorcerer* user, Character* target) {
+void Shrine::UseCleave(CurseUser* user, Character* target) {
     println("{} uses {}Cleave{} on {}!", user->GetNameWithID(),Color::Red,Color::Clear, target->GetNameWithID());
     double dmg = CalculateDamage(user, cleave_output * GetChantPower());
     target->Damage(dmg);
     chant = ChantLevel::Zero;
 }
-void Shrine::UseDismantle(Sorcerer* user, Character* target) {
+void Shrine::UseDismantle(CurseUser* user, Character* target) {
     println("{} uses {}Dismantle{} on {}!", user->GetNameWithID(),Color::Red,Color::Clear, target->GetNameWithID());
     double dmg = CalculateDamage(user, slash_output * GetChantPower());
     target->Damage(dmg);
     chant = ChantLevel::Zero;
 }
-void Shrine::UseTheWorldCuttingSlash(Sorcerer* user, Character* target) {
+void Shrine::UseTheWorldCuttingSlash(CurseUser* user, Character* target) {
     if (this->chant != ChantLevel::Four) {
         std::println("{} hasn't completed the incantations! {}The slash fails to divide the world...{}", user->GetName(), Color::Red,Color::Clear);
         return;
@@ -31,7 +32,7 @@ void Shrine::UseTheWorldCuttingSlash(Sorcerer* user, Character* target) {
     chant = ChantLevel::Zero;
 }
 
-void Shrine::UseShrineTechnique(ShrineType choice, Sorcerer* s, Character* c) {
+void Shrine::UseShrineTechnique(ShrineType choice, CurseUser* s, Character* c) {
     switch (choice) {
     case ShrineType::Dismantle:
         UseDismantle(s, c);
@@ -59,7 +60,7 @@ bool Shrine::WorldCuttingSlashUnlocked() const {
     return world_cutting_slash_allowed;
 }
 
-void Shrine::TechniqueMenu(Sorcerer* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) {
+void Shrine::TechniqueMenu(CurseUser* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) {
     if (user->DomainAmplificationActive()) {
         std::println("You cannot use your innate technique due to domain amplification!");
         return;
@@ -76,7 +77,7 @@ void Shrine::TechniqueMenu(Sorcerer* user, Character* target, const std::vector<
     UseShrineTechnique(static_cast<ShrineType>(choice), user, target);
 }
 
-void Shrine::TechniqueSetting(Sorcerer* user, const std::vector<std::unique_ptr<Character>>& battlefield) {
+void Shrine::TechniqueSetting(CurseUser* user, const std::vector<std::unique_ptr<Character>>& battlefield) {
     std::println("Chant level: [{}]", this->GetStringChantLevel());
     std::println("1 - Chant | 2 - Return");
     std::print("=> ");
