@@ -3,7 +3,9 @@
 
 import std;
 
-InfiniteVoid::InfiniteVoid() : Domain(500.0, 100.0, 16.0) {}
+InfiniteVoid::InfiniteVoid() : Domain(500.0, 100.0, 16.0) {
+    ref_level = Refinement::Absolute;
+}
 
 void InfiniteVoid::OnSureHit(Character& target) {
     auto* s = dynamic_cast<CurseUser*>(&target);

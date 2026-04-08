@@ -3,7 +3,9 @@
 
 import std;
 
-MalevolentShrine::MalevolentShrine() : Domain(600.0, 200.0, 20.0) {}
+MalevolentShrine::MalevolentShrine() : Domain(600.0, 200.0, 20.0) {
+    ref_level = Refinement::Absolute;
+}
 
 void MalevolentShrine::OnSureHit(Character& target) {
     auto* s = dynamic_cast<CurseUser*>(&target);

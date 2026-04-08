@@ -14,7 +14,7 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 	auto p_sorcerer = dynamic_cast<CurseUser*>(&s);
 	switch (plrch) {
 	case 1: {
-		if (!s.IsaSorcerer()) {
+		if (!s.IsaCurseUser()) {
 			std::println("You cant use techniques!");
 			return;
 		}
@@ -40,7 +40,7 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 		break;
 	}
 	case 3: {
-		if (!s.IsaSorcerer()) {
+		if (!s.IsaCurseUser()) {
 			std::println("You cant Special Moves");
 			return;
 		}
@@ -52,7 +52,7 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 		break;
 	}
 	case 4: {
-		if (!s.IsaSorcerer()) {
+		if (!s.IsaCurseUser()) {
 			std::println("You cant use domains");
 			return;
 		}
@@ -77,7 +77,7 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 		PlayerRCTusage(s);
 		break;
 	case 7:
-		if (!s.IsaSorcerer()) {
+		if (!s.IsaCurseUser()) {
 			std::println("You cant use Domain Amplification.");
 			return;
 		}
@@ -87,7 +87,7 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 		GetPlayerTools(s);
 		break;
 	case 9:
-		if (!s.IsaSorcerer()) {
+		if (!s.IsaCurseUser()) {
 			std::println("You cant use Techniques");
 			return;
 		}
@@ -96,14 +96,14 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 		}
 		break;
 	case 10:
-		if (!s.IsaSorcerer()) {
+		if (!s.IsaCurseUser()) {
 			std::println("You cant use Shikigami");
 			return;
 		}
 		PlayerShikigami(s);
 		break;
 	case 11:
-		if (!s.IsaSorcerer()) {
+		if (!s.IsaCurseUser()) {
 			std::println("You cant use Cursed Energy Reinforcement");
 			return;
 		}

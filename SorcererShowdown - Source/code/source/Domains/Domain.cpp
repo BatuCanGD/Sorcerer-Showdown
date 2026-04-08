@@ -19,6 +19,14 @@ bool Domain::Clashing() const {
     return clashing;
 }
 
+bool Domain::GetRefinementComparison(Domain& d1, Domain& d2) const {
+    return d1.GetRefinement() == d2.GetRefinement();
+}
+
+Domain::Refinement Domain::GetRefinement() const {
+    return ref_level;
+}
+
 void Domain::SetClashState(bool a) {
     clashing = a;
 }
@@ -49,6 +57,21 @@ void Domain::ClashDomains(CurseUser& user1, CurseUser& user2) {
     Domain* d1 = user1.GetDomain();
     Domain* d2 = user2.GetDomain();
 
+    
+    if (!GetRefinementComparison(*d1, *d2)){
+        if (d1->GetRefinement() > d2->GetRefinement()) {
+            std::println("{}'s domain has been overwhelmed by the more refined {}", user2.GetNameWithID(), d1->GetDomainName());
+            user2.DeactivateDomain();
+            d2->CollapseDomain();
+        }
+        else if (d2->GetRefinement() > d1->GetRefinement()) {
+            std::println("{}'s domain has been overwhelmed by the more refined {}", user1.GetNameWithID(), d2->GetDomainName());
+            user1.DeactivateDomain();
+            d1->CollapseDomain();
+        }
+        return;
+    }
+
     if (d1->GetDomainRange() > d2->GetDomainRange()) {
         d2->DamageDomain(d1->GetDomainStrength());
         std::println("{} is overwhelming {}'s barrier!", d1->GetDomainName(), d2->GetDomainName());
@@ -64,7 +87,7 @@ void Domain::ClashDomains(CurseUser& user1, CurseUser& user2) {
     }
 
     if (d1->IsDestroyed()) {
-        std::println("{}'s {} has been overwhelmed and has collapsed", user2.GetNameWithID(), d1->GetDomainName());
+        std::println("{}'s {} has been overwhelmed and has collapsed", user1.GetNameWithID(), d1->GetDomainName());
         user1.DeactivateDomain();
         d1->CollapseDomain(); 
     }

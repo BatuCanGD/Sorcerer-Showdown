@@ -13,6 +13,11 @@ protected:
 	double current_range;
 	bool clashing = false;
 	bool is_neutralizer = false;
+
+	enum class Refinement {
+		Unstable, Crude, Refined, Absolute
+	};
+	Refinement ref_level = Refinement::Refined;
 public:
 	Domain(double, double, double);
 	virtual ~Domain() = default;
@@ -27,8 +32,11 @@ public:
 	double GetDomainStrength() const;
 	double GetDomainRange() const;
 
+
 	void DamageDomain(double);
 	void ClashDomains(CurseUser&, CurseUser&);
+	bool GetRefinementComparison(Domain&, Domain&) const;
+	Refinement GetRefinement() const;
 	void CollapseDomain();
 
 	bool IsDestroyed() const;
