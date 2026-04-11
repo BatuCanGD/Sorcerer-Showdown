@@ -1,4 +1,4 @@
-#include "CurseUser.h"
+#include "Character.h"
 #include "BattleManager.h"
 #include "PlayerManager.h"
 #include "UIDisplay.h"
