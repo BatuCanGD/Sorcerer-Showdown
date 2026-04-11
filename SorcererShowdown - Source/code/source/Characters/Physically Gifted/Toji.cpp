@@ -29,26 +29,25 @@ void Toji::OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>& 
     }
 
     Character* target = nullptr;
-    bool limitless_found = false;
+    double best_score = -1.0;
 
     for (const auto& t : battlefield) {
         if (t.get() == this || t->GetCharacterHealth() <= 0.0) continue;
 
-        auto* sorcerer = dynamic_cast<Sorcerer*>(t.get());
-        bool has_limitless = sorcerer &&
-            sorcerer->GetTechnique() &&
-            sorcerer->GetTechnique()->GetTechniqueSimpleName() == "Limitless";
+        auto* curse_user = dynamic_cast<CurseUser*>(t.get());
+        
+        double hp_ratio = t->GetCharacterHealth() / t->GetCharacterMaxHealth();
+        double score = 1.0 - hp_ratio;
 
-        if (!target) {
-            target = t.get();
-            limitless_found = has_limitless;
+        if (curse_user && curse_user->GetTechnique()) {
+            auto* limitless = dynamic_cast<Limitless*>(curse_user->GetTechnique());
+            if (limitless && limitless->CheckInfinity()) {
+                score += 0.15;
+            }
         }
-        else if (has_limitless && !limitless_found) {
-            target = t.get();
-            limitless_found = true;
-        }
-        else if (!limitless_found &&
-            t->GetCharacterHealth() == t->GetCharacterPreviousHealth()) {
+        score += GetRandomNumber(-5, 5) * 0.01;
+        if (score > best_score) {
+            best_score = score;
             target = t.get();
         }
     }
@@ -63,8 +62,8 @@ void Toji::OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>& 
         this->Taunt(target);
     }
 
-    auto* sorcerer_target = dynamic_cast<Sorcerer*>(target);
-    auto* limitless = sorcerer_target ? dynamic_cast<Limitless*>(sorcerer_target->GetTechnique()) : nullptr;
+    auto* curse_user_t = dynamic_cast<CurseUser*>(target);
+    auto* limitless = curse_user_t ? dynamic_cast<Limitless*>(curse_user_t->GetTechnique()) : nullptr;
 
     if (limitless && limitless->CheckInfinity()) {
         if (!this->GetTool() || this->GetTool()->GetSimpleName() != "The Inverted Spear of Heaven") {

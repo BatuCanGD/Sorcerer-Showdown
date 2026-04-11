@@ -49,6 +49,7 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Character>>& ba
 	characters.push_back(std::make_unique<Sukuna>());
 	characters.push_back(std::make_unique<Yuta>());
 	characters.push_back(std::make_unique<Toji>());
+	characters.push_back(std::make_unique<Mahito>());
 	characters.push_back(std::make_unique<test_sorcerer>());
 	
 	Character::ResetGlobalID();

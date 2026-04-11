@@ -27,7 +27,7 @@ void Shrine::UseTheWorldCuttingSlash(CurseUser* user, Character* target) {
         return;
     }
     println("{} uses the {}World Cutting Slash{} on {}!", user->GetNameWithID(),Color::Red,Color::Clear, target->GetNameWithID());
-    double dmg = CalculateDamage(user, wcs_output * GetChantPower());
+    double dmg = CalculateDamage(user, wcs_output);
     target->DamageBypass(dmg);
     chant = ChantLevel::Zero;
 }

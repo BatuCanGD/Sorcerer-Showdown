@@ -1,12 +1,11 @@
 #pragma once
-#include "CurseUser.h"
+#include "CursedSpirit.h"
 #include <string>
 
-class CursedSpirit : public CurseUser {
-protected:
-	double passive_health_regen = 5.0;
+class Mahito : public CursedSpirit {
 public:
-	CursedSpirit(double hp, double ce, double regen);
+	Mahito();
+	std::unique_ptr<Character> Clone() const override;
 	std::string GetSimpleName() const override;
 	std::string GetName() const override;
 	bool CanBeHit() const override;

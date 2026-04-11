@@ -1,4 +1,4 @@
-#include "Sorcerer.h"
+#include "CurseUser.h"
 #include "BattleManager.h"
 #include "PlayerManager.h"
 #include "UIDisplay.h"

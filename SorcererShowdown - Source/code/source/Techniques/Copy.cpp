@@ -11,7 +11,6 @@ std::unique_ptr<Technique> Copy::Clone() const {
     for (const auto& tech : copied_techniques) {
         new_copy->copied_techniques.push_back(tech->Clone());
     }
-
     new_copy->active_copy = this->active_copy;
     new_copy->state = this->state;
     new_copy->chant = this->chant;

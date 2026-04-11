@@ -12,7 +12,7 @@
 
 import std;
 
-Sukuna::Sukuna() : Sorcerer(1000.0, 16000.0, 100.0) {
+Sukuna::Sukuna() : Sorcerer(1000.0, 20000.0, 150.0) {
     domain = std::make_unique<MalevolentShrine>();
     counter_domain = std::make_unique<HollowWickerBasket>();
     technique = std::make_unique<Shrine>();
@@ -20,6 +20,7 @@ Sukuna::Sukuna() : Sorcerer(1000.0, 16000.0, 100.0) {
     shikigami.push_back(std::make_unique<Agito>());
     special = std::make_unique<WorldCuttingSlash>();
     black_flash_chance = 10;
+    rct_skill = RCTProficiency::Expert;
 }
 
 std::unique_ptr<Character> Sukuna::Clone() const {
@@ -42,7 +43,7 @@ void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Char
     {
         this->BoostRCT();
     }
-    else if (!this->HPMoreThanMax(0.75) && this->CEMoreThanMax(0.10))
+    else if (!this->HPMoreThanMax(0.75))
     {
         this->EnableRCT();
     }
@@ -110,13 +111,13 @@ void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Char
 
     if (makora) {
         if (!shrine->WorldCuttingSlashUnlocked()) {
-            if (!makora->IsActivePhysically() && this->CEMoreThanMax(0.75)) {
+            if (!makora->IsActivePhysically() && this->CEMoreThanMax(0.40)) {
                 makora->Manifest();
             }
-            else if (!makora->IsActive() && this->CEMoreThanMax(0.235)) {
+            else if (!makora->IsActive() && this->CEMoreThanMax(0.025)) {
                 makora->PartiallyManifest();
             }
-            else if (!this->CEMoreThanMax(0.235)) {
+            else if (!this->CEMoreThanMax(0.35)) {
                 makora->Withdraw();
             }
         }
@@ -132,14 +133,12 @@ void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Char
         if (!this->CEMoreThanMax(0.30) && agito->IsActive()) {
             agito->Withdraw();
         }
-        else if (!(agito->IsActive() && this->HPMoreThanMax(0.50)) && this->CEMoreThanMax(0.30)) {
+        else if (!agito->IsActive() && this->HPMoreThanMax(0.50) && this->CEMoreThanMax(0.30)) {
             agito->Manifest();
         }
     }
 
-     
-
-    if (shrine->WorldCuttingSlashUnlocked() && this->CEMoreThanMax(0.16) && GetRandomNumber(1, 100) >= 75) {
+    if (shrine->WorldCuttingSlashUnlocked() && this->CEMoreThanMax(0.125) && GetRandomNumber(1, 100) >= 65) {
         if (makora && makora->IsActive()) {
             makora->Withdraw();
         }
@@ -147,15 +146,23 @@ void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Char
             shrine->Chant();
             return;
         }
+        if (shrine->FullyChanted() && this->CEMoreThanMax(0.125)) {
+            shrine->UseTheWorldCuttingSlash(this, strongest);
+            return;
+        }
     }
     if (!domain_users.empty()) {
-        if (this->GetDomainUses() < 5 && !shrine->BurntOut() && !this->DomainActive()) {
-            if (GetRandomNumber(1, 10) > 3) {
+        if (!shrine->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
+            if (domain_users.size() == 1) {
+                this->ActivateDomain();
+                return;
+            }
+            else if (GetRandomNumber(1, 100) <= 1) {
                 this->ActivateDomain();
                 return;
             }
         }
-        else if (!this->CounterDomainActive() && (shrine->BurntOut() || this->GetDomainUses() >= 5)) {
+        else if (!this->CounterDomainActive()) {
             this->ActivateCounterDomain();
             return;
         }
@@ -164,9 +171,11 @@ void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Char
         if (this->CounterDomainActive()) {
             this->DeactivateCounterDomain();
         }
-        if (!this->DomainActive() && !shrine->BurntOut() && this->GetDomainUses() < 5 && GetRandomNumber(1, 75) <= 40) {
-            this->ActivateDomain();
-            return;
+        if (!shrine->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
+            if (GetRandomNumber(1, 100) <= 20) {
+                this->ActivateDomain();
+                return;
+            }
         }
     }
 
@@ -185,11 +194,7 @@ void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Char
             shrine->Chant();
             return;
         }
-        if (this->CEMoreThanMax(0.20)) {
-            if (shrine->FullyChanted()) {
-                shrine->UseTheWorldCuttingSlash(this, strongest);
-                return;
-            }
+        if (this->CEMoreThanMax(0.050)) {
             if (strongest->GetCharacterHealth() < strongest->GetCharacterMaxHealth() * 0.25 && GetRandomNumber(1, 100) <= 15) {
                 shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, strongest);
                 return;

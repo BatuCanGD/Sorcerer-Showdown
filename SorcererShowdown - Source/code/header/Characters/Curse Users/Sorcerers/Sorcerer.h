@@ -18,6 +18,14 @@ protected:
 		Disabled, Active, Overdrive
 	};
 	ReverseCT rct_state = ReverseCT::Disabled;
+	enum class RCTProficiency {
+		None,
+		Crude,
+		Adept,
+		Expert,
+		Absolute
+	};
+	RCTProficiency rct_skill = RCTProficiency::None;
 public:
 	virtual ~Sorcerer();
 	Sorcerer(double hp, double ce, double re);
@@ -33,6 +41,10 @@ public:
 	void BoostRCT();
 	std::string GetRCTstatus() const;
 	void UseRCT();
+
+	double GetRCTHeal() const;
+	double GetRCTCost() const;
+	RCTProficiency GetRCTProficiency() const;
 
 	void Attack(Character*) override;
 

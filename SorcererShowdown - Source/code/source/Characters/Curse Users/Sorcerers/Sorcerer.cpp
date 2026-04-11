@@ -24,9 +24,9 @@ bool Sorcerer::HasSixEyes() const {
 void Sorcerer::SpendCE(double ce) {
     double efficiency = 1.0;
     if (HasSixEyes()) {
-        efficiency = 0.05;
+        efficiency = 0.025;
         if (technique && technique->GetStatus() == Technique::Status::BurntOut) {
-            efficiency = 0.50; 
+            efficiency = 0.25; 
         }
     }
     cursed_energy = std::max(cursed_energy - (ce * efficiency), 0.0);
@@ -53,19 +53,42 @@ std::string Sorcerer::GetRCTstatus() const {
     }
 }
 
+
+double Sorcerer::GetRCTHeal() const {
+    switch (GetRCTProficiency()) {
+    case RCTProficiency::Crude: return 15.0;
+    case RCTProficiency::Adept: return 30.0;
+    case RCTProficiency::Expert: return 60.0;
+    case RCTProficiency::Absolute: return 100.0;
+    default: return 0.0;
+    }
+}
+double Sorcerer::GetRCTCost() const {
+    switch (GetRCTProficiency()) {
+    case RCTProficiency::Crude: return 75.0;
+    case RCTProficiency::Adept: return 50.0;
+    case RCTProficiency::Expert: return 25.0;
+    case RCTProficiency::Absolute: return 10.0;
+    default: return 0.0;
+    }
+}
+Sorcerer::RCTProficiency Sorcerer::GetRCTProficiency() const {
+    return rct_skill;
+}
+
 void Sorcerer::UseRCT() {
     if (this->GetCharacterHealth() >= this->GetCharacterMaxHealth()) {
         return;
     }
-    const double default_regen = 50.0;
-    const double overdrive_regen = 100.0;
+    double rct_cost = GetRCTCost();
+    double rct_heal = GetRCTHeal();
     if (rct_state == ReverseCT::Active) {
-        this->Regen(default_regen);
-        this->SpendCE(default_regen * 2);
+        this->Regen(rct_heal);
+        this->SpendCEdirect(rct_cost);
     }
     else if (rct_state == ReverseCT::Overdrive) {
-        this->Regen(overdrive_regen);
-        this->SpendCE(overdrive_regen * 2);
+        this->Regen(rct_heal * 2);
+        this->SpendCEdirect(rct_cost * 2);
     }
 }
 

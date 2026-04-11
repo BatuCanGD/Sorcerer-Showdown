@@ -20,6 +20,7 @@ Yuta::Yuta() : Sorcerer(800.0, 6000.0, 30.0) {
     counter_domain = std::make_unique<SimpleDomain>();
     shikigami.push_back(std::make_unique<Rika>());
     black_flash_chance = 10;
+    rct_skill = RCTProficiency::Adept;
 }
 
 std::unique_ptr<Character> Yuta::Clone() const {
@@ -27,7 +28,7 @@ std::unique_ptr<Character> Yuta::Clone() const {
 }
 
 std::string Yuta::GetName() const {
-    return "\033[95mYuta Okkotsu\033[0m";
+    return "\033[38;5;183mYuta Okkotsu\033[0m";
 }
 std::string Yuta::GetSimpleName() const {
     return "Yuta Okkotsu";
@@ -95,26 +96,31 @@ void Yuta::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
     }
 
     if (!domain_users.empty()) {
-        if (!this->CounterDomainActive() && (this->GetTechnique()->BurntOut() || this->GetDomainUses() >= 5)) {
-            this->ActivateCounterDomain();
-            return;
-        }
-        else if (!this->DomainActive() && !this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5) {
-            int chroll = GetRandomNumber(1, 20);
-            if (chroll >= 15) {
+        if (!this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
+            if (domain_users.size() == 1) {
                 this->ActivateDomain();
                 return;
             }
-            else {
-                if (domain_users.size() <= 1) {
-                    this->ActivateDomain();
-                    return;
-                }
+            else if (GetRandomNumber(1, 100) <= 1) {
+                this->ActivateDomain();
+                return;
             }
+        }
+        else if (!this->CounterDomainActive()) {
+            this->ActivateCounterDomain();
+            return;
         }
     }
     else {
-        if (this->CounterDomainActive()) this->DeactivateCounterDomain();
+        if (this->CounterDomainActive()) {
+            this->DeactivateCounterDomain();
+        }
+        if (!this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
+            if (GetRandomNumber(1, 100) <= 25) {
+                this->ActivateDomain();
+                return;
+            }
+        }
     }
     InfCheck(strongest);
     HitCharacter(strongest);

@@ -16,6 +16,7 @@ Gojo::Gojo() : Sorcerer(800.0, 4000.0, 40.0) {
     special = std::make_unique<UnlimitedPurple>();
     SetSixEyes(true);
     black_flash_chance = 15;
+    rct_skill = RCTProficiency::Absolute;
 }
 std::unique_ptr<Character> Gojo::Clone() const {
     return std::make_unique<Gojo>();
@@ -103,32 +104,29 @@ void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
     
     if (!domain_users.empty()) {
         if (!limitless->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
-            int chroll = GetRandomNumber(1, 30); 
-            if (chroll >= 25) { // activate without checking 
+            if (domain_users.size() == 1) {
                 this->ActivateDomain(); 
                 return;
             }
-            else {
-                if (domain_users.size() <= 1) {
-                    this->ActivateDomain();
-                    return;
-                }
+            else if (GetRandomNumber(1, 100) <= 1) {
+                this->ActivateDomain();
+                return;
             }
         }
-        else if ((limitless->BurntOut() || this->GetDomainUses() >= 5) && !this->CounterDomainActive() && GetRandomNumber(1, 2) == 1) { // 50/50 on whether to activate simple domain or not
-            this->ActivateCounterDomain(); 
+        else if (!this->CounterDomainActive()) {
+            this->ActivateCounterDomain();
             return;
         }
     }
     else {
-        int droll = GetRandomNumber(1, 100);
-        if (droll <= 30 && !limitless->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
-            this->ActivateDomain();
-            return;
-        }
         if (this->CounterDomainActive()) {
             this->DeactivateCounterDomain();
-            return;
+        }
+        if (!limitless->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
+            if (GetRandomNumber(1, 100) <= 30) {
+                this->ActivateDomain();
+                return;
+            }
         }
     }
     if (strongest && 

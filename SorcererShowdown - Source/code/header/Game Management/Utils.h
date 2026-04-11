@@ -14,6 +14,7 @@ namespace Color {
     inline const std::string BrightRed = "\033[91m";
     inline const std::string BrightMagenta = "\033[95m";
     inline const std::string DimGray = "\033[2;90m";
+    inline const std::string LightPink = "\033[38;5;183m";
 }
 
 int GetValidInput();

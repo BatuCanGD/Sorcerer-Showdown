@@ -5,7 +5,7 @@ class Mahoraga : public Shikigami {
 public:
 	Mahoraga();
 protected:
-	const double keep_active_cost = 200.0;
+	const double keep_active_cost = 120.0;
 	enum class InfinityAdaptation {
 		None,
 		FirstSpin,

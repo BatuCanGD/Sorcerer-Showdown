@@ -5,8 +5,8 @@ class Agito : public Shikigami {
 public:
 	Agito();
 protected:
-	const double passive_heal_amount = 35.0;
-	const double summon_amount = 150.0;
+	const double passive_heal_amount = 50.0;
+	const double summon_amount = 80.0;
 public:
 	std::unique_ptr<Character> Clone() const override;
 
