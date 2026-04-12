@@ -31,7 +31,7 @@ std::string Gojo::GetSimpleName() const {
 
 void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
     if (this->IsCharacterStunned()) {
-        std::println("{} is stunned and their turn will be skipped", this->GetName());
+        std::println("{} is stunned and their turn will be skipped", this->GetNameWithID());
         return;
     }
     auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
@@ -49,6 +49,16 @@ void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
     else 
     {
         this->DisableRCT();
+    }
+    
+    if (this->CEMoreThanMax(0.70) || limitless->UnlimitedHollowAllowed()) {
+        this->SetCurrentReinforcement(200.0);
+    }
+    else if (this->CEMoreThanMax(0.30)) {
+        this->SetCurrentReinforcement(100.0);
+    }
+    else {
+        this->SetCursedEnergyRegen(25.0);
     }
 
     double best_score = -1.0;
@@ -113,7 +123,7 @@ void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
                 return;
             }
         }
-        else if (!this->CounterDomainActive()) {
+        else if (!(this->CounterDomainActive() && this->DomainActive())) {
             this->ActivateCounterDomain();
             return;
         }

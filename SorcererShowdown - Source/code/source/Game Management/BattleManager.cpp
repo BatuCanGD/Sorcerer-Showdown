@@ -170,6 +170,7 @@ bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Character>>& bat
 		c->RegenCE();
 		c->ClearStunTime();
 		c->TickReinforcement();
+		c->TickCharacterSpecialty();
 	}
 	std::println("{}======================================================={}", Color::Yellow, Color::Clear);
 	return player_alive;

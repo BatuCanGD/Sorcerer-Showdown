@@ -215,6 +215,8 @@ void Character::AddReinforcement(double r) {
 	current_ce_reinforcement = std::clamp(current_ce_reinforcement + r, 0.0, max_ce_reinforcement);
 }
 
+void Character::TickCharacterSpecialty() {};
+
 void Character::TickReinforcement() {
 	if (this->IsPhysicallyGifted()) return;
 	if (current_ce_reinforcement <= 0.0) return;
@@ -222,7 +224,7 @@ void Character::TickReinforcement() {
 	this->SpendCE(maintain_cost);
 	if (this->GetCharacterCE() < this->GetReinforcement()) {
 		current_ce_reinforcement = 0.0;
-		std::println("{}'s CE reinforcement collapsed due to exhaustion!", this->GetName());
+		std::println("{}'s CE reinforcement collapsed due to a lack of Cursed Energy!", this->GetName());
 	}
 }
 

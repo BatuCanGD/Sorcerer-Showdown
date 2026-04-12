@@ -135,10 +135,18 @@ void CurseUser::TickDomain() {
         else if (active_counter_time > max_counter_time) {
             std::println("{}'s {}{}{} has been {}shattered{}!", this->GetNameWithID(), Color::Cyan, this->GetCounterDomain()->GetDomainName(), Color::Clear, Color::Red, Color::Clear);
             this->DeactivateCounterDomain();
+            counter_on_cooldown = true;
             active_counter_time = 0;
         }
     }
-    if (!this->CounterDomainActive() && active_counter_time > 0) active_counter_time = 0;
+    if (!this->CounterDomainActive() && counter_on_cooldown) {
+        counter_recover_time++;
+        if (counter_recover_time >= counter_domain_cooldown) {
+            counter_on_cooldown = false;
+            counter_recover_time = 0;
+        }
+    }
+    else if (!this->CounterDomainActive() && active_counter_time > 0) active_counter_time = 0;
 }
 
 bool CurseUser::IsaCurseUser() const {
@@ -192,23 +200,27 @@ bool CurseUser::CounterDomainActive() const {
 
 void CurseUser::ActivateCounterDomain() {
     if (!counter_domain) {
-        std::println("{} doesn't have a counter domain!", this->GetName());
+        std::println("{} doesn't have a counter domain!", this->GetNameWithID());
+        return;
+    }
+    if (counter_on_cooldown) {
+        std::println("your counter domain is on cooldown, wait for it to recover!");
         return;
     }
     if (!counter_domain_active) {
         counter_domain_active = true;
-        std::println("{} activates {}!", this->GetName(), counter_domain->GetDomainName());
+        std::println("{} activates {}!", this->GetNameWithID(), counter_domain->GetDomainName());
     }
 }
 
 void CurseUser::DeactivateCounterDomain() {
     if (!counter_domain) {
-        std::println("{} doesn't have a counter domain!", this->GetName());
+        std::println("{} doesn't have a counter domain!", this->GetNameWithID());
         return;
     }
     if (counter_domain_active) {
         counter_domain_active = false;
-        std::println("{} deactivated {}!", this->GetName(), counter_domain->GetDomainName());
+        std::println("{} deactivated {}!", this->GetNameWithID(), counter_domain->GetDomainName());
     }
 }
 
@@ -248,7 +260,7 @@ void CurseUser::RecoverTechniqueBurnout(Technique* t) {
         if (technique_burnout_time >= max_technique_burnout_time) {
             t->Set(Technique::Status::Usable);
             technique_burnout_time = 0;
-            std::println("{}'s {}cursed technique{} has{} recovered from burnout{}!", this->GetName(), Color::Cyan, Color::Clear, Color::Green, Color::Clear);
+            std::println("{}'s {}cursed technique{} has{} recovered from burnout{}!", this->GetNameWithID(), Color::Cyan, Color::Clear, Color::Green, Color::Clear);
         }
     }
     if (technique_burnout_time != 0 && !t->BurntOut()) technique_burnout_time = 0;

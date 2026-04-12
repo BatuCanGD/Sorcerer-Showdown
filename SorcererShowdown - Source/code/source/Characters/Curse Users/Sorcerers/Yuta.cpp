@@ -36,13 +36,13 @@ std::string Yuta::GetSimpleName() const {
 
 void Yuta::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
     if (this->IsCharacterStunned()) {
-        std::println("{} is stunned and their turn will be skipped", this->GetName());
+        std::println("{} is stunned and their turn will be skipped", this->GetNameWithID());
         return;
     }
     Shikigami* rika = this->ChooseShikigami(0);
 
-    if (!(this->HPMoreThanMax(0.40) || this->CEMoreThanMax(0.20))) {
-        if (!((rika->GetActiveTime() > 5) && rika->IsActivePhysically())) {
+    if (!(this->HPMoreThanMax(0.50) || this->CEMoreThanMax(0.20))) {
+        if (!(rika->GetActiveTime() > 5 && rika->IsActivePhysically())) {
             std::println("Come, Rika.");
             rika->Manifest();
         }
@@ -56,6 +56,16 @@ void Yuta::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
     }
     else {
         this->DisableRCT();
+    }
+
+    if (this->CEMoreThanMax(0.60) || rika->IsActive() || !this->HPMoreThanMax(0.20)) {
+        this->SetCurrentReinforcement(200.0);
+    }
+    else if (this->CEMoreThanMax(0.20)) {
+        this->SetCurrentReinforcement(100.0);
+    }
+    else {
+        this->SetCursedEnergyRegen(50.0);
     }
 
     double best_score = -1.0;
@@ -106,7 +116,7 @@ void Yuta::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
                 return;
             }
         }
-        else if (!this->CounterDomainActive()) {
+        else if (!(this->CounterDomainActive() && this->DomainActive())) {
             this->ActivateCounterDomain();
             return;
         }

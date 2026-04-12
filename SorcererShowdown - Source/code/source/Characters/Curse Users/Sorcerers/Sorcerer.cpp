@@ -56,9 +56,9 @@ std::string Sorcerer::GetRCTstatus() const {
 
 double Sorcerer::GetRCTHeal() const {
     switch (GetRCTProficiency()) {
-    case RCTProficiency::Crude: return 15.0;
-    case RCTProficiency::Adept: return 30.0;
-    case RCTProficiency::Expert: return 60.0;
+    case RCTProficiency::Crude: return 25.0;
+    case RCTProficiency::Adept: return 50.0;
+    case RCTProficiency::Expert: return 75.0;
     case RCTProficiency::Absolute: return 100.0;
     default: return 0.0;
     }
@@ -80,15 +80,13 @@ void Sorcerer::UseRCT() {
     if (this->GetCharacterHealth() >= this->GetCharacterMaxHealth()) {
         return;
     }
-    double rct_cost = GetRCTCost();
-    double rct_heal = GetRCTHeal();
     if (rct_state == ReverseCT::Active) {
-        this->Regen(rct_heal);
-        this->SpendCEdirect(rct_cost);
+        this->Regen(GetRCTCost());
+        this->SpendCEdirect(GetRCTHeal());
     }
     else if (rct_state == ReverseCT::Overdrive) {
-        this->Regen(rct_heal * 2);
-        this->SpendCEdirect(rct_cost * 2);
+        this->Regen(GetRCTCost() * 2);
+        this->SpendCEdirect(GetRCTHeal() * 2);
     }
 }
 

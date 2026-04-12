@@ -90,6 +90,8 @@ public:
 	void AddReinforcement(double);
 	void TickReinforcement();
 
+	virtual void TickCharacterSpecialty();
+
 	int GetID() const;
 	std::string GetNameWithID() const;
 	static void ResetGlobalID() { global_id_counter = 0; }

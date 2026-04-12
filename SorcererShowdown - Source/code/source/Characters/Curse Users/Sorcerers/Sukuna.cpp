@@ -36,10 +36,10 @@ std::string Sukuna::GetSimpleName() const {
 
 void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
     if (this->IsCharacterStunned()) {
-        std::println("{} is stunned and their turn will be skipped", this->GetName());
+        std::println("{} is stunned and their turn will be skipped", this->GetNameWithID());
         return;
     }
-    if (!this->HPMoreThanMax(0.10) && this->CEMoreThanMax(0.25))
+    if (!this->HPMoreThanMax(0.25) && this->CEMoreThanMax(0.15))
     {
         this->BoostRCT();
     }
@@ -50,6 +50,16 @@ void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Char
     else
     {
         this->DisableRCT();
+    }
+
+    if (this->CEMoreThanMax(0.50) || !this->HPMoreThanMax(0.15)) {
+        this->SetCurrentReinforcement(200.0);
+    }
+    else if (this->CEMoreThanMax(0.15)) {
+        this->SetCurrentReinforcement(100.0);
+    }
+    else {
+        this->SetCursedEnergyRegen(25.0);
     }
 
     double best_score = -1.0;
@@ -162,7 +172,7 @@ void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Char
                 return;
             }
         }
-        else if (!this->CounterDomainActive()) {
+        else if (!(this->CounterDomainActive() && this->DomainActive())) {
             this->ActivateCounterDomain();
             return;
         }

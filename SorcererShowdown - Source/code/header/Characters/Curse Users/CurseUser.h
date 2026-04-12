@@ -21,19 +21,22 @@ protected:
 	bool counter_domain_active = false;
 	bool domain_active = false;
 	bool is_strained = false;
+	bool counter_on_cooldown = false;
 
 	int total_domain_uses = 0;
 	int technique_burnout_time = 0;
 	int burnout_time = 0;
 	int active_domain_time = 0;
-	int active_counter_time = 0;
-	int black_flash_chance = 5;
+	int active_counter_time = 0;  // active domain is based on technique recovery speed
+	int counter_recover_time = 0;//  counters need an actual timer with them
+	int black_flash_chance = 5;  
 	int the_zone_time = 0;
 
 	const double black_flash_multiplier = 4.0;
 
 	const int domain_limit = 5;
 	const int max_counter_time = 3;
+	const int counter_domain_cooldown = 2;
 	const int max_domain_time = 5;
 	const int max_technique_burnout_time = 4;
 public:
