@@ -11,10 +11,10 @@ protected:
 	int blue_used_amount = 0;
 	int red_used_amount = 0;
 	int purple_used_amount = 0;
-	static constexpr double blue_output = 20.0 + base_output;
-	static constexpr double red_output = 40.0 + base_output;
-	static constexpr double purple_output = 90.0 + base_output;
-	static constexpr double unlpurple_output = 1500.0;
+	static constexpr double blue_output = 50.0;
+	static constexpr double red_output = 75.0;
+	static constexpr double purple_output = 150.0;
+	static constexpr double unlpurple_output = 1750.0;
 public:
 	std::unique_ptr<Technique> Clone() const override;
 

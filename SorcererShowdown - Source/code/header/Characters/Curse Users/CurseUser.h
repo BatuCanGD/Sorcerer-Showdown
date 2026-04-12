@@ -36,7 +36,7 @@ protected:
 
 	const int domain_limit = 5;
 	const int max_counter_time = 3;
-	const int counter_domain_cooldown = 2;
+	const int max_counter_cooldown = 2;
 	const int max_domain_time = 5;
 	const int max_technique_burnout_time = 4;
 public:

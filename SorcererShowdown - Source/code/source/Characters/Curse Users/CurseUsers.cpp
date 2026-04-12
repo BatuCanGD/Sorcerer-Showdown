@@ -127,7 +127,7 @@ void CurseUser::TickDomain() {
             active_domain_time = 0;
         }
     }
-    else if (this->CounterDomainActive()) {
+    if (this->CounterDomainActive()) {
         active_counter_time++;
         if (active_counter_time == max_counter_time) {
             std::println("{}'s {}{}{} is about to shatter", this->GetNameWithID(), Color::Cyan, this->GetCounterDomain()->GetDomainName(), Color::Clear);
@@ -139,14 +139,20 @@ void CurseUser::TickDomain() {
             active_counter_time = 0;
         }
     }
-    if (!this->CounterDomainActive() && counter_on_cooldown) {
-        counter_recover_time++;
-        if (counter_recover_time >= counter_domain_cooldown) {
-            counter_on_cooldown = false;
-            counter_recover_time = 0;
+    if (!this->CounterDomainActive()) {
+        if (active_counter_time > 0) {
+            counter_on_cooldown = true;
+            active_counter_time = 0;
+            counter_recover_time = 0; 
+        }
+        if (counter_on_cooldown) {
+            counter_recover_time++;
+            if (counter_recover_time >= max_counter_cooldown) {
+                counter_on_cooldown = false;
+                counter_recover_time = 0;
+            }
         }
     }
-    else if (!this->CounterDomainActive() && active_counter_time > 0) active_counter_time = 0;
 }
 
 bool CurseUser::IsaCurseUser() const {

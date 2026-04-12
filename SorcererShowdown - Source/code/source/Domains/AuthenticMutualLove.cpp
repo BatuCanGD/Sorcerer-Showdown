@@ -3,7 +3,7 @@
 
 import std;
 
-AuthenticMutualLove::AuthenticMutualLove() : Domain(500.0, 100.0, 16.0) {
+AuthenticMutualLove::AuthenticMutualLove() : Domain(600.0, 100.0, 16.0) {
     ref_level = Refinement::Refined;
 }
 

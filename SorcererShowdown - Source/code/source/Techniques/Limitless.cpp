@@ -112,7 +112,7 @@ void Limitless::InfinityNerf(CurseUser* user) {
         return;
     }
     if (this->CheckInfinity()) {
-        double maintain_cost = 40.0;
+        double maintain_cost = 50.0;
         if (user->GetCharacterCE() < maintain_cost) {
             std::println("{}{}'s concentration wavers due to low CE!{}{} Infinity is deactivated.{}",Color::Red,user->GetNameWithID(),Color::Clear,Color::Cyan,Color::Clear);
             SetInfinity(false);

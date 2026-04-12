@@ -9,7 +9,7 @@
 
 import std;
 
-Gojo::Gojo() : Sorcerer(800.0, 4000.0, 40.0) {
+Gojo::Gojo() : Sorcerer(800.0, 4000.0, 150.0) {
     domain = std::make_unique<InfiniteVoid>();
     counter_domain = std::make_unique<SimpleDomain>();
     technique = std::make_unique<Limitless>();
@@ -51,14 +51,17 @@ void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
         this->DisableRCT();
     }
     
-    if (this->CEMoreThanMax(0.70) || limitless->UnlimitedHollowAllowed()) {
+    if (this->CEMoreThanMax(0.70) || (limitless->UnlimitedHollowAllowed() && limitless->FullyChanted()) || !this->HPMoreThanMax(0.25)) {
         this->SetCurrentReinforcement(200.0);
     }
     else if (this->CEMoreThanMax(0.30)) {
         this->SetCurrentReinforcement(100.0);
     }
+    else if (this->CEMoreThanMax(0.20)) {
+        this->SetCurrentReinforcement(50.0);
+    }
     else {
-        this->SetCursedEnergyRegen(25.0);
+        this->SetCurrentReinforcement(0.0);
     }
 
     double best_score = -1.0;
@@ -123,7 +126,7 @@ void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
                 return;
             }
         }
-        else if (!(this->CounterDomainActive() && this->DomainActive())) {
+        else if (!(this->CounterDomainActive() && this->DomainActive()) && !this->counter_on_cooldown) {
             this->ActivateCounterDomain();
             return;
         }

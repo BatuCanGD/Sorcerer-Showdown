@@ -13,7 +13,7 @@ import std;
 
 // -------------- Yuta ------------------
 
-Yuta::Yuta() : Sorcerer(800.0, 6000.0, 30.0) {
+Yuta::Yuta() : Sorcerer(800.0, 6000.0, 75.0) {
     technique = std::make_unique<Copy>();
     cursed_tool = std::make_unique<Katana>();
     domain = std::make_unique<AuthenticMutualLove>();
@@ -116,7 +116,7 @@ void Yuta::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
                 return;
             }
         }
-        else if (!(this->CounterDomainActive() && this->DomainActive())) {
+        else if (!(this->CounterDomainActive() && this->DomainActive()) && !this->counter_on_cooldown) {
             this->ActivateCounterDomain();
             return;
         }

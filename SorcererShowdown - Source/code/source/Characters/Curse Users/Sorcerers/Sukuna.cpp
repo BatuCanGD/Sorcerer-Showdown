@@ -12,7 +12,7 @@
 
 import std;
 
-Sukuna::Sukuna() : Sorcerer(1000.0, 20000.0, 150.0) {
+Sukuna::Sukuna() : Sorcerer(1000.0, 20000.0, 200.0) {
     domain = std::make_unique<MalevolentShrine>();
     counter_domain = std::make_unique<HollowWickerBasket>();
     technique = std::make_unique<Shrine>();
@@ -52,14 +52,17 @@ void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Char
         this->DisableRCT();
     }
 
-    if (this->CEMoreThanMax(0.50) || !this->HPMoreThanMax(0.15)) {
+    if (this->CEMoreThanMax(0.75) || !this->HPMoreThanMax(0.15)) {
         this->SetCurrentReinforcement(200.0);
     }
-    else if (this->CEMoreThanMax(0.15)) {
+    else if (this->CEMoreThanMax(0.50)) {
         this->SetCurrentReinforcement(100.0);
     }
+    else if (this->CEMoreThanMax(0.25)) {
+        this->SetCurrentReinforcement(50.0);
+    }
     else {
-        this->SetCursedEnergyRegen(25.0);
+        this->SetCurrentReinforcement(0.0);
     }
 
     double best_score = -1.0;
@@ -172,7 +175,7 @@ void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Char
                 return;
             }
         }
-        else if (!(this->CounterDomainActive() && this->DomainActive())) {
+        else if (!(this->CounterDomainActive() && this->DomainActive()) && !this->counter_on_cooldown) {
             this->ActivateCounterDomain();
             return;
         }

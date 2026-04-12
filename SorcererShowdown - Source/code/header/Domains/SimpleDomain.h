@@ -3,7 +3,7 @@
 
 class SimpleDomain : public Domain {
 private:
-	static constexpr double domain_cost = 0.0;
+	static constexpr double domain_cost = 150.0;
 public:
 	SimpleDomain();
 	void OnSureHit(Character&) override;

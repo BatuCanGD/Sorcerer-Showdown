@@ -73,7 +73,7 @@ void Character::Damage(double h) {
 }
 void Character::DamageBypass(double h) {
 	if (is_invulnerable) return;
-	health = std::max(health - h, 0.0);
+	health = std::max(health - (h / this->GetDamageReinforcement()), 0.0);
 }
 
 void Character::Regen(double h) {
