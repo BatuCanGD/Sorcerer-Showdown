@@ -1,4 +1,6 @@
 #include "Mahito.h"
+#include "TransfiguredHuman.h"
+#include "BattlefieldHeader.h"
 
 import std;
 
@@ -20,8 +22,9 @@ bool Mahito::CanBeHit() const {
 	return true;
 }
 
-void Mahito::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
-	std::println("my name is skyfall and i hate kaisen!");
+void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
+	std::println("my name is skyfall and i hate kaisen! take my transfigured human!");
+	bf.spawn_queue.push_back(std::make_unique<TransfiguredHuman>());
 }
 
 void Mahito::TickCharacterSpecialty() {

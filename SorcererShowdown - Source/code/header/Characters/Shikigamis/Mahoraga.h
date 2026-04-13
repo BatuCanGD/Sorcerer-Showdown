@@ -20,7 +20,7 @@ public:
 
 	void Adapt();
 	bool FullyAdapted()const;
-	void OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>&) override;
+	void OnCharacterTurn(Character*, Battlefield&) override;
 	void PrintStatus(Character*) const;
 	void UpdatePreviousState();
 

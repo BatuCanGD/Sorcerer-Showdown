@@ -1,4 +1,5 @@
 #include "Character.h"
+#include "BattlefieldHeader.h"
 #include "BattleManager.h"
 #include "PlayerManager.h"
 #include "UIDisplay.h"
@@ -6,29 +7,27 @@
 import std;
 
 int main() { // main
+	Battlefield bf;
 	BattleManager manager;
 	PlayerManager player;
 	UserInterface interface;
 
-	std::vector<std::unique_ptr<Character>> battlefield;
-	std::map<std::string, int> fighter_counts;
-
-	bool spectator_mode = manager.SetupBattlefield(battlefield, fighter_counts);
+	bool spectator_mode = manager.SetupBattlefield(bf.battlefield, bf.fighter_counts);
 	bool skip_turns = manager.SkipTurnFullyCheck();
-	interface.ShowBattleEntry(battlefield);
+	interface.ShowBattleEntry(bf.battlefield);
 	
 	if (!spectator_mode) {
-		battlefield[0]->SetAsPlayer(true);
+		bf.battlefield[0]->SetAsPlayer(true);
 	}
 	while (true) {
 		bool game_over = false;
-		for (const auto& s : battlefield) {
-			if (s->GetCharacterHealth() <= 0.0) continue;
+		for (const auto& s : bf.battlefield) {
+			if (s->GetCharacterHealth() <= 0.0 || s.get() == nullptr) continue;
 			if (s->IsThePlayer()) {
 				interface.DisplaySorcererStatus(s.get());
 				if (s->IsCharacterStunned()) continue;
 				std::println("\n");
-				player.OnPlayerTurn(*s, battlefield); // devnote: ponder on adding imgui
+				player.OnPlayerTurn(*s, bf);
 				std::println("\n");
 				std::cin.clear();
 			}
@@ -36,11 +35,11 @@ int main() { // main
 				std::println("\n");
 				interface.DisplaySorcererStatus(s.get());
 				std::println("\n");
-				s->OnCharacterTurn(s.get(), battlefield);
+				s->OnCharacterTurn(s.get(), bf);
 				std::println("\n");
 			}
 
-			if (manager.GameEndCheck(battlefield, spectator_mode)) {
+			if (manager.GameEndCheck(bf.battlefield, spectator_mode)) {
 				game_over = true;
 				break;
 			}
@@ -48,11 +47,12 @@ int main() { // main
 				interface.ContinuePrompt();
 			}
 		}
-		manager.DomainCheckAndPerform(battlefield);
-		bool player_found = manager.ManageEndOfTurn(battlefield, spectator_mode);
-
-		if (manager.IsBattleOver(game_over, player_found, spectator_mode ,battlefield)) break;
-
+		manager.DomainCheckAndPerform(bf.battlefield);
+		bool player_found = manager.ManageEndOfTurn(bf.battlefield, spectator_mode);
+		manager.SpawnNewFighters(bf);
+		
+		if (manager.IsBattleOver(game_over, player_found, spectator_mode , bf.battlefield)) break;
+		
 		std::println("Press Enter to begin the next round...");
 		std::cin.get();
 		interface.ClearScreen();

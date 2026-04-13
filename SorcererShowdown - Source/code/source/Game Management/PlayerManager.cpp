@@ -1,4 +1,5 @@
 #include "PlayerManager.h"
+#include "BattlefieldHeader.h"
 #include "Shikigami.h"
 #include "Techniques.h"
 #include "CursedTool.h"
@@ -9,7 +10,7 @@
 
 import std;
 
-void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr<Character>>& battlefield) {
+void PlayerManager::OnPlayerTurn(Character& s, Battlefield& bf) {
 	int plrch = GetValidInput();
 	auto p_sorcerer = dynamic_cast<CurseUser*>(&s);
 	switch (plrch) {
@@ -26,14 +27,14 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 			std::println("Your technique is burnt out, you cant use it yet!");
 			break;
 		}
-		Character* target = TargetSelector(battlefield, &s);
+		Character* target = TargetSelector(bf.battlefield, &s);
 		if (target) {
-			p_sorcerer->GetTechnique()->TechniqueMenu(p_sorcerer, target, battlefield);
+			p_sorcerer->GetTechnique()->TechniqueMenu(p_sorcerer, target, bf.battlefield);
 		}
 		break;
 	}
 	case 2: {
-		if (Character* target = TargetSelector(battlefield, &s)) {
+		if (Character* target = TargetSelector(bf.battlefield, &s)) {
 			std::println("{} engages in close combat with {}!", s.GetName(), target->GetName());
 			s.Attack(target);
 		}
@@ -60,7 +61,7 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 		break;
 	}
 	case 5: {
-		if (Character* target = TargetSelector(battlefield, &s)) {
+		if (Character* target = TargetSelector(bf.battlefield, &s)) {
 			s.Taunt(target);
 		}
 		break;
@@ -92,7 +93,7 @@ void PlayerManager::OnPlayerTurn(Character& s, const std::vector<std::unique_ptr
 			return;
 		}
 		if (p_sorcerer && p_sorcerer->GetTechnique() != nullptr) {
-			p_sorcerer->GetTechnique()->TechniqueSetting(p_sorcerer, battlefield);
+			p_sorcerer->GetTechnique()->TechniqueSetting(p_sorcerer, bf.battlefield);
 		}
 		break;
 	case 10:

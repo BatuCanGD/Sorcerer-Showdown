@@ -1,5 +1,6 @@
 #include "Agito.h"
-#include "Sorcerer.h"
+#include "BattlefieldHeader.h"
+#include "CurseUser.h"
 
 import std;
 
@@ -19,7 +20,7 @@ void Agito::PassiveSupport(Character* user) {
     }
 }
 
-void Agito::OnCharacterTurn(Character* user, std::vector<std::unique_ptr<Character>>& battlefield) {
+void Agito::OnCharacterTurn(Character* user, Battlefield& bf) {
     if (!IsActive()) {
         this->Regen(shadow_health_regen);
         return;

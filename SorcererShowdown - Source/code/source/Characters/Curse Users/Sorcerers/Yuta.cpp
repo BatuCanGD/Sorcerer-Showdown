@@ -1,4 +1,5 @@
 #include "Yuta.h"
+#include "BattlefieldHeader.h"
 #include "Copy.h"
 #include "Limitless.h"
 #include "Rika.h"
@@ -34,7 +35,7 @@ std::string Yuta::GetSimpleName() const {
     return "Yuta Okkotsu";
 }
 
-void Yuta::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
+void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {
     if (this->IsCharacterStunned()) {
         std::println("{} is stunned and their turn will be skipped", this->GetNameWithID());
         return;
@@ -72,7 +73,7 @@ void Yuta::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
     Character* strongest = nullptr;
     std::vector<CurseUser*> domain_users;
 
-    for (const auto& s : battlefield) {
+    for (const auto& s : bf.battlefield) {
         if (s.get() == this) continue;
         double score = s->GetCharacterHealth() / this->GetCharacterMaxHealth();
 

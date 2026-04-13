@@ -1,5 +1,6 @@
 #include "Mahoraga.h"
-#include "Sorcerer.h"
+#include "BattlefieldHeader.h"
+#include "CurseUser.h"
 #include "Utils.h"
 
 import std;
@@ -51,7 +52,7 @@ bool Mahoraga::FullyAdapted() const {
     return InfStage == InfinityAdaptation::FourthSpin;
 }
 
-void Mahoraga::OnCharacterTurn(Character* user, std::vector<std::unique_ptr<Character>>&) {
+void Mahoraga::OnCharacterTurn(Character* user, Battlefield& bf) {
     if (!IsActive()) {
         this->Regen(shadow_health_regen);
         return;

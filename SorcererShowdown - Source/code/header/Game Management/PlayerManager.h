@@ -2,12 +2,12 @@
 #include <vector>
 #include <memory>
 
-class Sorcerer;
 class Character;
+struct Battlefield;
 
 class PlayerManager {
 public:
-	void OnPlayerTurn(Character& s, const std::vector<std::unique_ptr<Character>>& battlefield);
+	void OnPlayerTurn(Character& s, Battlefield& bf);
 	void PlayerRCTusage(Character& s);
 	void PlayerDAusage(Character& s);
 	void PlayerDomainUsage(Character& s);

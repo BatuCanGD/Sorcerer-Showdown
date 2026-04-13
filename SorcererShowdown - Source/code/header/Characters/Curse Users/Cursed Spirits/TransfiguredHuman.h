@@ -1,14 +1,14 @@
 #pragma once
-#include "Sorcerer.h"
+#include "CursedSpirit.h"
+#include <vector>
+#include <string>
 
-class Gojo : public Sorcerer {
+class TransfiguredHuman : public CursedSpirit {
 public:
-	Gojo();
+	TransfiguredHuman();
 	std::unique_ptr<Character> Clone() const override;
 	std::string GetSimpleName() const override;
 	std::string GetName() const override;
-	void OnCharacterTurn(Character*, Battlefield&) override;
 	bool CanBeHit() const override;
-	bool InfCheck(Character*);
-	void HitCharacter(Character*);
+	void OnCharacterTurn(Character*, Battlefield&) override;
 };

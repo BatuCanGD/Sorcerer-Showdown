@@ -13,7 +13,7 @@ private:
 public:
 	Rika();
 	std::unique_ptr<Character> Clone() const override;
-	void OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>&) override;
+	void OnCharacterTurn(Character*, Battlefield&) override;
 	void SaveUserCursedEnergy(Character*);
 	void RikaCooldownRegeneration(Character*);
 

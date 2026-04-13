@@ -1,4 +1,5 @@
 #include "Gojo.h"
+#include "BattlefieldHeader.h"
 #include "Limitless.h"
 #include "InfiniteVoid.h"
 #include "UnlimitedPurple.h"
@@ -29,7 +30,7 @@ std::string Gojo::GetSimpleName() const {
     return "Gojo";
 }
 
-void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
+void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
     if (this->IsCharacterStunned()) {
         std::println("{} is stunned and their turn will be skipped", this->GetNameWithID());
         return;
@@ -69,7 +70,7 @@ void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
     std::vector<CurseUser*> domain_users;
     bool shrine_found = false;
 
-    for (const auto& target : battlefield) {
+    for (const auto& target : bf.battlefield) {
         if (target.get() == this) continue;
 
         double hp_ratio = target->GetCharacterHealth() / this->GetCharacterMaxHealth();
@@ -166,7 +167,7 @@ void Gojo::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Charac
             return;
         }
         if (limitless->FullyChanted() && limitless->UnlimitedHollowAllowed()) {
-            limitless->UseUnlimitedHollowPurple(this, battlefield);
+            limitless->UseUnlimitedHollowPurple(this, bf.battlefield);
             return;
         }
 

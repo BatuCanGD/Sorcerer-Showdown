@@ -1,4 +1,5 @@
 #include "CurseUser.h"
+#include "BattlefieldHeader.h"
 #include "Shikigami.h"
 #include "Domain.h"
 #include "Techniques.h"
@@ -55,8 +56,9 @@ std::string CurseUser::GetDomainStatus()const {
 }
 void CurseUser::TickShikigami() {
     std::vector<std::unique_ptr<Character>> empty;
+    Battlefield bf;
     for (const auto& s : shikigami) {
-        s->OnCharacterTurn(this, empty);
+        s->OnCharacterTurn(this, bf);
     }
 }
 

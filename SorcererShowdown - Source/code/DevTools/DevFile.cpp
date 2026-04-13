@@ -25,7 +25,7 @@ std::unique_ptr<Character> test_sorcerer::Clone() const {
     return std::make_unique<test_sorcerer>();
 }
 
-void test_sorcerer::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
+void test_sorcerer::OnCharacterTurn(Character*, Battlefield& bf) {
     std::println("Exception thrown");
     std::println("Access violation reading location 0x000000000000000C.");
 }

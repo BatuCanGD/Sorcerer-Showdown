@@ -1,4 +1,5 @@
 #include "BattleManager.h"
+#include "BattlefieldHeader.h"
 #include "CharacterList.h"
 #include "DevFile.h"
 #include "Limitless.h"
@@ -117,6 +118,14 @@ bool BattleManager::SetupBattlefield(std::vector<std::unique_ptr<Character>>& ba
 		UserInterface::ClearScreen();
 	}
 	return spec_mode;
+}
+
+void BattleManager::SpawnNewFighters(Battlefield& bf) {
+	for (auto& new_unit : bf.spawn_queue) {
+		new_unit->AssignID();
+		bf.battlefield.push_back(std::move(new_unit));
+	}
+	bf.spawn_queue.clear();
 }
 
 bool BattleManager::ManageEndOfTurn(std::vector<std::unique_ptr<Character>>& battlefield, bool spectator_mode) {

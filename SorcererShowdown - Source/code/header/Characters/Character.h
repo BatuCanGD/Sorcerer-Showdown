@@ -4,6 +4,7 @@
 #include <vector>
 
 class CursedTool;
+struct Battlefield;
 
 class Character { 
 protected:
@@ -51,7 +52,8 @@ public:
 	bool IsThePlayer() const;
 	void SetAsPlayer(bool);
 
-	virtual void OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>&);
+	virtual void OnCharacterTurn(Character*, Battlefield&);
+
 	void Taunt(Character* target) const;
 
 	virtual void Attack(Character*);

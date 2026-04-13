@@ -12,7 +12,7 @@ class test_sorcerer : public Sorcerer {
 public:
 	test_sorcerer();
 	std::unique_ptr<Character> Clone() const override;
-	void OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) override;
+	void OnCharacterTurn(Character*, Battlefield& bf) override;
 	std::string GetName() const override;
 	bool CanBeHit() const override;
 };

@@ -1,11 +1,12 @@
 #include "Rika.h"
-#include "Sorcerer.h"
+#include "BattlefieldHeader.h"
+#include "CurseUser.h"
 
 import std;
 
 Rika::Rika() : Shikigami(INT32_MAX, 100000.0, 3000.0) {}
 
-void Rika::OnCharacterTurn(Character* user, std::vector<std::unique_ptr<Character>>& battlefield) {
+void Rika::OnCharacterTurn(Character* user, Battlefield& bf) {
     if (IsPartiallyActive()) {
         this->Manifest();
     }

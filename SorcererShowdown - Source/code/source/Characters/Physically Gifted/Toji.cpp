@@ -1,4 +1,5 @@
 #include "Toji.h"
+#include "BattlefieldHeader.h"
 #include "Limitless.h"
 #include "CursedToolList.h"
 #include "Sorcerer.h"
@@ -22,7 +23,7 @@ std::string Toji::GetSimpleName() const {
     return "Toji Fushiguro";
 }
 
-void Toji::OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>& battlefield) {
+void Toji::OnCharacterTurn(Character*, Battlefield& bf) {
     if (this->IsCharacterStunned()) {
         std::println("{} is stunned and their turn will be skipped", this->GetName());
         return;
@@ -31,7 +32,7 @@ void Toji::OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>& 
     Character* target = nullptr;
     double best_score = -1.0;
 
-    for (const auto& t : battlefield) {
+    for (const auto& t : bf.battlefield) {
         if (t.get() == this || t->GetCharacterHealth() <= 0.0) continue;
 
         auto* curse_user = dynamic_cast<CurseUser*>(t.get());

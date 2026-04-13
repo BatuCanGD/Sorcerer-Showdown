@@ -1,4 +1,5 @@
 #include "Character.h"
+#include "BattlefieldHeader.h"
 #include "PhysicallyGifted.h"
 #include "Utils.h"
 #include "CursedTool.h"
@@ -19,7 +20,7 @@ Character::Character(double hp, double ce, double regen)
 }
 Character::~Character() = default;
 
-void Character::OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>&) {
+void Character::OnCharacterTurn(Character*, Battlefield& bf) {
 	std::println("Base Character Initialized Text");
 }
 
@@ -28,7 +29,8 @@ bool Character::CanBeAssignedID() const {
 }
 
 void Character::Attack(Character* target) {
-	std::println("Placeholder character class virtual attack function, {}", target->GetName());
+	target->Damage(20.0);
+	std::println("{} got Attacked!", target->GetNameWithID());
 }
 
 void Character::AssignID() {

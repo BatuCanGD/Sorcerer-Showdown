@@ -1,4 +1,5 @@
 #include "Sukuna.h"
+#include "BattlefieldHeader.h"
 #include "DomainList.h"
 #include "Shrine.h"
 #include "Limitless.h"
@@ -34,7 +35,7 @@ std::string Sukuna::GetSimpleName() const {
     return "Sukuna";
 }
 
-void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Character>>& battlefield) {
+void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
     if (this->IsCharacterStunned()) {
         std::println("{} is stunned and their turn will be skipped", this->GetNameWithID());
         return;
@@ -69,7 +70,7 @@ void Sukuna::OnCharacterTurn(Character* unused, std::vector<std::unique_ptr<Char
     Character* strongest = nullptr;
     std::vector<CurseUser*> domain_users;
 
-    for (const auto& target : battlefield) {
+    for (const auto& target : bf.battlefield) {
         if (target.get() == this || target->GetCharacterHealth() <= 0.0) continue;
 
         double hp_ratio = target->GetCharacterHealth() / this->GetCharacterMaxHealth();

@@ -10,6 +10,6 @@ public:
 	std::string GetSimpleName() const override;
 	std::string GetName() const override;
 	bool CanBeHit() const override;
-	void OnCharacterTurn(Character*, std::vector<std::unique_ptr<Character>>&) override;
+	void OnCharacterTurn(Character*, Battlefield&) override;
 	void TickCharacterSpecialty() override;
 };
