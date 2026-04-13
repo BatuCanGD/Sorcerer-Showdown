@@ -29,7 +29,7 @@ Modules: Ensure your build system (like CMake or VS) is configured to handle imp
 
 Standard: Set your language standard to c++23 or /std:c++latest.
 
-## Adding New Characters
+## Adding New Characters (Extremely Outdated!!!)
 
 ```cpp
 // First, create a header file with any name you want
