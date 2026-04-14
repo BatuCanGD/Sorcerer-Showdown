@@ -14,6 +14,6 @@ public:
 	void PlayerShikigami(Character& s);
 	void PlayerReinforcement(Character& s);
 	void GetPlayerTools(Character& s);
-	Character* TargetSelector(const std::vector<std::unique_ptr<Character>>& battlefield, Character* player);
+	Character* TargetSelector(Battlefield&, Character* player);
 
 };

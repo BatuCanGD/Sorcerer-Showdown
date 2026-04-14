@@ -9,11 +9,11 @@ struct Battlefield;
 
 class BattleManager {
 public:
-	bool GameEndCheck(const std::vector<std::unique_ptr<Character>>& battlefield, bool spectator_mode);
-	bool SetupBattlefield(std::vector<std::unique_ptr<Character>>& battlefield, std::map<std::string, int>& sorcerer_counts);
+	bool GameEndCheck(Battlefield&, bool spectator_mode);
+	bool SetupBattlefield(Battlefield&);
 	bool SkipTurnFullyCheck();
 	void SpawnNewFighters(Battlefield&);
-	bool ManageEndOfTurn(std::vector<std::unique_ptr<Character>>& battlefield, bool spectator_mode);
-	void DomainCheckAndPerform(std::vector<std::unique_ptr<Character>>& battlefield);
-	bool IsBattleOver(bool,bool,bool, std::vector<std::unique_ptr<Character>>&);
+	bool ManageEndOfTurn(Battlefield&, bool spectator_mode);
+	void DomainCheckAndPerform(Battlefield&);
+	bool IsBattleOver(bool,bool,bool, Battlefield&);
 };

@@ -12,7 +12,7 @@ int main() { // main
 	PlayerManager player;
 	UserInterface interface;
 
-	bool spectator_mode = manager.SetupBattlefield(bf.battlefield, bf.fighter_counts);
+	bool spectator_mode = manager.SetupBattlefield(bf);
 	bool skip_turns = manager.SkipTurnFullyCheck();
 	interface.ShowBattleEntry(bf.battlefield);
 	
@@ -22,7 +22,7 @@ int main() { // main
 	while (true) {
 		bool game_over = false;
 		for (const auto& s : bf.battlefield) {
-			if (s->GetCharacterHealth() <= 0.0 || s.get() == nullptr) continue;
+			if (s->GetCharacterHealth() <= 0.0) continue;
 			if (s->IsThePlayer()) {
 				interface.DisplaySorcererStatus(s.get());
 				if (s->IsCharacterStunned()) continue;
@@ -39,7 +39,7 @@ int main() { // main
 				std::println("\n");
 			}
 
-			if (manager.GameEndCheck(bf.battlefield, spectator_mode)) {
+			if (manager.GameEndCheck(bf, spectator_mode)) {
 				game_over = true;
 				break;
 			}
@@ -47,11 +47,11 @@ int main() { // main
 				interface.ContinuePrompt();
 			}
 		}
-		manager.DomainCheckAndPerform(bf.battlefield);
-		bool player_found = manager.ManageEndOfTurn(bf.battlefield, spectator_mode);
+		manager.DomainCheckAndPerform(bf);
+		bool player_found = manager.ManageEndOfTurn(bf, spectator_mode);
 		manager.SpawnNewFighters(bf);
 		
-		if (manager.IsBattleOver(game_over, player_found, spectator_mode , bf.battlefield)) break;
+		if (manager.IsBattleOver(game_over, player_found, spectator_mode, bf)) break;
 		
 		std::println("Press Enter to begin the next round...");
 		std::cin.get();

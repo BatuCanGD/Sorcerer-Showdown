@@ -11,7 +11,7 @@ void Rika::OnCharacterTurn(Character* user, Battlefield& bf) {
         this->Manifest();
     }
     if (IsActivePhysically()) {
-        if (active_turn_amount > 5) {
+        if (active_turn_amount >= 5) {
             std::println("the queen of curses has reached her time limit\n{} trudges back into the shadows!", this->GetName());
             this->Withdraw();
             RikaCooldownRegeneration(user);
@@ -32,7 +32,7 @@ void Rika::OnCharacterTurn(Character* user, Battlefield& bf) {
 
 void Rika::RikaCooldownRegeneration(Character* user) {
     if (!IsActivePhysically() && value_saved) {
-        if (active_turn_amount > 5) {
+        if (active_turn_amount >= 5) {
             active_cooldown--;
             if (active_cooldown <= 0) {
                 active_turn_amount = 0;

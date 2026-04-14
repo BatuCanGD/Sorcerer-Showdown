@@ -27,14 +27,14 @@ void PlayerManager::OnPlayerTurn(Character& s, Battlefield& bf) {
 			std::println("Your technique is burnt out, you cant use it yet!");
 			break;
 		}
-		Character* target = TargetSelector(bf.battlefield, &s);
+		Character* target = TargetSelector(bf, &s);
 		if (target) {
 			p_sorcerer->GetTechnique()->TechniqueMenu(p_sorcerer, target, bf.battlefield);
 		}
 		break;
 	}
 	case 2: {
-		if (Character* target = TargetSelector(bf.battlefield, &s)) {
+		if (Character* target = TargetSelector(bf, &s)) {
 			std::println("{} engages in close combat with {}!", s.GetName(), target->GetName());
 			s.Attack(target);
 		}
@@ -61,7 +61,7 @@ void PlayerManager::OnPlayerTurn(Character& s, Battlefield& bf) {
 		break;
 	}
 	case 5: {
-		if (Character* target = TargetSelector(bf.battlefield, &s)) {
+		if (Character* target = TargetSelector(bf, &s)) {
 			s.Taunt(target);
 		}
 		break;
@@ -326,10 +326,10 @@ void PlayerManager::PlayerReinforcement(Character& s) {
 	}
 }
 
-Character* PlayerManager::TargetSelector(const std::vector<std::unique_ptr<Character>>& battlefield, Character* player) {
+Character* PlayerManager::TargetSelector(Battlefield& bf, Character* player) {
 	std::println("Choose your target:");
-	for (size_t i = 0; i < battlefield.size(); ++i) {
-		auto& current = *battlefield[i];
+	for (size_t i = 0; i < bf.battlefield.size(); ++i) {
+		auto& current = *bf.battlefield[i];
 		if (current.GetCharacterHealth() <= 0) continue;
 
 		double health = current.GetCharacterHealth();
@@ -347,7 +347,7 @@ Character* PlayerManager::TargetSelector(const std::vector<std::unique_ptr<Chara
 		std::string name = current.GetName();
 		std::string ce_display = current.IsPhysicallyGifted() ? "Heavenly Restricted" : std::format("{:.1f} CE", cursed_energy);
 
-		if (battlefield[i].get() == player) {
+		if (bf.battlefield[i].get() == player) {
 			std::println("{}: {} (You)",
 							i, name);
 		}
@@ -359,7 +359,7 @@ Character* PlayerManager::TargetSelector(const std::vector<std::unique_ptr<Chara
 
 	std::print("=> ");
 	size_t t;
-	if (!(std::cin >> t) || t >= battlefield.size() || battlefield[t].get() == player || battlefield[t]->GetCharacterHealth() <= 0.0) {
+	if (!(std::cin >> t) || t >= bf.battlefield.size() || bf.battlefield[t].get() == player || bf.battlefield[t]->GetCharacterHealth() <= 0.0) {
 		if (std::cin.fail()) { 
 			std::cin.clear(); 
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
@@ -367,5 +367,5 @@ Character* PlayerManager::TargetSelector(const std::vector<std::unique_ptr<Chara
 		std::println("Target missed or invalid!");
 		return nullptr;
 	}
-	return battlefield[t].get();
+	return bf.battlefield[t].get();
 }

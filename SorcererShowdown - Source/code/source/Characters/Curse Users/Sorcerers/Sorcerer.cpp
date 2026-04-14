@@ -24,9 +24,9 @@ bool Sorcerer::HasSixEyes() const {
 void Sorcerer::SpendCE(double ce) {
     double efficiency = 1.0;
     if (HasSixEyes()) {
-        efficiency = 0.025;
+        efficiency = 0.3;
         if (technique && technique->GetStatus() == Technique::Status::BurntOut) {
-            efficiency = 0.25; 
+            efficiency = 0.85; 
         }
     }
     cursed_energy = std::max(cursed_energy - (ce * efficiency), 0.0);
@@ -56,19 +56,19 @@ std::string Sorcerer::GetRCTstatus() const {
 
 double Sorcerer::GetRCTHeal() const {
     switch (GetRCTProficiency()) {
-    case RCTProficiency::Crude: return 25.0;
-    case RCTProficiency::Adept: return 50.0;
-    case RCTProficiency::Expert: return 75.0;
-    case RCTProficiency::Absolute: return 100.0;
+    case RCTProficiency::Crude: return 20.0;
+    case RCTProficiency::Adept: return 35.0;
+    case RCTProficiency::Expert: return 50.0;
+    case RCTProficiency::Absolute: return 65.0;
     default: return 0.0;
     }
 }
 double Sorcerer::GetRCTCost() const {
     switch (GetRCTProficiency()) {
-    case RCTProficiency::Crude: return 75.0;
-    case RCTProficiency::Adept: return 50.0;
-    case RCTProficiency::Expert: return 25.0;
-    case RCTProficiency::Absolute: return 10.0;
+    case RCTProficiency::Crude: return 100.0;
+    case RCTProficiency::Adept: return 75.0;
+    case RCTProficiency::Expert: return 50.0;
+    case RCTProficiency::Absolute: return 25.0;
     default: return 0.0;
     }
 }
@@ -81,12 +81,12 @@ void Sorcerer::UseRCT() {
         return;
     }
     if (rct_state == ReverseCT::Active) {
-        this->Regen(GetRCTCost());
-        this->SpendCEdirect(GetRCTHeal());
+        this->Regen(GetRCTHeal());
+        this->SpendCEdirect(GetRCTCost());
     }
     else if (rct_state == ReverseCT::Overdrive) {
-        this->Regen(GetRCTCost() * 2);
-        this->SpendCEdirect(GetRCTHeal() * 2);
+        this->Regen(GetRCTHeal() * 2);
+        this->SpendCEdirect(GetRCTCost() * 2 );
     }
 }
 
@@ -101,7 +101,7 @@ void Sorcerer::Attack(Character* target) {
         }
     }
     if (domain_amplification_active) {
-        double ce_addon = std::sqrt(std::max(0.0, this->GetCharacterCE())) * 0.633;
+        double ce_addon = std::sqrt(std::max(0.0, this->GetCharacterCE())) * 0.888;
         double amp_damage = base_attack_damage + ce_addon;
 
         target->DamageBypass(amp_damage);
