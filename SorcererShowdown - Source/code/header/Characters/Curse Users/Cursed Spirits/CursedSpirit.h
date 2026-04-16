@@ -9,5 +9,7 @@ public:
 	CursedSpirit(double hp, double ce, double regen);
 	std::string GetSimpleName() const override;
 	std::string GetName() const override;
+	void Attack(Character*) override;
+	bool IsaCursedSpirit() const override;
 	bool CanBeHit() const override;
 };

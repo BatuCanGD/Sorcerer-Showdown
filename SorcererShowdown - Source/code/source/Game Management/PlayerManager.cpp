@@ -29,7 +29,7 @@ void PlayerManager::OnPlayerTurn(Character& s, Battlefield& bf) {
 		}
 		Character* target = TargetSelector(bf, &s);
 		if (target) {
-			p_sorcerer->GetTechnique()->TechniqueMenu(p_sorcerer, target, bf.battlefield);
+			p_sorcerer->GetTechnique()->TechniqueMenu(p_sorcerer, target, bf);
 		}
 		break;
 	}
@@ -93,7 +93,7 @@ void PlayerManager::OnPlayerTurn(Character& s, Battlefield& bf) {
 			return;
 		}
 		if (p_sorcerer && p_sorcerer->GetTechnique() != nullptr) {
-			p_sorcerer->GetTechnique()->TechniqueSetting(p_sorcerer, bf.battlefield);
+			p_sorcerer->GetTechnique()->TechniqueSetting(p_sorcerer, bf);
 		}
 		break;
 	case 10:

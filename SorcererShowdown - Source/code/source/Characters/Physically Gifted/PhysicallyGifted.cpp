@@ -20,6 +20,10 @@ std::unique_ptr<Character> PhysicallyGifted::Clone() const {
 	return nullptr;
 }
 
+double PhysicallyGifted::GetHealingFactor() const {
+    return strength / 15;
+}
+
 void  PhysicallyGifted::Attack(Character* target) {
     if (auto* target_cuser = dynamic_cast<CurseUser*>(target)) {
         if (auto* limitless = dynamic_cast<Limitless*>(target_cuser->GetTechnique())) {

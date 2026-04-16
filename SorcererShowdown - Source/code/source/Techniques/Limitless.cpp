@@ -1,4 +1,5 @@
 #include "Limitless.h"
+#include "BattlefieldHeader.h"
 #include "CurseUser.h"
 #include "Character.h"
 #include "Utils.h"
@@ -81,13 +82,13 @@ int Limitless::GetUsedPurpleAmount() const {
     return purple_used_amount;
 }
 
-void Limitless::UseUnlimitedHollowPurple(CurseUser* user, const std::vector<std::unique_ptr<Character>>& battlefield) {
+void Limitless::UseUnlimitedHollowPurple(CurseUser* user, Battlefield& bf) {
     if (chant != ChantLevel::Four) {
         std::println("the Unlimited Hollow Purple doesnt have enough output, chant to its maximum output and potential!");
         return;
     }
     std::println("{}===== !UNLIMITED HOLLOW PURPLE! ====={}", Color::Purple, Color::Clear);
-    for (const auto& s : battlefield) {
+    for (const auto& s : bf.battlefield) {
         if (s.get() == user) {
             s->Damage(unlpurple_output * 0.15);
             if (s->GetCharacterHealth() <= 0.0) {
@@ -112,7 +113,7 @@ void Limitless::InfinityNerf(CurseUser* user) {
         return;
     }
     if (this->CheckInfinity()) {
-        double maintain_cost = 50.0;
+        double maintain_cost = 125.0;
         if (user->GetCharacterCE() < maintain_cost) {
             std::println("{}{}'s concentration wavers due to low CE!{}{} Infinity is deactivated.{}",Color::Red,user->GetNameWithID(),Color::Clear,Color::Cyan,Color::Clear);
             SetInfinity(false);
@@ -123,7 +124,7 @@ void Limitless::InfinityNerf(CurseUser* user) {
     }
 }
 
-void Limitless::TechniqueMenu(CurseUser* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) {
+void Limitless::TechniqueMenu(CurseUser* user, Character* target, Battlefield& bf) {
     if (user->DomainAmplificationActive()) {
         std::println("{}You cannot use your innate technique due to domain amplification!{}", Color::Red, Color::Clear);
         return;
@@ -138,15 +139,14 @@ void Limitless::TechniqueMenu(CurseUser* user, Character* target, const std::vec
     std::print("=> ");
     size_t choice = GetValidInput();
     if (choice == 4 && unlimited_hollow_purple_allowed) {
-        UseUnlimitedHollowPurple(user, battlefield);
+        UseUnlimitedHollowPurple(user, bf);
     }
     else {
         UseTheLimitlessTechnique(static_cast<LimitlessType>(choice), user, target);
     }
-
 }
 
-void Limitless::TechniqueSetting(CurseUser* user, const std::vector<std::unique_ptr<Character>>& battlefield) {
+void Limitless::TechniqueSetting(CurseUser* user, Battlefield& bf) {
     std::println("Infinity Status: [{}] | Chant level: [{}]", this->CheckInfinity() ? "\033[36mActive\033[0m" : "\033[31mInactive\033[0m", this->GetStringChantLevel());
     std::println("1 - Turn on Infinity | 2 - Turn off Infinity | 3 - Chant | 4 - Return");
     std::print("=> ");

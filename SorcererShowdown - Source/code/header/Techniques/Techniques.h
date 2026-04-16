@@ -5,6 +5,7 @@
 
 class CurseUser;
 class Character;
+struct Battlefield;
 
 class Technique { // BASE CLASS
 protected:
@@ -30,8 +31,8 @@ public:
 	virtual std::string GetTechniqueSimpleName() const = 0;
 
 	virtual void Chant() = 0;
-	virtual void TechniqueMenu(CurseUser* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) = 0;
-	virtual void TechniqueSetting(CurseUser*, const std::vector<std::unique_ptr<Character>>& battlefield) = 0;
+	virtual void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) = 0;
+	virtual void TechniqueSetting(CurseUser*, Battlefield&) = 0;
 	virtual std::unique_ptr<Technique> Clone() const = 0;
 
 	std::string GetStringChantLevel() const;

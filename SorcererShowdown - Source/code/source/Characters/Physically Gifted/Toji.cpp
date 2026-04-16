@@ -23,6 +23,10 @@ std::string Toji::GetSimpleName() const {
     return "Toji Fushiguro";
 }
 
+void Toji::TickCharacterSpecialty() {
+    this->Regen(this->GetHealingFactor());
+}
+
 void Toji::OnCharacterTurn(Character*, Battlefield& bf) {
     if (this->IsCharacterStunned()) {
         std::println("{} is stunned and their turn will be skipped", this->GetName());

@@ -26,6 +26,8 @@ protected:
 
 	int stun_duration = 3;
 
+	const double base_attack_damage = 20.0;
+
 	bool is_stunned = false;
 	bool is_heavenly_restricted;
 	bool is_invulnerable = false;
@@ -100,7 +102,7 @@ public:
 	static void AddGlobalID(int i) { global_id_counter += i; }
 
 	virtual bool IsaCurseUser() const;
-	//virtual bool IsaCursedSpirit() const;
+	virtual bool IsaCursedSpirit() const;
 	virtual bool IsaSorcerer() const;
 	virtual bool IsPhysicallyGifted() const;
 	virtual bool IsShikigami() const;

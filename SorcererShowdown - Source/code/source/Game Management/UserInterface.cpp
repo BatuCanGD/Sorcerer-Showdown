@@ -73,7 +73,7 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 	}
 
 	std::println("");
-	if (s->IsaSorcerer()) {
+	if (s->IsaCurseUser()) {
 		auto sorcerer = static_cast<Sorcerer*>(s);
 		if (sorcerer->GetDomain() != nullptr) {
 			std::print("Domain: [{}] [{}]   ",
@@ -128,7 +128,7 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 		std::string amplificationd = std::format("7 - Domain Amplification [{}Locked{}]", Color::DimGray, Color::Clear);
 		std::string shikigami = std::format("10 - Shikigami [{}None{}]", Color::DimGray, Color::Clear);
 
-		if (s->IsaSorcerer()) {
+		if (s->IsaCurseUser()) {
 			auto* p_sorcerer = static_cast<Sorcerer*>(s);
 			Domain* domain = p_sorcerer->GetDomain();
 			Domain* counter = p_sorcerer->GetCounterDomain();

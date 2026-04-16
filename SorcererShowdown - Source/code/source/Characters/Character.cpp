@@ -29,8 +29,7 @@ bool Character::CanBeAssignedID() const {
 }
 
 void Character::Attack(Character* target) {
-	target->Damage(20.0);
-	std::println("{} got Attacked!", target->GetNameWithID());
+	std::println("Do not use this base function");
 }
 
 void Character::AssignID() {
@@ -159,6 +158,9 @@ bool Character::IsPhysicallyGifted() const {
 	return false;
 }
 bool Character::IsaCurseUser() const {
+	return false;
+}
+bool Character::IsaCursedSpirit() const {
 	return false;
 }
 

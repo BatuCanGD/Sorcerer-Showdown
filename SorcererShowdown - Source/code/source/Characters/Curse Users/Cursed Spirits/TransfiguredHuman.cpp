@@ -8,6 +8,7 @@ TransfiguredHuman::TransfiguredHuman() : CursedSpirit(50.0, 10.0, 0.0) {
 	passive_health_regen = 0.0;
 	current_ce_reinforcement = 0.0;
 	max_ce_reinforcement = 0.0;
+	black_flash_chance = 0;
 };
 
 std::unique_ptr<Character> TransfiguredHuman::Clone() const {
@@ -25,10 +26,10 @@ bool TransfiguredHuman::CanBeHit() const {
 void TransfiguredHuman::OnCharacterTurn(Character*, Battlefield& bf) {
 	Character* target = nullptr;
 	for (const auto& tar : bf.battlefield) {
-		if (target == nullptr) target = tar.get();
 		if (tar.get() == this ||
 			tar.get()->GetSimpleName() == "Transfigured Human" ||
 			tar.get()->GetSimpleName() == "Mahito") continue;
+		if (target == nullptr) target = tar.get();
 
 		if (GetRandomNumber(0, 1) == 1 || !target) {
 			target = tar.get();

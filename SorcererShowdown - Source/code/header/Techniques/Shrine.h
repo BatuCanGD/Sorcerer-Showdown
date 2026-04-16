@@ -3,10 +3,11 @@
 
 class CurseUser;
 class Character;
+struct Battlefield;
 
 class Shrine : public Technique { 
 protected:
-	static constexpr double slash_output = 45.0;
+	static constexpr double slash_output = 60.0;
 	static constexpr double cleave_output = 300.0;
 	static constexpr double wcs_output = 2500.0;
 	bool world_cutting_slash_allowed = false;
@@ -23,8 +24,8 @@ public:
 	void UseTheWorldCuttingSlash(CurseUser* user, Character* target);
 
 	void UseShrineTechnique(ShrineType choice, CurseUser* s, Character* c);
-	void TechniqueMenu(CurseUser* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) override;
-	void TechniqueSetting(CurseUser*, const std::vector<std::unique_ptr<Character>>& battlefield) override;
+	void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
+	void TechniqueSetting(CurseUser*, Battlefield&) override;
 
 	std::string GetTechniqueName() const override;
 	std::string GetTechniqueSimpleName() const override;

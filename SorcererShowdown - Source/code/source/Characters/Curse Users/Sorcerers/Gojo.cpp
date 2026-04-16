@@ -167,7 +167,7 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
             return;
         }
         if (limitless->FullyChanted() && limitless->UnlimitedHollowAllowed()) {
-            limitless->UseUnlimitedHollowPurple(this, bf.battlefield);
+            limitless->UseUnlimitedHollowPurple(this, bf);
             return;
         }
 

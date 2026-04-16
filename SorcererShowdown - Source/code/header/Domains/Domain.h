@@ -19,7 +19,7 @@ protected:
 	};
 	Refinement ref_level = Refinement::Refined;
 public:
-	Domain(double, double, double);
+	Domain(double health, double damage, double range);
 	virtual ~Domain() = default;
 	bool Clashing() const;
 	void SetClashState(bool a);

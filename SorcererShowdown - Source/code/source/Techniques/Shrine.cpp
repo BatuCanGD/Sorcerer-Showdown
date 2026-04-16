@@ -60,7 +60,7 @@ bool Shrine::WorldCuttingSlashUnlocked() const {
     return world_cutting_slash_allowed;
 }
 
-void Shrine::TechniqueMenu(CurseUser* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) {
+void Shrine::TechniqueMenu(CurseUser* user, Character* target, Battlefield& bf) {
     if (user->DomainAmplificationActive()) {
         std::println("You cannot use your innate technique due to domain amplification!");
         return;
@@ -77,7 +77,7 @@ void Shrine::TechniqueMenu(CurseUser* user, Character* target, const std::vector
     UseShrineTechnique(static_cast<ShrineType>(choice), user, target);
 }
 
-void Shrine::TechniqueSetting(CurseUser* user, const std::vector<std::unique_ptr<Character>>& battlefield) {
+void Shrine::TechniqueSetting(CurseUser* user, Battlefield& bf) {
     std::println("Chant level: [{}]", this->GetStringChantLevel());
     std::println("1 - Chant | 2 - Return");
     std::print("=> ");

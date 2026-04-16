@@ -13,7 +13,6 @@ class Specials;
 class Sorcerer : public CurseUser {
 protected:
 	bool six_eyes = false;
-	double base_attack_damage = 20.0;
 	enum class ReverseCT {
 		Disabled, Active, Overdrive
 	};

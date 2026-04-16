@@ -43,7 +43,7 @@ void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {
     Shikigami* rika = this->ChooseShikigami(0);
 
     if (!(this->HPMoreThanMax(0.50) || this->CEMoreThanMax(0.20))) {
-        if (!(rika->GetActiveTime() >= 5 && rika->IsActivePhysically())) {
+        if (!(rika->GetActiveTime() >= 5) && !rika->IsActivePhysically()) {
             std::println("Come, Rika.");
             rika->Manifest();
         }

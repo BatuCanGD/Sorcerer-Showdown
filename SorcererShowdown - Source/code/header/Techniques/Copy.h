@@ -3,6 +3,7 @@
 
 class CurseUser;
 class Character;
+struct Battlefield;
 
 class Copy : public Technique {
 private:
@@ -17,8 +18,8 @@ public:
 	Technique* GetActive() const;
 	void Set(Status s) override;
 
-	void TechniqueMenu(CurseUser* user, Character* target, const std::vector<std::unique_ptr<Character>>& battlefield) override;
-	void TechniqueSetting(CurseUser* user, const std::vector<std::unique_ptr<Character>>& battlefield) override;
+	void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
+	void TechniqueSetting(CurseUser* user, Battlefield&) override;
 
 	void Chant() override;
 	std::string GetTechniqueName() const override;
