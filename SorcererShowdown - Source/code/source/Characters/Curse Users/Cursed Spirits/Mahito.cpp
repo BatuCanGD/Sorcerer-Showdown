@@ -28,7 +28,6 @@ bool Mahito::CanBeHit() const {
 }
 
 void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
-	std::println("my name is skyfall and i hate kaisen! take my transfigured human!");
 	IdleTransfiguration* tf = dynamic_cast<IdleTransfiguration*>(this->GetTechnique());
 
 	constexpr auto TRANSFIGURE = IdleTransfiguration::TransfigurationType::Transfigure;
