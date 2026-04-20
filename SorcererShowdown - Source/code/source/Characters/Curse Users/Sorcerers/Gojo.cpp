@@ -117,7 +117,7 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
     }
     
     if (!domain_users.empty()) {
-        if (!limitless->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
+        if (!limitless->BurntOut() && this->GetDomainUses() < 6 && !this->DomainActive()) {
             if (domain_users.size() == 1) {
                 this->ActivateDomain(); 
                 return;

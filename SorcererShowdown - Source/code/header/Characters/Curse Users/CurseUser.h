@@ -57,6 +57,8 @@ public:
 	void SpendCE(double ce) override;
 	void SpendCEdirect(double ce);
 
+	void Attack(Character*) override;
+
     bool DomainActive() const;
     void ActivateDomain();
     void DeactivateDomain();

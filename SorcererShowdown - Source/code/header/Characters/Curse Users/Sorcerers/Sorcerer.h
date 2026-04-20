@@ -45,8 +45,6 @@ public:
 	double GetRCTCost() const;
 	RCTProficiency GetRCTProficiency() const;
 
-	void Attack(Character*) override;
-
 	std::string GetSimpleName() const override;
 	std::string GetName() const override;
 

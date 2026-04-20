@@ -19,6 +19,7 @@ protected:
 
 	double cursed_energy;
 	double max_cursed_energy;
+
 	double ce_regen_efficiency;
 	
 	std::unique_ptr<CursedTool> cursed_tool = nullptr;

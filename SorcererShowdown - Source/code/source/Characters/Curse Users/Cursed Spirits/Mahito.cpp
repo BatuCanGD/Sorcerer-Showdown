@@ -48,17 +48,23 @@ void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
 			weakest = chr.get();
 			weakest_hp_pr = character_pr;
 		}
-		if (tf_amount == bf.battlefield.size() - 1) summon_humans = false;
 	}
+	if (tf_amount == bf.battlefield.size() - 1) summon_humans = false;
+	else if (tf_amount == 0 || tf->GetTFcount() > 5) summon_humans = true;
+	else summon_humans = false;  
+							    
+
 	if (tf->GetTFcount() > 0 && summon_humans) {
-		tf->UseIdleTransfiguration(this, weakest, SUMMON, bf);
+		tf->SummonTransfiguredHumans(bf);
 		return;
 	}
-	else if (!(this->HPMoreThanMax(0.40) && this->GetDomainUses() >= 5) && 
-			 !(tf->BurntOut() && this->DomainActive())) 
+	else if (this->GetDomainUses() < 5 && !this->DomainActive())
 	{
-		this->ActivateDomain();
-		return;
+		if ((!this->HPMoreThanMax(0.40) || tf->Boosted()) && !tf->BurntOut())
+		{
+			this->ActivateDomain();
+			return;
+		}
 	}
 	if (!tf->BurntOut() && weakest) {
 		tf->UseIdleTransfiguration(this, weakest, TRANSFIGURE, bf);
