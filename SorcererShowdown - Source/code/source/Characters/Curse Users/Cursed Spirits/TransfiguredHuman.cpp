@@ -1,5 +1,6 @@
 #include "TransfiguredHuman.h"
 #include "BattlefieldHeader.h"
+#include "CursedSpirit.h"
 #include "Utils.h"
 
 import std;
@@ -25,17 +26,26 @@ bool TransfiguredHuman::CanBeHit() const {
 }
 void TransfiguredHuman::OnCharacterTurn(Character*, Battlefield& bf) {
 	Character* target = nullptr;
+
 	for (const auto& tar : bf.battlefield) {
+
 		if (tar.get() != this)
 		{
-			if (!target || tar.get()->GetSimpleName() != "Mahito") 
-			{
+			if (auto cursedspirit = dynamic_cast<CursedSpirit*>(tar.get())) {
+				continue;
+			}
+			if (!target) {
+				target = tar.get();
+				continue;
+			} 
+			if (GetRandomNumber(0, 1) == 1) {
 				target = tar.get();
 			}
 		}
-		if (GetRandomNumber(0, 1) == 1 || !target) {
-			target = tar.get();
-		}
+	}
+	if (!target) {
+		std::println("The transfigured human just stands menacingly");
+		return;
 	}
 	this->Attack(target);
 }
