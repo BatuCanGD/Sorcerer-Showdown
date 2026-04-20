@@ -3,13 +3,19 @@
 
 import std;
 
-SelfEmbodimentOfPerfection::SelfEmbodimentOfPerfection() : Domain(500.0, surehit_damage, 16.0) {};
+SelfEmbodimentOfPerfection::SelfEmbodimentOfPerfection() : Domain(500.0, 100.0, 16.0) {
+    ref_level = Refinement::Refined;
+};
 
 void SelfEmbodimentOfPerfection::OnSureHit(Character& target) {
     auto* s = dynamic_cast<CurseUser*>(&target);
     if (clashing) return;
     else if (s && s->CounterDomainActive()) {
         std::println("{} protected himself from {}'s surehit by using {}!", s->GetNameWithID(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
+        return;
+    }
+    else if (target.IsPhysicallyGifted()) {
+        std::println("{} couldnt detect {} due to their heavenly restriction\nThe domain's surehit didnt work!", this->GetDomainName(), target.GetNameWithID());
         return;
     }
     target.DamageBypass(surehit_damage * DomainRangeMult());

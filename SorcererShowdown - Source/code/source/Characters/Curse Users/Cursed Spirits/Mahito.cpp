@@ -73,7 +73,7 @@ void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
 			return;
 		}
 	}
-	if (!tf->BurntOut() && weakest) {
+	if (!tf->BurntOut() && weakest && this->CEMoreThanMax(0.03)) {
 		tf->UseTransfiguration(this, weakest);
 		return;
 	}
