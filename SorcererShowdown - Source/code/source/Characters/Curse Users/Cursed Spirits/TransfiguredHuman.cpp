@@ -26,8 +26,8 @@ bool TransfiguredHuman::CanBeHit() const {
 void TransfiguredHuman::OnCharacterTurn(Character*, Battlefield& bf) {
 	Character* target = nullptr;
 	for (const auto& tar : bf.battlefield) {
-		if (tar.get() != this && target == nullptr&&
-			tar.get()->GetSimpleName() != "Mahito") 
+		if (tar.get() != this && (target == nullptr ||
+			tar.get()->GetSimpleName() != "Mahito")) 
 		{
 			target = tar.get();
 		}
