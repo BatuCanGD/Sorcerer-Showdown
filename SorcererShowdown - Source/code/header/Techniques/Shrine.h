@@ -14,8 +14,6 @@ protected:
 public:
 	std::unique_ptr<Technique> Clone() const override;
 
-	enum class ShrineType { Dismantle = 1, Cleave = 2, WCS = 3 };
-
 	void SetWCS(bool s);
 	bool WorldCuttingSlashUnlocked() const;
 
@@ -23,7 +21,6 @@ public:
 	void UseDismantle(CurseUser* user, Character* target);
 	void UseTheWorldCuttingSlash(CurseUser* user, Character* target);
 
-	void UseShrineTechnique(ShrineType choice, CurseUser* s, Character* c);
 	void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
 	void TechniqueSetting(CurseUser*, Battlefield&) override;
 

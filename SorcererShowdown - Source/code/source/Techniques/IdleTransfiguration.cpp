@@ -14,19 +14,6 @@ std::string IdleTransfiguration::GetTechniqueSimpleName() const {
 	return "Idle Transfiguration";
 }
 
-void IdleTransfiguration::UseIdleTransfiguration(CurseUser* user, Character* target, TransfigurationType tf, Battlefield& bf) {
-    switch (tf) {
-    case TransfigurationType::Transfigure:
-        UseTransfiguration(user, target);
-        break;
-    case TransfigurationType::Summon:
-        SummonTransfiguredHumans(bf);
-        break;
-    default:
-        std::println("Invalid Input");
-    }
-}
-
 void IdleTransfiguration::UseTransfiguration(CurseUser* user, Character* target) {
     println("{} tried to transfigure {}!", user->GetNameWithID(), target->GetNameWithID());
     double dmg = CalculateDamage(user, transfiguration_damage);
@@ -60,12 +47,29 @@ void IdleTransfiguration::TechniqueMenu(CurseUser* user, Character* target, Batt
         UseTransfiguration(user, target);
         break;
     case 2:
-        SummonTransfiguredHumans(bf);
+        GetTransfiguredSummonAmount(bf);
         break;
     default:
         std::println("Invalid Choice");
         break;
     }
+}
+
+void IdleTransfiguration::GetTransfiguredSummonAmount(Battlefield& bf) {
+    if (transfigured_human_count == 0){
+        std::println("You dont have any Transfigured Humans in stock!");
+        return;
+    }   
+    std::println("You currently have {} Transfigured Humans in stock", transfigured_human_count);
+    std::println("How much would you like to use\n=> ");
+    int ch = GetValidInput();
+    int pr = 0;
+
+    while (pr < ch && this->GetTFcount() > 0) {
+        SummonTransfiguredHumans(bf);
+        pr++;
+    }
+    std::println("You have summoned {} Transfigured Humans!", pr);
 }
 
 int IdleTransfiguration::GetTFcount() const {

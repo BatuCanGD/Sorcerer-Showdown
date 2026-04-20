@@ -210,11 +210,11 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
         }
         if (this->CEMoreThanMax(0.050)) {
             if (strongest->GetCharacterHealth() < strongest->GetCharacterMaxHealth() * 0.25 && GetRandomNumber(1, 100) <= 15) {
-                shrine->UseShrineTechnique(Shrine::ShrineType::Cleave, this, strongest);
+                shrine->UseCleave(this, strongest);
                 return;
             }
             else if (strongest->CanBeHit()) {
-                shrine->UseShrineTechnique(Shrine::ShrineType::Dismantle, this, strongest);
+                shrine->UseDismantle(this, strongest);
                 return;
             }
         }

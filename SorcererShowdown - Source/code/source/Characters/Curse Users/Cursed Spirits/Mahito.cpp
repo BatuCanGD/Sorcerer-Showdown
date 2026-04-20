@@ -30,9 +30,6 @@ bool Mahito::CanBeHit() const {
 void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
 	IdleTransfiguration* tf = dynamic_cast<IdleTransfiguration*>(this->GetTechnique());
 
-	constexpr auto TRANSFIGURE = IdleTransfiguration::TransfigurationType::Transfigure;
-	constexpr auto SUMMON = IdleTransfiguration::TransfigurationType::Summon;
-
 	double weakest_hp_pr = 1.1;
 	Character* weakest = nullptr;
 	int tf_amount = 0;
@@ -52,10 +49,20 @@ void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
 	if (tf_amount == bf.battlefield.size() - 1) summon_humans = false;
 	else if (tf_amount == 0 || tf->GetTFcount() > 5) summon_humans = true;
 	else summon_humans = false;  
-							    
 
-	if (tf->GetTFcount() > 0 && summon_humans) {
-		tf->SummonTransfiguredHumans(bf);
+	if (summon_humans && tf->GetTFcount() > 0) {
+		int summon_amount = 0;
+		std::println("{} is releasing a swarm of transfigured humans!", this->GetNameWithID());
+		while (tf->GetTFcount() > 0) {
+			tf->SummonTransfiguredHumans(bf);
+			summon_amount++;
+		}
+		if (summon_amount > 1) {
+			std::println("{} has summoned a total of {} transfigured humans!", this->GetNameWithID(), summon_amount);
+		}
+		else {
+			std::println("{} has summoned a transfigured human!", this->GetNameWithID());
+		}
 		return;
 	}
 	else if (this->GetDomainUses() < 5 && !this->DomainActive())
@@ -67,7 +74,7 @@ void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
 		}
 	}
 	if (!tf->BurntOut() && weakest) {
-		tf->UseIdleTransfiguration(this, weakest, TRANSFIGURE, bf);
+		tf->UseTransfiguration(this, weakest);
 		return;
 	}
 	this->Attack(weakest);

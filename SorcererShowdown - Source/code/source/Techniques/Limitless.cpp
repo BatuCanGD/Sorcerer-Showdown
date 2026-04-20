@@ -33,22 +33,6 @@ void Limitless::UsePurple(CurseUser* user, Character* target) {
     chant = ChantLevel::Zero;
 }
 
-void Limitless::UseTheLimitlessTechnique(LimitlessType choice, CurseUser* s, Character* c) {
-    switch (choice) {
-    case LimitlessType::Blue:
-        UseBlue(s, c);
-        break;
-    case LimitlessType::Red:
-        UseRed(s, c);
-        break;
-    case LimitlessType::Purple:
-        UsePurple(s, c);
-        break;
-    default:
-        std::println("Invalid input. No technique used.");
-    }
-}
-
 std::string Limitless::GetTechniqueName() const {
     return "\033[36mLimitless\033[0m";
 }
@@ -142,7 +126,19 @@ void Limitless::TechniqueMenu(CurseUser* user, Character* target, Battlefield& b
         UseUnlimitedHollowPurple(user, bf);
     }
     else {
-        UseTheLimitlessTechnique(static_cast<LimitlessType>(choice), user, target);
+        switch (choice) {
+        case 1:
+            UseBlue(user, target);
+            break;
+        case 2:
+            UseRed(user, target);
+            break;
+        case 3:
+            UsePurple(user, target);
+            break;
+        default:
+            std::println("Invalid Input");
+        }
     }
 }
 

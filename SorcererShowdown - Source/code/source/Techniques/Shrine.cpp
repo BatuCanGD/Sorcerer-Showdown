@@ -32,23 +32,6 @@ void Shrine::UseTheWorldCuttingSlash(CurseUser* user, Character* target) {
     chant = ChantLevel::Zero;
 }
 
-void Shrine::UseShrineTechnique(ShrineType choice, CurseUser* s, Character* c) {
-    switch (choice) {
-    case ShrineType::Dismantle:
-        UseDismantle(s, c);
-        break;
-    case ShrineType::Cleave:
-        UseCleave(s, c);
-        break;
-    case ShrineType::WCS:
-        if (!world_cutting_slash_allowed) return;
-        UseTheWorldCuttingSlash(s, c);
-        break;
-    default:
-        std::println("Invalid input. No technique used.");
-    }
-}
-
 std::string Shrine::GetTechniqueName() const {
     return "\033[31mShrine\033[0m";
 }
@@ -73,8 +56,21 @@ void Shrine::TechniqueMenu(CurseUser* user, Character* target, Battlefield& bf) 
     }
 
     std::print("=> ");
-    size_t choice = GetValidInput();
-    UseShrineTechnique(static_cast<ShrineType>(choice), user, target);
+    int choice = GetValidInput();
+   
+    if (choice == 3 && world_cutting_slash_allowed) {
+        UseTheWorldCuttingSlash(user, target);
+    }
+    switch (choice) {
+    case 1:
+        UseDismantle(user, target);
+        break;
+    case 2:
+        UseCleave(user, target);
+        break;
+    default:
+        std::println("Invalid Input");
+    }
 }
 
 void Shrine::TechniqueSetting(CurseUser* user, Battlefield& bf) {

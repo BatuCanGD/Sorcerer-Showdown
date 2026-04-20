@@ -19,8 +19,6 @@ protected:
 public:
 	std::unique_ptr<Technique> Clone() const override;
 
-	enum class LimitlessType { Blue = 1, Red = 2, Purple = 3 };
-
 	void SetInfinity(bool s);
 	void InfinityNerf(CurseUser*);
 	bool CheckInfinity() const;
@@ -37,7 +35,6 @@ public:
 	void UseRed(CurseUser* user, Character* target);
 	void UsePurple(CurseUser* user, Character* target);
 
-	void UseTheLimitlessTechnique(LimitlessType choice, CurseUser* s, Character* c);
 	void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
 	void TechniqueSetting(CurseUser*, Battlefield&) override;
 

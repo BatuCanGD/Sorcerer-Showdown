@@ -172,13 +172,13 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
         }
 
         if (roll <= 15 && this->CEMoreThanMax(0.75)) {
-            limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Purple, this, strongest);
+            limitless->UsePurple(this, strongest);
         }
         else if (roll <= 60) {
-            limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Blue, this, strongest);
+            limitless->UseBlue(this, strongest);
         }
         else {
-            limitless->UseTheLimitlessTechnique(Limitless::LimitlessType::Red, this, strongest);
+            limitless->UseRed(this, strongest);
         }
         return;
     }
