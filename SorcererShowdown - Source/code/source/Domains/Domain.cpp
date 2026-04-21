@@ -1,4 +1,5 @@
 #include "Domain.h"
+#include "CurseUser.h"
 #include "Character.h"
 #include "Sorcerer.h"
 
@@ -102,6 +103,40 @@ void Domain::ClashDomains(CurseUser& user1, CurseUser& user2) {
 void Domain::CollapseDomain() {
     domain_health = base_health; // reset domain stats for next time use
     clashing = false;
+}
+
+bool Domain::CheckDomainSurehit(Character& target) const {
+    auto* s = dynamic_cast<CurseUser*>(&target);
+    switch (hit_type) {
+    case HitType::HitsCurseUsers:
+        if (clashing) 
+        {
+            return true;
+        }
+        else if (s && s->CounterDomainActive()) {
+            std::println("{} protected himself from the {}'s surehit by using {}!", s->GetNameWithID(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
+            return true;
+        }
+        else if (target.IsPhysicallyGifted()) {
+            std::println("{} couldnt detect {} due to their heavenly restriction\nThe domain's surehit didnt work!", this->GetDomainName(), target.GetNameWithID());
+            return true;
+        }
+        return false;
+    case HitType::HitsEveryone:
+        if (clashing)
+        {
+            return true;
+        }
+        else if (s && s->CounterDomainActive()) {
+            std::println("{} protected himself from the {}'s surehit by using {}!", s->GetNameWithID(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
+            return true;
+        }
+        return false;
+    }
+}
+
+Domain::HitType Domain::GetHitType() const {
+    return hit_type;
 }
 
 bool Domain::IsDestroyed() const {

@@ -5,19 +5,10 @@ import std;
 
 InfiniteVoid::InfiniteVoid() : Domain(800.0, 150.0, 16.0) {
     ref_level = Refinement::Absolute;
+    hit_type = HitType::HitsCurseUsers;
 }
-
 void InfiniteVoid::OnSureHit(Character& target) {
-    auto* s = dynamic_cast<CurseUser*>(&target);
-    if (clashing) return;
-    else if (s && s->CounterDomainActive()) {
-        std::println("{} protected himself from the {}'s surehit by using {}!", s->GetNameWithID(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
-        return;
-    }
-    else if (target.IsPhysicallyGifted()) {
-        std::println("{} couldnt detect {} due to their heavenly restriction\nThe domain's surehit didnt work!", this->GetDomainName(), target.GetNameWithID());
-        return;
-    }
+    if (CheckDomainSurehit(target)) return;
     target.DamageBypass(surehit_braindamage * DomainRangeMult());
     target.SetStunState(true);
     std::println("{} got hit by {}'s SureHit!", target.GetNameWithID(), this->GetDomainName());
@@ -25,7 +16,6 @@ void InfiniteVoid::OnSureHit(Character& target) {
 std::string InfiniteVoid::GetDomainName() const {
     return "\033[34mInfinite Void\033[0m";
 }
-
 double InfiniteVoid::GetUseCost() const {
     return domain_cost;
 }

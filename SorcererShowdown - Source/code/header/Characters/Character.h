@@ -21,6 +21,7 @@ protected:
 	double max_cursed_energy;
 
 	double ce_regen_efficiency;
+	double previous_ce_regen;
 	
 	std::unique_ptr<CursedTool> cursed_tool = nullptr;
 	std::vector<std::unique_ptr<CursedTool>> inventory_curse;

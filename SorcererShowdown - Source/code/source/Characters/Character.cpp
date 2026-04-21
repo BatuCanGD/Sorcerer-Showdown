@@ -11,12 +11,9 @@ import std;
 int Character::global_id_counter = 0;
 
 Character::Character(double hp, double ce, double regen)
-	: health(hp),
-	max_health(hp),
-	previous_health(hp),
-	cursed_energy(ce),
-	max_cursed_energy(ce),
-	ce_regen_efficiency(regen){
+	: health(hp),max_health(hp),previous_health(hp),
+	cursed_energy(ce),max_cursed_energy(ce),
+	ce_regen_efficiency(regen),previous_ce_regen(regen) {
 }
 Character::~Character() = default;
 

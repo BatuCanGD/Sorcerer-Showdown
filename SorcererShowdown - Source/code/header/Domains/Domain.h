@@ -18,6 +18,10 @@ protected:
 		Unstable, Crude, Refined, Absolute
 	};
 	Refinement ref_level = Refinement::Refined;
+	enum class HitType {
+		HitsEveryone, HitsCurseUsers
+	};
+	HitType hit_type = HitType::HitsCurseUsers;
 public:
 	Domain(double health, double damage, double range);
 	virtual ~Domain() = default;
@@ -32,11 +36,13 @@ public:
 	double GetDomainStrength() const;
 	double GetDomainRange() const;
 
+	bool CheckDomainSurehit(Character&) const;
 
 	void DamageDomain(double);
 	void ClashDomains(CurseUser&, CurseUser&);
 	bool GetRefinementComparison(Domain&, Domain&) const;
 	Refinement GetRefinement() const;
+	HitType GetHitType() const;
 	void CollapseDomain();
 
 	bool IsDestroyed() const;

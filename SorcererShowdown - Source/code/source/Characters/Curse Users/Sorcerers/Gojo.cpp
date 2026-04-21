@@ -39,11 +39,11 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
     if (!limitless->CheckInfinity() && this->CEMoreThanMax(0.03) && !limitless->BurntOut()) {
         limitless->SetInfinity(true);
     }
-    if ((!this->HPMoreThanMax(0.35) && this->CEMoreThanMax(0.20)) || !limitless->CheckInfinity()) 
+    if ((!this->HPMoreThanMax(0.35) && this->CEMoreThanMax(0.25)) || !limitless->CheckInfinity()) 
     {
         this->BoostRCT();
     }
-    else if (!this->HPMoreThanMax(0.75) && this->CEMoreThanMax(0.20))
+    else if (!this->HPMoreThanMax(0.75) && this->CEMoreThanMax(0.15))
     {
         this->EnableRCT();
     }
@@ -52,7 +52,7 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
         this->DisableRCT();
     }
     
-    if (this->CEMoreThanMax(0.70) || (limitless->UnlimitedHollowAllowed() && limitless->FullyChanted()) || !this->HPMoreThanMax(0.25)) {
+    if (this->CEMoreThanMax(0.50) || (limitless->UnlimitedHollowAllowed() && limitless->FullyChanted()) || !this->HPMoreThanMax(0.25)) {
         this->SetCurrentReinforcement(200.0);
     }
     else if (this->CEMoreThanMax(0.30)) {
@@ -171,7 +171,7 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
             return;
         }
 
-        if (roll <= 15 && this->CEMoreThanMax(0.75)) {
+        if (roll <= 15 && this->CEMoreThanMax(0.35)) {
             limitless->UsePurple(this, strongest);
         }
         else if (roll <= 60) {

@@ -108,6 +108,10 @@ void CurseUser::TickZone() {
 
     if (!this->DomainActive() && this->GetTechnique()->GetStatus() == Technique::Status::DomainBoost) {
         the_zone_time++;
+        if (!zone_ce_boost) {
+            this->SetCursedEnergyRegen(ce_regen_efficiency + 50.0);
+            zone_ce_boost = true;
+        }
         if (the_zone_time > 3) {
             this->GetTechnique()->Set(Technique::Status::Usable);
             the_zone_time = 0;
@@ -115,6 +119,10 @@ void CurseUser::TickZone() {
     }
     else {
         the_zone_time = 0;
+        if (zone_ce_boost) {
+            this->SetCursedEnergyRegen(previous_ce_regen);
+            zone_ce_boost = false;
+        }
     }
 }
 

@@ -22,6 +22,7 @@ protected:
 	bool domain_active = false;
 	bool is_strained = false;
 	bool counter_on_cooldown = false;
+	bool zone_ce_boost = false;
 
 	int total_domain_uses = 0;
 	int technique_burnout_time = 0;
