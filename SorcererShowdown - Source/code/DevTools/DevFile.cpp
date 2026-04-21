@@ -39,7 +39,7 @@ bool test_sorcerer::CanBeHit() const {
 
 KillEveryoneDomain::KillEveryoneDomain() : Domain(10000000.0, 10000000.0, 1000.0) {}
 
-void KillEveryoneDomain::OnSureHit(Character& target) {
+void KillEveryoneDomain::OnSureHit(CurseUser& user, Character& target) {
     target.DamageBypass(surehit_killdamage);
     std::println("{} got erased by {}'s SureHit!", target.GetName(), this->GetDomainName());
 }

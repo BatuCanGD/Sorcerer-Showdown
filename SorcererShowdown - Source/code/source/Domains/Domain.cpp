@@ -1,7 +1,6 @@
 #include "Domain.h"
 #include "CurseUser.h"
 #include "Character.h"
-#include "Sorcerer.h"
 
 import std;
 

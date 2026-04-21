@@ -5,5 +5,6 @@
 #include "Gojo.h"
 #include "Mahito.h"
 #include "Sukuna.h"
+#include "Hakari.h"
 #include "Toji.h"
 #include "Yuta.h"

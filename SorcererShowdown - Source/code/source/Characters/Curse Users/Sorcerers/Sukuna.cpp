@@ -121,7 +121,7 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
         }
     }
 
-    Shrine* shrine = dynamic_cast<Shrine*> (this->GetTechnique());
+    Shrine* shrine = static_cast<Shrine*> (this->GetTechnique());
 
     if (makora) {
         if (!shrine->WorldCuttingSlashUnlocked()) {

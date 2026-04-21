@@ -15,7 +15,7 @@ Gojo::Gojo() : Sorcerer(800.0, 4000.0, 150.0) {
     counter_domain = std::make_unique<SimpleDomain>();
     technique = std::make_unique<Limitless>();
     special = std::make_unique<UnlimitedPurple>();
-    SetSixEyes(true);
+    six_eyes = true;
     black_flash_chance = 15;
     rct_skill = RCTProficiency::Absolute;
 }
@@ -35,7 +35,7 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
         std::println("{} is stunned and their turn will be skipped", this->GetNameWithID());
         return;
     }
-    auto* limitless = dynamic_cast<Limitless*>(this->GetTechnique());
+    auto* limitless = static_cast<Limitless*>(this->GetTechnique());
     if (!limitless->CheckInfinity() && this->CEMoreThanMax(0.03) && !limitless->BurntOut()) {
         limitless->SetInfinity(true);
     }

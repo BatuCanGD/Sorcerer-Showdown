@@ -7,6 +7,7 @@
 #include "Domain.h"
 
 class Domain;
+class CurseUser;
 
 class test_sorcerer : public Sorcerer {
 public:
@@ -23,7 +24,7 @@ protected:
 	static constexpr double domain_cost = 5000000.0;
 public:
 	KillEveryoneDomain();
-	void OnSureHit(Character& target) override;
+	void OnSureHit(CurseUser& user, Character& target) override;
 	std::string GetDomainName() const override;
 	double GetUseCost() const override;
 };

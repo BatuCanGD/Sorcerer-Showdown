@@ -42,7 +42,7 @@ bool BattleManager::SkipTurnFullyCheck() {
 }
 
 bool BattleManager::SetupBattlefield(Battlefield& bf) {
-	bool choosing = true; bool spec_mode = false;
+	bool choosing = true, spec_mode = false; 
 	int c = 0;
 
 	std::vector<std::unique_ptr<Character>> characters;
@@ -51,7 +51,7 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 	characters.push_back(std::make_unique<Yuta>());
 	characters.push_back(std::make_unique<Toji>());
 	characters.push_back(std::make_unique<Mahito>());
-	characters.push_back(std::make_unique<test_sorcerer>());
+	characters.push_back(std::make_unique<Hakari>());
 	
 	Character::ResetGlobalID();
 
@@ -73,7 +73,7 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 			i++;
 		}
 		std::println("-2 - Spectator mode | -1 - Undo | 0 - Finish |");
-
+		
 		if (!(std::cin >> c)) {
 			std::cin.clear();
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -233,7 +233,7 @@ void BattleManager::DomainCheckAndPerform(Battlefield& bf) {
 				s->GetNameWithID(),
 				domain_user->GetNameWithID(),
 				domain_user->GetDomain()->GetDomainName());
-			domain_user->GetDomain()->OnSureHit(*s);
+			domain_user->GetDomain()->OnSureHit(*domain_user,*s);
 		}
 	}
 	for (const auto& s : bf.battlefield) {

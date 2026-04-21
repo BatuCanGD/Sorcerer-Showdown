@@ -4,12 +4,15 @@
 class CurseUser;
 class Character;
 
-class MalevolentShrine : public Domain {
+class IdleDeathGamble : public Domain {
 protected:
-	static constexpr double domain_cost = 750.0;
-	static constexpr double surehit_slashdamage = 100.0;
+	static constexpr double domain_cost = 25.0;
+	int luck = 200;
+	bool jackpot = false, info_dumped = false;
 public:
-	MalevolentShrine();
+	IdleDeathGamble();
+	bool HasHitJackpot() const;
+	void SetJackpot(bool);
 	void OnSureHit(CurseUser& user, Character& target) override;
 	std::string GetDomainName() const override;
 	double GetUseCost() const override;

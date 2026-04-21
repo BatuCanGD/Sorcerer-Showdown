@@ -1,5 +1,5 @@
 #include "InfiniteVoid.h"
-#include "Sorcerer.h"
+#include "Character.h"
 
 import std;
 
@@ -7,7 +7,7 @@ InfiniteVoid::InfiniteVoid() : Domain(800.0, 150.0, 16.0) {
     ref_level = Refinement::Absolute;
     hit_type = HitType::HitsCurseUsers;
 }
-void InfiniteVoid::OnSureHit(Character& target) {
+void InfiniteVoid::OnSureHit(CurseUser& user, Character& target) {
     if (CheckDomainSurehit(target)) return;
     target.DamageBypass(surehit_braindamage * DomainRangeMult());
     target.SetStunState(true);

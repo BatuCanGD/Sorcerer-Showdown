@@ -28,7 +28,7 @@ public:
 	bool Clashing() const;
 	void SetClashState(bool a);
 	double DomainRangeMult()const;
-	virtual void OnSureHit(Character& target) = 0;
+	virtual void OnSureHit(CurseUser& user, Character& target) = 0;
 	virtual std::string GetDomainName() const = 0;
 	virtual double GetUseCost() const = 0;
 

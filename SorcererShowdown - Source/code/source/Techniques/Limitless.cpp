@@ -86,6 +86,7 @@ void Limitless::UseUnlimitedHollowPurple(CurseUser* user, Battlefield& bf) {
         s->Damage(unlpurple_output);
         std::println("{} got hit by Unlimited Hollow Purple for {}{:.1f} damage!{}", s->GetNameWithID(), Color::Red, unlpurple_output , Color::Clear);
     }
+    chant = ChantLevel::Zero;
 }
 
 void Limitless::InfinityNerf(CurseUser* user) {
@@ -97,7 +98,7 @@ void Limitless::InfinityNerf(CurseUser* user) {
         return;
     }
     if (this->CheckInfinity()) {
-        double maintain_cost = 80.0;
+        double maintain_cost = 100.0;
         if (user->GetCharacterCE() < maintain_cost) {
             std::println("{}{}'s concentration wavers due to low CE!{}{} Infinity is deactivated.{}",Color::Red,user->GetNameWithID(),Color::Clear,Color::Cyan,Color::Clear);
             SetInfinity(false);

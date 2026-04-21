@@ -28,7 +28,7 @@ protected:
 
 	int stun_duration = 3;
 
-	const double base_attack_damage = 20.0;
+	double base_attack_damage = 20.0;
 
 	bool is_stunned = false;
 	bool is_heavenly_restricted;
@@ -115,4 +115,5 @@ public:
 
 	void AssignID();
 	virtual bool CanBeAssignedID() const;
+	double GetBaseAttackDamage() const;
 };

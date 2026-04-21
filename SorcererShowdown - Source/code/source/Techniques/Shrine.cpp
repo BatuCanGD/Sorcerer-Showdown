@@ -58,15 +58,20 @@ void Shrine::TechniqueMenu(CurseUser* user, Character* target, Battlefield& bf) 
     std::print("=> ");
     int choice = GetValidInput();
    
-    if (choice == 3 && world_cutting_slash_allowed) {
-        UseTheWorldCuttingSlash(user, target);
-    }
     switch (choice) {
     case 1:
         UseDismantle(user, target);
         break;
     case 2:
         UseCleave(user, target);
+        break;
+    case 3:
+        if (world_cutting_slash_allowed) {
+            UseTheWorldCuttingSlash(user, target);
+        }
+        else {
+            std::println("Invalid Input");
+        }
         break;
     default:
         std::println("Invalid Input");

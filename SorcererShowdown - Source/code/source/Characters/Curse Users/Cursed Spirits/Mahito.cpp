@@ -28,7 +28,7 @@ bool Mahito::CanBeHit() const {
 }
 
 void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
-	IdleTransfiguration* tf = dynamic_cast<IdleTransfiguration*>(this->GetTechnique());
+	IdleTransfiguration* tf = static_cast<IdleTransfiguration*>(this->GetTechnique());
 
 	double weakest_hp_pr = 1.1;
 	Character* weakest = nullptr;

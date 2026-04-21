@@ -48,6 +48,10 @@ void Character::SetVulnerability(bool t) {
 	is_invulnerable = t;
 }
 
+double Character::GetBaseAttackDamage() const {
+	return base_attack_damage;
+}
+
 void Character::SetHealth(double h) {
 	health = h;
 }

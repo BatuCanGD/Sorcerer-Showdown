@@ -1,5 +1,5 @@
 #include "SelfEmbodimentOfPerfection.h"
-#include "CurseUser.h"
+#include "Character.h"
 
 import std;
 
@@ -7,7 +7,7 @@ SelfEmbodimentOfPerfection::SelfEmbodimentOfPerfection() : Domain(500.0, 100.0, 
     ref_level = Refinement::Refined;
     hit_type = HitType::HitsCurseUsers;
 };
-void SelfEmbodimentOfPerfection::OnSureHit(Character& target) {
+void SelfEmbodimentOfPerfection::OnSureHit(CurseUser& user, Character& target) {
     if (CheckDomainSurehit(target)) return;
     target.DamageBypass(surehit_damage * DomainRangeMult());
     std::println("{} got hit by {}'s SureHit!", target.GetNameWithID(), this->GetDomainName());
