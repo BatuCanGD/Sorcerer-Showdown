@@ -1,0 +1,257 @@
+# ⚔️ Sorcerer Showdown
+
+A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++** using modules (`import std`). Fight as iconic sorcerers — or build your own custom characters, cursed techniques, and domains.
+
+---
+
+## 🎮 Roster
+
+| Character | Type | Cursed Technique | Domain |
+|---|---|---|---|
+| **Gojo** | Sorcerer | Limitless (Blue/Red/Purple) | Infinite Void |
+| **Sukuna** | Sorcerer | Shrine (Dismantle/Cleave/WCS) | Malevolent Shrine |
+| **Yuta** | Sorcerer | Copy | Authentic Mutual Love |
+| **Hakari** | Sorcerer | Private Pure Love Train | Idle Death Gamble |
+| **Mahito** | Cursed Spirit | Idle Transfiguration | Self Embodiment of Perfection |
+| **Toji** | Physically Gifted | *(Heavenly Restricted)* | *(Heavenly Restricted)* |
+
+---
+
+## 🛠 Building
+
+- **Requires** a C++23 compiler with `import std` support (MSVC `/std:c++latest` or Clang 17+)
+- Easiest to use Visual Studio and add all `.cpp` files to one project
+
+---
+
+## 🕹 How to Play
+
+1. Select your character and opponent count
+2. Enable **Spectator Mode** (optional) for AI vs AI
+3. Choose step-through or skip-turn mode for AI turns
+4. On your turn, pick from 11 actions: Technique, Attack, Special, Domain, Taunt, RCT, DA, Tools, Technique Settings, Shikigami, Reinforcement
+
+---
+
+## 🧩 Adding Custom Content
+
+### ➕ New Character
+
+Pick your base class:
+
+| Base Class | Use For |
+|---|---|
+| `Sorcerer` | CE user with RCT and a technique |
+| `CursedSpirit` | CE entity without RCT |
+| `PhysicallyGifted` | Heavenly-restricted, strength-based |
+
+**MyCharacter.h:**
+```cpp
+#pragma once
+#include "Sorcerer.h"
+
+class MyCharacter : public Sorcerer {
+public:
+    MyCharacter();
+    std::unique_ptr<Character> Clone() const override;
+    std::string GetSimpleName() const override;
+    std::string GetName() const override;
+    void OnCharacterTurn(Character*, Battlefield&) override;
+    bool CanBeHit() const override;
+};
+```
+
+**MyCharacter.cpp:**
+```cpp
+#include "MyCharacter.h"
+#include "BattlefieldHeader.h"
+import std;
+
+MyCharacter::MyCharacter() : Sorcerer(700.0, 3000.0, 100.0) {
+    // hp, cursed_energy, ce_regen
+    technique  = std::make_unique<MyTechnique>();
+    domain     = std::make_unique<MyDomain>();
+    rct_skill  = RCTProficiency::Adept;
+    black_flash_chance = 10;
+    base_attack_damage = 30.0;
+}
+std::unique_ptr<Character> MyCharacter::Clone() const { return std::make_unique<MyCharacter>(); }
+std::string MyCharacter::GetName() const        { return "\033[36mMyCharacter\033[0m"; }
+std::string MyCharacter::GetSimpleName() const  { return "MyCharacter"; }
+bool MyCharacter::CanBeHit() const              { return true; }
+
+void MyCharacter::OnCharacterTurn(Character*, Battlefield& bf) {
+    Character* target = nullptr;
+    for (const auto& s : bf.battlefield) {
+        if (s.get() != this) { target = s.get(); break; }
+    }
+    if (target) this->Attack(target);
+}
+```
+
+Register in `BattleManager.cpp → SetupBattlefield` and include in `CharacterList.h`.
+
+---
+
+### ➕ New Cursed Technique
+
+**MyTechnique.h:**
+```cpp
+#pragma once
+#include "Techniques.h"
+
+class MyTechnique : public Technique {
+protected:
+    static constexpr double output_damage = 80.0;
+public:
+    std::string GetTechniqueName() const override;
+    std::string GetTechniqueSimpleName() const override;
+    void Chant() override;
+    void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
+    void TechniqueSetting(CurseUser* user, Battlefield&) override;
+    std::unique_ptr<Technique> Clone() const override;
+    void UseMyAbility(CurseUser* user, Character* target);
+};
+```
+
+**MyTechnique.cpp:**
+```cpp
+#include "MyTechnique.h"
+#include "CurseUser.h"
+#include "Utils.h"
+import std;
+
+std::string MyTechnique::GetTechniqueName() const       { return "My Technique"; }
+std::string MyTechnique::GetTechniqueSimpleName() const { return "My Technique"; }
+void MyTechnique::Chant() {}
+
+void MyTechnique::UseMyAbility(CurseUser* user, Character* target) {
+    // CalculateDamage deducts CE cost and applies Boost/Burnout multipliers automatically
+    double dmg = CalculateDamage(user, output_damage);
+    target->Damage(dmg);
+    std::println("{} uses My Ability on {}!", user->GetNameWithID(), target->GetNameWithID());
+}
+
+void MyTechnique::TechniqueMenu(CurseUser* user, Character* target, Battlefield& bf) {
+    if (user->DomainAmplificationActive()) { std::println("Blocked by DA!"); return; }
+    std::println("1 - Use My Ability");
+    std::print("=> ");
+    if (GetValidInput() == 1) UseMyAbility(user, target);
+}
+
+void MyTechnique::TechniqueSetting(CurseUser*, Battlefield&) {}
+std::unique_ptr<Technique> MyTechnique::Clone() const { return std::make_unique<MyTechnique>(*this); }
+```
+
+---
+
+### ➕ New Domain
+
+**MyDomain.h:**
+```cpp
+#pragma once
+#include "Domain.h"
+
+class MyDomain : public Domain {
+protected:
+    static constexpr double domain_cost    = 400.0;
+    static constexpr double surehit_damage = 90.0;
+public:
+    MyDomain();
+    void OnSureHit(CurseUser& user, Character& target) override;
+    std::string GetDomainName() const override;
+    double GetUseCost() const override;
+};
+```
+
+**MyDomain.cpp:**
+```cpp
+#include "MyDomain.h"
+#include "Character.h"
+import std;
+
+//           health   overwhelm_strength   range
+MyDomain::MyDomain() : Domain(600.0, 100.0, 14.0) {
+    ref_level = Refinement::Refined;      // Unstable / Crude / Refined / Absolute
+    hit_type  = HitType::HitsCurseUsers;  // or HitsEveryone
+}
+
+void MyDomain::OnSureHit(CurseUser& user, Character& target) {
+    if (CheckDomainSurehit(target)) return; // handles counters, Heavenly Restriction, clashing
+    target.DamageBypass(surehit_damage * DomainRangeMult());
+    std::println("{} is struck inside {}!", target.GetNameWithID(), GetDomainName());
+}
+
+std::string MyDomain::GetDomainName() const { return "\033[36mMy Domain\033[0m"; }
+double MyDomain::GetUseCost() const         { return domain_cost; }
+```
+
+**Domain constructor params:** `health` (clash barrier HP), `overwhelm_strength` (damage to opposing domain per tick), `range` (larger range wins clash at equal refinement).
+
+---
+
+### ➕ New Cursed Tool
+
+```cpp
+// MyTool.cpp
+void MyTool::UseTool(Character* user, Character* target) {
+    // GetCalculatedStrength scales with Strength (PhysicallyGifted) or max HP (sorcerers)
+    target->Damage(GetCalculatedStrength(user));
+    std::println("{} attacks {} with {}!", user->GetNameWithID(), target->GetNameWithID(), GetName());
+}
+```
+
+Add to `CursedToolList.h` and equip via `inventory_curse.push_back(std::make_unique<MyTool>())` in a character's constructor.
+
+---
+
+## 🗂 Project Structure
+
+```
+SorcererShowdown/
+├── Core
+│   ├── Character           — Base class, HP/CE/reinforcement/tools
+│   ├── CurseUser           — CE users, domain/technique/shikigami management
+│   ├── Sorcerer            — Adds RCT proficiency, Six Eyes
+│   ├── CursedSpirit        — Passive HP regen, no RCT
+│   ├── PhysicallyGifted    — Strength-based combat, heavenly restriction
+│   └── Shikigami           — Shadow/Partial/Full state machine
+├── Systems
+│   ├── Techniques          — Base class + CalculateDamage, chant, status
+│   ├── Domain              — Base class + clash logic, surehit checks
+│   ├── CursedTool          — Base tool + GetCalculatedStrength
+│   ├── Specials            — One-off special move base
+│   ├── BattleManager       — Game loop, domain resolution, turn management
+│   ├── PlayerManager       — Player input routing and action handling
+│   └── UIDisplay           — Status panels and action menus
+├── Characters              — Gojo, Sukuna, Yuta, Hakari, Mahito, Toji, TransfiguredHuman
+├── Techniques              — Limitless, Shrine, Copy, IdleTransfiguration, PrivatePureLoveTrain
+├── Domains                 — InfiniteVoid, MalevolentShrine, AuthenticMutualLove,
+│                             IdleDeathGamble, SelfEmbodimentOfPerfection,
+│                             SimpleDomain, HollowWickerBasket
+├── Shikigami               — Mahoraga, Rika, Agito
+├── Tools                   — Katana, PlayfulCloud, InvertedSpearOfHeaven
+└── SorcererShowdown.cpp    — main()
+```
+
+---
+
+## ⚙️ Key Systems
+
+**Domain Clashing** — Two active domains clash each turn. Higher `Refinement` wins outright; ties go to `Range`. Three+ domains all collapse.
+
+**Burnout** — Deactivating a domain burns out the technique (35% output) for several turns.
+
+**Black Flash** — Configurable per-character chance to deal 4x damage and boost technique to Domain Boost status.
+
+**The Zone** — Sustaining Domain Boost outside a domain gives a temporary CE regen bonus.
+
+**RCT Proficiency** — Tiers from None → Absolute determine heal amount and CE cost per RCT use.
+
+**CE Reinforcement** — Reduces incoming damage at the cost of continuous CE drain each turn.
+
+---
+
+## 📝 License
+
+Fan project based on Jujutsu Kaisen by Gege Akutami. All character names and concepts belong to their respective owners.
