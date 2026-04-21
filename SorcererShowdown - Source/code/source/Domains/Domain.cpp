@@ -106,16 +106,19 @@ void Domain::CollapseDomain() {
 }
 
 bool Domain::CheckDomainSurehit(Character& target) const {
-    auto* s = dynamic_cast<CurseUser*>(&target);
     switch (hit_type) {
     case HitType::HitsCurseUsers:
         if (clashing) 
         {
             return true;
         }
-        else if (s && s->CounterDomainActive()) {
-            std::println("{} protected himself from the {}'s surehit by using {}!", s->GetNameWithID(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
-            return true;
+        else if (target.IsaCurseUser()) {
+            auto* s = static_cast<CurseUser*>(&target);
+            if (s->CounterDomainActive()) {
+                std::println("{} protected himself from the {}'s surehit by using {}!", s->GetNameWithID(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
+                return true;
+            }
+            return false;
         }
         else if (target.IsPhysicallyGifted()) {
             std::println("{} couldnt detect {} due to their heavenly restriction\nThe domain's surehit didnt work!", this->GetDomainName(), target.GetNameWithID());
@@ -127,12 +130,17 @@ bool Domain::CheckDomainSurehit(Character& target) const {
         {
             return true;
         }
-        else if (s && s->CounterDomainActive()) {
-            std::println("{} protected himself from the {}'s surehit by using {}!", s->GetNameWithID(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
-            return true;
+        else if (target.IsaCurseUser()) {
+            auto* s = static_cast<CurseUser*>(&target);
+            if (s->CounterDomainActive()) {
+                std::println("{} protected himself from the {}'s surehit by using {}!", s->GetNameWithID(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
+                return true;
+            }
+            return false;
         }
         return false;
     }
+    return false;
 }
 
 Domain::HitType Domain::GetHitType() const {
