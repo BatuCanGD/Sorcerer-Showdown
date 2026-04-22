@@ -1,0 +1,40 @@
+name: Code Stats Tracker
+on: 
+  push:
+    branches:
+      - main 
+  workflow_dispatch: 
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Tools
+        run: sudo apt-get update && sudo apt-get install -y cloc jq
+        
+      - name: Count Lines and Update README
+        run: |
+          TARGET_FOLDER="SorcererShowdown - Source"
+          
+          STATS=$(cloc "$TARGET_FOLDER" --quiet --json)
+          LINES=$(echo "$STATS" | jq -r '.SUM.code // 0')
+          FILES=$(echo "$STATS" | jq -r '.SUM.nFiles // 0')
+          
+          sed -i -E "s/LINES%20OF%20CODE-[0-9]+-[a-zA-Z]+/LINES%20OF%20CODE-$LINES-blue/g" README.md
+          sed -i -E "s/FILES-[0-9]+-[a-zA-Z]+/FILES-$FILES-yellow/g" README.md
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: update repository stats [skip ci]"
+            git push
+          else
+            echo "No changes to stats. Skipping commit."
+          fi
