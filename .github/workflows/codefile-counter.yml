@@ -1,8 +1,5 @@
 name: Code Stats Tracker
 on: 
-  push:
-    branches:
-      - main 
   workflow_dispatch: 
 jobs:
   update-stats:
