@@ -191,8 +191,8 @@ double MyDomain::GetUseCost() const         { return domain_cost; }
 
 ### ➕ New Cursed Tool
 
+**MyTool.h:**
 ```cpp
-// MyTool.h
 #pragma once
 #include "CursedTool.h"
 import std;
@@ -204,10 +204,8 @@ public:
 }
 ```
 
-
-
+**MyTool.cpp:**
 ```cpp
-// MyTool.cpp
 MyTool::MyTool(){
     tool_name = "My Tool";
     tool_color = "\033[35m";
