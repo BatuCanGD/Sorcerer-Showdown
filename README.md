@@ -40,6 +40,9 @@ A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++** using m
 
 ## 🧩 Adding Custom Content
 
+### There are now two ways to expand the roster: writing a native C++ class for unique mechanics, or using the JSON system for quick, data-driven characters.
+
+## 1. Native C++ Characters:
 ### ➕ New Character
 
 Pick your base class:
@@ -221,6 +224,78 @@ void MyTool::UseTool(Character* user, Character* target) {
 Add to `CursedToolList.h` and equip via `inventory_curse.push_back(std::make_unique<MyTool>())` in a character's constructor.
 
 ---
+
+## 2. JSON Modding (For Quick Expansion)
+### this only supports making custom characters for now, it doesnt support creating new techniques or domains
+### The json file must be in the same directory as the exe or the built project and must be named characters.json
+The custom json characters will use the fallback base character functions, which will make the AI dumber and unable to use techniques or domains except for domain amplification
+This will come to change as more updates and changes come
+
+```json
+{
+  "characters": [
+    {
+      "name": "Legendary Six Eyes Wielder",
+      "type": "Sorcerer",
+      "hp": 2000.0,
+      "ce": 12000.0,
+      "regen": 50.0,
+      "six_eyes": true,
+      "rct_proficiency": "Absolute",
+      "technique": "Limitless",
+      "domain": "Infinite Void",
+      "counter_domain": "Simple Domain",
+      "special": "Unlimited Purple",
+      "inventory": [
+        "Playful Cloud"
+      ],
+      "shikigami": [
+        "Rika",
+        "Agito"
+      ],
+      "color": "\u001b[36m"
+    },
+    {
+      "name": "Kyoto Grade 1",
+      "type": "Sorcerer",
+      "hp": 550.0,
+      "ce": 2500.0,
+      "regen": 25.0,
+      "six_eyes": false,
+      "rct_proficiency": "Adept",
+      "technique": "Shrine",
+      "domain": "Malevolent Shrine",
+      "counter_domain": "Simple Domain",
+      "inventory": [
+        "Katana"
+      ],
+      "color": "\u001b[31m"
+    },
+    {
+      "name": "Shadow Weaver",
+      "type": "Sorcerer",
+      "hp": 950.0,
+      "ce": 6000.0,
+      "regen": 25.0,
+      "six_eyes": false,
+      "rct_proficiency": "Expert",
+      "technique": "Copy",
+      "domain": "Authentic Mutual Love",
+      "counter_domain": "Hollow Wicker Basket",
+      "inventory": [
+        "Inverted Spear of Heaven"
+      ],
+      "shikigami": [
+        "Mahoraga"
+      ],
+      "color": "\u001b[35m"
+    }
+  ]
+}
+```
+
+
+
 
 ## 🗂 Project Structure
 
