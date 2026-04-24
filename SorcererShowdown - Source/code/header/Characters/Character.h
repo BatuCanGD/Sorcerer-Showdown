@@ -55,7 +55,7 @@ public:
 	void SetCursedEnergy(double c);
 	void SetMaxCursedEnergy(double c);
 	void SetCursedEnergyRegen(double c);
-	std::string SetCharacterName(std::string name, std::string color);
+	void SetCharacterName(std::string name, std::string color);
 
 	bool IsThePlayer() const;
 	void SetAsPlayer(bool);
@@ -121,4 +121,5 @@ public:
 	void AssignID();
 	virtual bool CanBeAssignedID() const;
 	double GetBaseAttackDamage() const;
+	void AddToolToInventory(std::unique_ptr<CursedTool>);
 };

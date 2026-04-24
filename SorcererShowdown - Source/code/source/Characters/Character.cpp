@@ -68,9 +68,15 @@ void Character::SetCursedEnergyRegen(double c) {
 	ce_regen_efficiency = c;
 }
 
-std::string Character::SetCharacterName(std::string name, std::string color) {
+void Character::SetCharacterName(std::string name, std::string color) {
 	char_name = name;
 	name_color = color;
+}
+
+void Character::AddToolToInventory(std::unique_ptr<CursedTool> tool) {
+	if (tool) {
+		inventory_curse.push_back(std::move(tool));
+	}
 }
 
 void Character::Damage(double h) {

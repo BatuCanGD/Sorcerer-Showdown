@@ -1,0 +1,22 @@
+#pragma once
+#include "json.hpp"
+#include <memory>
+
+#include "Sorcerer.h"
+#include "CursedSpirit.h"
+#include "PhysicallyGifted.h"
+#include "Shikigami.h"
+
+using json = nlohmann::json;
+struct Battlefield;
+class Technique;
+class Domain;
+class Specials;
+class CursedTool;
+class Shikigami;
+
+class CharacterCreator {
+public:
+	static	std::unique_ptr<Character> CreateFromJson(const json&);
+	void LoadJsonCharacter(Battlefield&);
+};

@@ -86,6 +86,27 @@ void Sorcerer::UseRCT() {
     }
 }
 
+void Sorcerer::SetRCTProficiency(std::string str) {
+    if (str == "None") {
+        rct_skill = RCTProficiency::None;
+    }
+    else if (str == "Crude") {
+        rct_skill = RCTProficiency::Crude;
+    }
+    else if (str == "Adept") {
+        rct_skill = RCTProficiency::Adept;
+    }
+    else if (str == "Expert") {
+        rct_skill = RCTProficiency::Expert;
+    }
+    else if (str == "Absolute") {
+        rct_skill = RCTProficiency::Absolute;
+    }
+    else {
+        rct_skill = RCTProficiency::Adept;
+    }
+}
+
 bool Sorcerer::CanBeHit() const {
     return true;
 }

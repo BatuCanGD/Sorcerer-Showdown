@@ -1,7 +1,7 @@
 #include "BattleManager.h"
 #include "BattlefieldHeader.h"
+#include "CharacterCreator.h"
 #include "CharacterList.h"
-#include "DevFile.h"
 #include "Limitless.h"
 #include "ShikigamiList.h"
 #include "DomainList.h"
@@ -44,15 +44,20 @@ bool BattleManager::SkipTurnFullyCheck() {
 bool BattleManager::SetupBattlefield(Battlefield& bf) {
 	bool choosing = true, spec_mode = false; 
 	int c = 0;
+	CharacterCreator cc;
+	bf.characterlist.push_back(std::make_unique<Gojo>());
+	bf.characterlist.push_back(std::make_unique<Sukuna>());
+	bf.characterlist.push_back(std::make_unique<Yuta>());
+	bf.characterlist.push_back(std::make_unique<Toji>());
+	bf.characterlist.push_back(std::make_unique<Mahito>());
+	bf.characterlist.push_back(std::make_unique<Hakari>());
+	std::println("Load characters from json?\nThis will search the current directory\n1-Yes|2-No\n=>");
+	int csc = GetValidInput();
+	if (csc == 1) {
+		cc.LoadJsonCharacter(bf);
+	}
 
-	std::vector<std::unique_ptr<Character>> characters;
-	characters.push_back(std::make_unique<Gojo>());
-	characters.push_back(std::make_unique<Sukuna>());
-	characters.push_back(std::make_unique<Yuta>());
-	characters.push_back(std::make_unique<Toji>());
-	characters.push_back(std::make_unique<Mahito>());
-	characters.push_back(std::make_unique<Hakari>());
-	
+
 	Character::ResetGlobalID();
 
 	while (choosing) {
@@ -68,11 +73,11 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 		}
 		std::println("\n");
 		int i = 1;
-		for (const auto& s : characters) {
+		for (const auto& s : bf.characterlist) {
 			std::println("{}: {}",i, s->GetName());
 			i++;
 		}
-		std::println("-2 - Spectator mode | -1 - Undo | 0 - Finish |");
+		std::println("-2 - Spectator mode | -1 - Undo | 0 - Finish ");
 		
 		if (!(std::cin >> c)) {
 			std::cin.clear();
@@ -104,9 +109,9 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 			}
 		}
 		else {
-			if (c > 0 && c <= characters.size()) {
+			if (c > 0 && c <= bf.characterlist.size()) {
 				int index = c - 1;
-				std::unique_ptr<Character> new_character = characters[index]->Clone();
+				std::unique_ptr<Character> new_character = bf.characterlist[index]->Clone();
 				new_character->AssignID();
 				bf.fighter_counts[new_character->GetName()]++;
 				bf.battlefield.push_back(std::move(new_character));

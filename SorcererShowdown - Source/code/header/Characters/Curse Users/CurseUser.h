@@ -83,6 +83,12 @@ public:
     void TickShikigami();
     void CleanupShikigami();
 
+	void SetTechnique(std::unique_ptr<Technique>);
+	void SetDomain(std::unique_ptr<Domain>);
+	void SetCounterDomain(std::unique_ptr<Domain>);
+	void SetSpecial(std::unique_ptr<Specials>);
+	void AddShikigami(std::unique_ptr<Shikigami>);
+
 	bool IsaCurseUser() const override;
 	bool CanBeHit() const override;
 };

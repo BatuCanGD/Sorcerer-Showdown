@@ -29,7 +29,8 @@ public:
 	virtual ~Sorcerer();
 	Sorcerer(double hp, double ce, double re);
 	std::unique_ptr<Character> Clone() const override;
-
+	
+	void SetRCTProficiency(std::string);
 	void SetSixEyes(bool);
 	bool HasSixEyes() const;
 

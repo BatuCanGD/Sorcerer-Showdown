@@ -1,0 +1,60 @@
+{
+  "characters": [
+    {
+      "name": "Legendary Six Eyes Wielder",
+      "type": "Sorcerer",
+      "hp": 2000.0,
+      "ce": 12000.0,
+      "regen": 50.0,
+      "six_eyes": true,
+      "rct_proficiency": "Absolute",
+      "technique": "Limitless",
+      "domain": "Infinite Void",
+      "counter_domain": "Simple Domain",
+      "special": "Unlimited Purple",
+      "inventory": [
+        "Playful Cloud"
+      ],
+      "shikigami": [
+        "Rika",
+        "Agito"
+      ],
+      "color": "\u001b[36m"
+    },
+    {
+      "name": "Kyoto Grade 1",
+      "type": "Sorcerer",
+      "hp": 550.0,
+      "ce": 2500.0,
+      "regen": 25.0,
+      "six_eyes": false,
+      "rct_proficiency": "Adept",
+      "technique": "Shrine",
+      "domain": "Malevolent Shrine",
+      "counter_domain": "Simple Domain",
+      "inventory": [
+        "Katana"
+      ],
+      "color": "\u001b[31m"
+    },
+    {
+      "name": "Shadow Weaver",
+      "type": "Sorcerer",
+      "hp": 950.0,
+      "ce": 6000.0,
+      "regen": 25.0,
+      "six_eyes": false,
+      "rct_proficiency": "Expert",
+      "technique": "Copy",
+      "domain": "Authentic Mutual Love",
+      "counter_domain": "Hollow Wicker Basket",
+      "inventory": [
+        "Inverted Spear of Heaven"
+      ],
+      "shikigami": [
+        "Mahoraga"
+      ],
+      "color": "\u001b[35m"
+    }
+  ]
+}
