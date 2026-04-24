@@ -12,10 +12,7 @@ private:
 	int active_cooldown = 5;
 public:
 	Rika();
-	std::unique_ptr<Character> Clone() const override;
 	void OnCharacterTurn(Character*, Battlefield&) override;
 	void SaveUserCursedEnergy(Character*);
 	void RikaCooldownRegeneration(Character*);
-
-	bool CanBeHit() const override;
 };

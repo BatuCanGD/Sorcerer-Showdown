@@ -10,10 +10,6 @@ Shikigami::Shikigami(double hp, double ce, double re) : Character(hp, ce, re) {
     max_ce_reinforcement = 0.0;
 }
 
-std::unique_ptr<Character> Shikigami::Clone() const {
-    return nullptr;
-}
-
 bool Shikigami::CanBeAssignedID() const {
     return false;
 }
@@ -66,5 +62,8 @@ bool Shikigami::IsShikigami() const {
 }
 
 bool Shikigami::CanBeHit() const {
-    return true;
+    if (IsActivePhysically()) {
+        return true;
+    }
+    return false;
 }

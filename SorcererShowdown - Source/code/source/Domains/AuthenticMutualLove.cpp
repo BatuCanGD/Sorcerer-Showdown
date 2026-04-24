@@ -18,3 +18,7 @@ void AuthenticMutualLove::OnSureHit(CurseUser& user, Character& target) {
 double AuthenticMutualLove::GetUseCost() const {
     return domain_cost;
 }
+
+std::unique_ptr<Domain> AuthenticMutualLove::Clone() const {
+    return std::make_unique<AuthenticMutualLove>(*this);
+}

@@ -33,66 +33,61 @@ std::unique_ptr<Shikigami> GetShikigamiByName(const std::string& name);
 std::unique_ptr<Character> CharacterCreator::CreateFromJson(const json& j) {
     std::string type = j.at("type").get<std::string>();
     std::unique_ptr<Character> character;
-    
-    CurseUser* curse_ptr = nullptr;
 
     if (type == "Sorcerer") {
         auto s = std::make_unique<Sorcerer>(
-            j.at("hp").get<double>(), 
-            j.at("ce").get<double>(), 
+            j.at("hp").get<double>(),
+            j.at("ce").get<double>(),
             j.at("regen").get<double>());
 
-        if (j.contains("six_eyes")) { 
-            s->SetSixEyes(j.at("six_eyes").get<bool>()); 
-        }
-        if (j.contains("rct_proficiency")) { 
-            s->SetRCTProficiency(j.at("rct_proficiency").get<std::string>());
-        }
+        if (j.contains("six_eyes")) s->SetSixEyes(j.at("six_eyes").get<bool>());
+        if (j.contains("rct_proficiency")) s->SetRCTProficiency(j.at("rct_proficiency").get<std::string>());
+
         character = std::move(s);
-        curse_ptr = s.get();
     }
     else if (type == "CursedSpirit") {
-        auto cs = std::make_unique<CursedSpirit>(
-            j.at("hp").get<double>(), 
-            j.at("ce").get<double>(), 
+        character = std::make_unique<CursedSpirit>(
+            j.at("hp").get<double>(),
+            j.at("ce").get<double>(),
             j.at("regen").get<double>());
-        curse_ptr = cs.get();
-        character = std::move(cs);
     }
     else if (type == "PhysicallyGifted") {
         character = std::make_unique<PhysicallyGifted>(
-            j.at("hp").get<double>(), 
+            j.at("hp").get<double>(),
             j.at("strength").get<double>());
     }
-    if (curse_ptr) {
-        if (j.contains("technique")) {
+
+    if (!character) return nullptr;
+
+    if (auto* curse_ptr = dynamic_cast<CurseUser*>(character.get())) {
+
+        if (j.contains("technique"))
             curse_ptr->SetTechnique(GetTechniqueByName(j.at("technique").get<std::string>()));
-        }
-        if (j.contains("domain")) {
+
+        if (j.contains("domain"))
             curse_ptr->SetDomain(GetDomainByName(j.at("domain").get<std::string>()));
-        }
-        if (j.contains("counter_domain")) {
+
+        if (j.contains("counter_domain"))
             curse_ptr->SetCounterDomain(GetCounterDomainByName(j.at("counter_domain").get<std::string>()));
-        }
-        if (j.contains("inventory") && j.at("inventory").is_array()) {
-            for (const auto& item_name : j.at("inventory")) {
-                character->AddToolToInventory(GetToolByName(item_name.get<std::string>()));
-            }
-        }
-        if (j.contains("special")) {
+
+        if (j.contains("special"))
             curse_ptr->SetSpecial(GetSpecialByName(j.at("special").get<std::string>()));
-        }
+
         if (j.contains("shikigami") && j.at("shikigami").is_array()) {
-            for (const auto& s_name : j.at("shikigami")) {
-                curse_ptr->AddShikigami(GetShikigamiByName(s_name.get<std::string>()));
+            for (const auto& name : j.at("shikigami")) {
+                curse_ptr->AddShikigami(GetShikigamiByName(name.get<std::string>()));
             }
         }
     }
 
-    if (character) {
-        character->SetCharacterName(j.at("name").get<std::string>(), j.value("color", ""));
-        character->AssignID();
+    if (j.contains("inventory") && j.at("inventory").is_array()) {
+        for (const auto& item : j.at("inventory")) {
+            character->AddToolToInventory(GetToolByName(item.get<std::string>()));
+        }
     }
+
+    character->SetCharacterName(j.at("name").get<std::string>(), j.value("color", ""));
+    character->AssignID();
 
     return character;
 }

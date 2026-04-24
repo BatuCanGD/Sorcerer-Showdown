@@ -106,10 +106,6 @@ void Hakari::OnCharacterTurn(Character*, Battlefield& bf) {
     this->Attack(strongest);
 }
 
-bool Hakari::CanBeHit() const {
-    return true;
-}
-
 void Hakari::TickCharacterSpecialty() {
     auto idg = static_cast<IdleDeathGamble*>(this->GetDomain());
     auto pplt = static_cast<PrivatePureLoveTrain*>(this->GetTechnique());

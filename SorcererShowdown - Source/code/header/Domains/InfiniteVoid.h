@@ -10,6 +10,7 @@ protected:
 	static constexpr double surehit_braindamage = 100.0;
 public:
 	InfiniteVoid();
+	std::unique_ptr<Domain> Clone() const override;
 	void OnSureHit(CurseUser& user, Character& target) override;
 	double GetUseCost() const override;
 };

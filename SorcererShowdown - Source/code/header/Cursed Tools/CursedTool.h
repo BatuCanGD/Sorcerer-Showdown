@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 
 class Sorcerer;
 class Character;
@@ -16,6 +17,7 @@ protected:
 	double GetCalculatedStrength(Character*) const;
 public:
 	virtual ~CursedTool() = default;
+	virtual std::unique_ptr<CursedTool> Clone() const = 0;
 	virtual void UseTool(Character*, Character*) = 0;
 	std::string GetName() const;
 	std::string GetSimpleName() const;

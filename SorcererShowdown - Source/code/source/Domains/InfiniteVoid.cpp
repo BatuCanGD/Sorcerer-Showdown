@@ -18,3 +18,7 @@ void InfiniteVoid::OnSureHit(CurseUser& user, Character& target) {
 double InfiniteVoid::GetUseCost() const {
     return domain_cost;
 }
+
+std::unique_ptr<Domain> InfiniteVoid::Clone() const {
+    return std::make_unique<InfiniteVoid>(*this);
+}

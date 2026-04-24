@@ -17,3 +17,7 @@ void SelfEmbodimentOfPerfection::OnSureHit(CurseUser& user, Character& target) {
 double SelfEmbodimentOfPerfection::GetUseCost() const {
 	return domain_cost;
 }
+
+std::unique_ptr<Domain> SelfEmbodimentOfPerfection::Clone() const {
+    return std::make_unique<SelfEmbodimentOfPerfection>(*this);
+}

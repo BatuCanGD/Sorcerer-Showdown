@@ -17,7 +17,15 @@ PhysicallyGifted::PhysicallyGifted(double hp, double str)
 }
 
 std::unique_ptr<Character> PhysicallyGifted::Clone() const {
-	return nullptr;
+    auto pg = std::make_unique<PhysicallyGifted>(max_health, base_attack_damage);
+
+    pg->SetCharacterName(this->char_name, this->name_color);
+
+    for (const auto& tool : this->inventory_curse) {
+        if (tool) pg->AddToolToInventory(tool->Clone());
+    }
+
+    return pg;
 }
 
 double PhysicallyGifted::GetHealingFactor() const {
@@ -62,8 +70,4 @@ double PhysicallyGifted::GetDamageReinforcement() const {
 
 void PhysicallyGifted::SetStrength(double str) {
     strength = str;
-}
-
-bool PhysicallyGifted::CanBeHit() const {
-	return true;
 }

@@ -107,5 +107,5 @@ void PrivatePureLoveTrain::TechniqueMenu(CurseUser* user, Character* target, Bat
 }
 
 std::unique_ptr<Technique> PrivatePureLoveTrain::Clone() const {
-	return std::make_unique<PrivatePureLoveTrain>();
+	return std::make_unique<PrivatePureLoveTrain>(*this);
 }

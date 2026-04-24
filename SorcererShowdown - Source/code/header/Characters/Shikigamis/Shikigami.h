@@ -16,7 +16,6 @@ protected:
 	State shikigami_state = State::Shadow;
 public:
 	Shikigami(double hp, double ce, double re);
-	std::unique_ptr<Character> Clone() const override;
 	bool CanBeAssignedID() const override;
 
 	void PartiallyManifest();
@@ -30,6 +29,5 @@ public:
 	std::string GetShikigamiStatus() const;
 
 	bool IsShikigami() const override;
-
 	bool CanBeHit() const override;
 };

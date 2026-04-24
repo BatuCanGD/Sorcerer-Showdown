@@ -51,3 +51,7 @@ bool IdleDeathGamble::HasHitJackpot() const {
 double IdleDeathGamble::GetUseCost() const {
     return domain_cost;
 }
+
+std::unique_ptr<Domain> IdleDeathGamble::Clone() const {
+    return std::make_unique<IdleDeathGamble>(*this);
+}

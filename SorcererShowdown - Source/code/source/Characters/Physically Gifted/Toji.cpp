@@ -87,7 +87,3 @@ void Toji::OnCharacterTurn(Character*, Battlefield& bf) {
         target->Damage(10.0 * this->GetStrengthDamage());
     }
 }
-
-bool Toji::CanBeHit() const {
-    return true;
-}

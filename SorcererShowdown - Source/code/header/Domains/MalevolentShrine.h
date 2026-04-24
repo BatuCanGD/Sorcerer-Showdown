@@ -10,6 +10,7 @@ protected:
 	static constexpr double surehit_slashdamage = 100.0;
 public:
 	MalevolentShrine();
+	std::unique_ptr<Domain> Clone() const override;
 	void OnSureHit(CurseUser& user, Character& target) override;
 	double GetUseCost() const override;
 };

@@ -18,3 +18,7 @@ void Katana::UseTool(Character* user, Character* target) {
 	target->Damage(total_damage);
 	std::println("{} attacks {} using {}", user->GetNameWithID(), target->GetNameWithID(), this->GetName());
 }
+
+std::unique_ptr<CursedTool> Katana::Clone() const {
+	return std::make_unique<Katana>(*this);
+}

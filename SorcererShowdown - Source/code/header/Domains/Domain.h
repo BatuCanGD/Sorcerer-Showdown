@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 
 class Character;
 class CurseUser;
@@ -26,6 +27,7 @@ protected:
 	};
 	HitType hit_type = HitType::HitsCurseUsers;
 public:
+	virtual std::unique_ptr<Domain> Clone() const = 0;
 	Domain(double health, double damage, double range);
 	virtual ~Domain() = default;
 	bool Clashing() const;

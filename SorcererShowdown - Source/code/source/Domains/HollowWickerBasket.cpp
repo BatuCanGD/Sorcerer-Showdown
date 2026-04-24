@@ -12,3 +12,6 @@ double HollowWickerBasket::GetUseCost() const {
     return domain_cost;
 }
 void HollowWickerBasket::OnSureHit(CurseUser&, Character&) {}
+std::unique_ptr<Domain> HollowWickerBasket::Clone() const {
+    return std::make_unique<HollowWickerBasket>(*this);
+}

@@ -1,4 +1,7 @@
 #include "Sorcerer.h"
+#include "Specials.h"
+#include "Domain.h"
+#include "CursedTool.h"
 #include "Techniques.h"
 #include "CurseUser.h"
 #include "Utils.h"
@@ -15,6 +18,23 @@ void Sorcerer::SetSixEyes(bool t) {
 
 bool Sorcerer::HasSixEyes() const {
     return six_eyes;
+}
+
+std::unique_ptr<Character> Sorcerer::Clone() const {
+    auto s = std::make_unique<Sorcerer>(max_health, max_cursed_energy, ce_regen_efficiency);
+
+    if (this->technique) s->SetTechnique(this->technique->Clone());
+    if (this->domain)    s->SetDomain(this->domain->Clone());
+    if (this->special)   s->SetSpecial(this->special->Clone());
+
+    s->SetCharacterName(this->char_name, this->name_color);
+    s->SetSixEyes(this->six_eyes);
+
+    for (const auto& tool : this->inventory_curse) {
+        if (tool) s->AddToolToInventory(tool->Clone());
+    }
+
+    return s;
 }
 
 void Sorcerer::SpendCE(double ce) {
@@ -113,8 +133,4 @@ bool Sorcerer::CanBeHit() const {
 
 bool Sorcerer::IsaSorcerer()const {
     return true;
-}
-
-std::unique_ptr<Character> Sorcerer::Clone() const {
-    return nullptr;
 }

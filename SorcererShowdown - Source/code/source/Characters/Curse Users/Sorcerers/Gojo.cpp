@@ -203,11 +203,3 @@ void Gojo::HitCharacter(Character* strongest) {
     this->Attack(strongest);
     if (this->DomainAmplificationActive()) this->SetAmplification(false);
 }
-
-bool Gojo::CanBeHit() const {
-    auto* limitless = dynamic_cast<Limitless*>(technique.get());
-    if (limitless->CheckInfinity()) {
-        return false;
-    }
-    return true;
-}

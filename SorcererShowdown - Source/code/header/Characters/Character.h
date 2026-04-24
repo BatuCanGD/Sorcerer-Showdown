@@ -44,7 +44,7 @@ public:
 
 	virtual ~Character();
 
-	virtual std::unique_ptr<Character> Clone() const = 0;
+	virtual std::unique_ptr<Character> Clone() const;
 	
 	CursedTool* GetTool() const;
 	const std::vector<std::unique_ptr<CursedTool>>& GetCursedTools() const;
@@ -116,7 +116,7 @@ public:
 	std::string GetSimpleName() const;
 	std::string GetName() const;
 
-	virtual bool CanBeHit() const = 0;
+	virtual bool CanBeHit() const;
 
 	void AssignID();
 	virtual bool CanBeAssignedID() const;

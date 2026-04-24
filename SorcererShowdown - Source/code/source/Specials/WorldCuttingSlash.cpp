@@ -30,3 +30,7 @@ void WorldCuttingSlash::PerformSpecial(CurseUser* user) {
 		}
 	}
 }
+
+std::unique_ptr<Specials> WorldCuttingSlash::Clone() const {
+	return std::make_unique<WorldCuttingSlash>(*this);
+}

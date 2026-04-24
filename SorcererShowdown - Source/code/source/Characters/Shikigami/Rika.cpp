@@ -56,14 +56,3 @@ void Rika::SaveUserCursedEnergy(Character* user) {
     user_regen = user->GetCEregen();
     value_saved = true;
 }
-
-bool Rika::CanBeHit() const {
-    if (IsActivePhysically()) {
-        return true;
-    }
-    return false;
-}
-
-std::unique_ptr<Character> Rika::Clone() const {
-    return nullptr;
-}

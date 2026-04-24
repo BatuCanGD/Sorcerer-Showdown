@@ -89,6 +89,8 @@ public:
 	void SetSpecial(std::unique_ptr<Specials>);
 	void AddShikigami(std::unique_ptr<Shikigami>);
 
+	int GetBlackFlashChance() const;
+
 	bool IsaCurseUser() const override;
 	bool CanBeHit() const override;
 };

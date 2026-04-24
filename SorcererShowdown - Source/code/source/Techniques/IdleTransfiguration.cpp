@@ -84,5 +84,5 @@ void IdleTransfiguration::TechniqueSetting(CurseUser*, Battlefield&) {
 }
 
 std::unique_ptr<Technique> IdleTransfiguration::Clone() const {
-    return std::make_unique<IdleTransfiguration>();
+    return std::make_unique<IdleTransfiguration>(*this);
 }

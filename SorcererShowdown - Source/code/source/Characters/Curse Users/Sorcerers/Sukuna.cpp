@@ -223,7 +223,5 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
     }
 }
 
-bool Sukuna::CanBeHit() const {
-    return true;
-}
+
 

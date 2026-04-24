@@ -14,12 +14,6 @@ TransfiguredHuman::TransfiguredHuman() : CursedSpirit(50.0, 10.0, 0.0) {
 	char_name = "Transfigured Human";
 };
 
-std::unique_ptr<Character> TransfiguredHuman::Clone() const {
-	return nullptr;
-}
-bool TransfiguredHuman::CanBeHit() const {
-	return true;
-}
 void TransfiguredHuman::OnCharacterTurn(Character*, Battlefield& bf) {
 	Character* target = nullptr;
 

@@ -12,3 +12,6 @@ void SimpleDomain::OnSureHit(CurseUser&, Character&) {}
 double SimpleDomain::GetUseCost() const {
     return domain_cost;
 }
+std::unique_ptr<Domain> SimpleDomain::Clone() const {
+    return std::make_unique<SimpleDomain>(*this);
+}

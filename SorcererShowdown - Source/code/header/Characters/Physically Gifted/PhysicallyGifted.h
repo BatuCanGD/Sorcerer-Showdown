@@ -20,6 +20,4 @@ public:
 	double GetDamageReinforcement()const override;
 	double GetHealingFactor()const;
 	bool IsPhysicallyGifted() const override;
-
-	bool CanBeHit() const override;
 };

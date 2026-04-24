@@ -8,5 +8,4 @@ public:
 	void OnCharacterTurn(Character*, Battlefield&) override;
 	bool InfCheck(Character*);
 	void HitCharacter(Character*);
-	bool CanBeHit() const override;
 };

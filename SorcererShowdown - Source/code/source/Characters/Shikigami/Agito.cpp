@@ -30,14 +30,3 @@ void Agito::OnCharacterTurn(Character* user, Battlefield& bf) {
     PassiveSupport(user);
     user->SpendCE(summon_amount);
 }
-
-bool Agito::CanBeHit() const {
-    if (IsActivePhysically()) {
-        return true;
-    }
-    return false;
-}
-
-std::unique_ptr<Character> Agito::Clone() const {
-    return nullptr;
-}

@@ -1,6 +1,7 @@
 #include "Character.h"
 #include "BattlefieldHeader.h"
 #include "PhysicallyGifted.h"
+#include "Limitless.h"
 #include "Utils.h"
 #include "CursedTool.h"
 #include "Sorcerer.h"
@@ -17,8 +18,30 @@ Character::Character(double hp, double ce, double regen)
 }
 Character::~Character() = default;
 
-void Character::OnCharacterTurn(Character*, Battlefield& bf) {
-	std::println("Base Character Initialized Text");
+void Character::OnCharacterTurn(Character * unused, Battlefield & bf) {
+	if (this->GetCharacterHealth() <= 0) return;
+
+	Character* target = nullptr;
+
+	for (const auto& entity : bf.battlefield) {
+		if (entity.get() == this || entity->GetCharacterHealth() <= 0) {
+			continue;
+		}
+		if (GetRandomNumber(0, 1) == 1) { target = entity.get(); }
+		if (!target) target = entity.get();
+	}
+	if (!target) return; 
+
+	if (auto* cu = dynamic_cast<CurseUser*>(this)) {
+		if (auto* target_cu = dynamic_cast<CurseUser*>(target)) {
+			if (auto* tech = target_cu->GetTechnique()) {
+				if (tech->GetTechniqueSimpleName() == "Limitless" && !cu->DomainAmplificationActive()) {
+					cu->SetAmplification(true);
+				}
+			}
+		}
+	}
+	this->Attack(target);
 }
 
 bool Character::CanBeAssignedID() const {
@@ -26,7 +49,70 @@ bool Character::CanBeAssignedID() const {
 }
 
 void Character::Attack(Character* target) {
-	std::println("Do not use this base function");
+	if (!target || target->GetCharacterHealth() <= 0) return;
+
+	CurseUser* me_cuser = dynamic_cast<CurseUser*>(this);
+	CurseUser* target_cuser = dynamic_cast<CurseUser*>(target);
+	PhysicallyGifted* me_gifted = dynamic_cast<PhysicallyGifted*>(this);
+
+	if (target_cuser) {
+		if (auto* tech = target_cuser->GetTechnique()) {
+			if (auto* limitless = dynamic_cast<Limitless*>(tech)) {
+				bool has_da = me_cuser && me_cuser->DomainAmplificationActive();
+				if (limitless->CheckInfinity() && !has_da) {
+					std::println("{}'s strike was slowed to a halt by {}'s {}Infinity{}!",
+						this->GetNameWithID(), target_cuser->GetNameWithID(), Color::Cyan, Color::Clear);
+					return;
+				}
+			}
+		}
+	}
+
+	if (me_cuser && me_cuser->DomainAmplificationActive()) {
+		double ce_addon = std::sqrt(std::max(0.0, me_cuser->GetCharacterCE())) * 0.888;
+		double amp_damage = this->base_attack_damage + ce_addon;
+
+		target->DamageBypass(amp_damage); 
+		std::println("{} neutralizes {}'s Infinity and hits them using Domain Amplification!",
+			this->GetNameWithID(), target->GetNameWithID());
+		return;
+	}
+
+	if (!this->inventory_curse.empty() && this->inventory_curse[0]) {
+		this->inventory_curse[0]->UseTool(this, target);
+		return;
+	}
+
+	double current_base = this->base_attack_damage;
+	double multiplier = 1.0;
+	bool is_black_flash = false;
+
+	if (me_cuser) {
+		if (GetRandomNumber(1, 100) <= me_cuser->GetBlackFlashChance()) {
+			is_black_flash = true;
+			multiplier = 4.0;
+
+			if (auto* tech = me_cuser->GetTechnique()) {
+				tech->Set(Technique::Status::DomainBoost);
+			}
+			me_cuser->TickZone();
+		}
+	}
+	else if (me_gifted) {
+		current_base += me_gifted->GetStrengthDamage();
+	}
+
+	target->Damage(current_base * multiplier);
+
+	if (is_black_flash) {
+		std::println("\n{}*** {}BLACK FLASH!{} ***{}", Color::BrightMagenta, Color::Red, Color::BrightMagenta, Color::Clear);
+		std::println("The space distorts! {} lands a devastating blow on {}!",
+			this->GetNameWithID(), target->GetNameWithID());
+	}
+	else {
+		std::println("{} lands a {}solid strike{} on {}!",
+			this->GetNameWithID(), Color::BrightRed, Color::Clear, target->GetNameWithID());
+	}
 }
 
 void Character::AssignID() {
@@ -77,6 +163,14 @@ void Character::AddToolToInventory(std::unique_ptr<CursedTool> tool) {
 	if (tool) {
 		inventory_curse.push_back(std::move(tool));
 	}
+}
+
+bool Character::CanBeHit() const {
+	return true;
+}
+
+std::unique_ptr<Character> Character::Clone() const {
+	return nullptr;
 }
 
 void Character::Damage(double h) {

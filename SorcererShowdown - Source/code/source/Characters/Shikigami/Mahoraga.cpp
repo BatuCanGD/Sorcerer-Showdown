@@ -71,14 +71,3 @@ void Mahoraga::OnCharacterTurn(Character* user, Battlefield& bf) {
     this->UpdatePreviousState();
     user->SpendCE(keep_active_cost);
 }
-
-bool Mahoraga::CanBeHit() const {
-    if (IsActivePhysically()) {
-        return true;
-    }
-    return false;
-}
-
-std::unique_ptr<Character> Mahoraga::Clone() const {
-    return nullptr;
-}

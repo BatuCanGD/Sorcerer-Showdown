@@ -13,3 +13,7 @@ void InvertedSpearofHeaven::UseTool(Character* user, Character* target) {
 	target->DamageBypass(special_tool_damage * special_tool_mult);
 	std::println("{} {}attacks{} {} with {}", user->GetNameWithID(),Color::Red,Color::Clear, target->GetNameWithID(), this->GetName());
 }
+
+std::unique_ptr<CursedTool> InvertedSpearofHeaven::Clone() const {
+	return std::make_unique<InvertedSpearofHeaven>(*this);
+}

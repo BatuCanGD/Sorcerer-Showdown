@@ -20,10 +20,6 @@ std::unique_ptr<Character> Mahito::Clone() const {
 	return std::make_unique<Mahito>();
 }
 
-bool Mahito::CanBeHit() const {
-	return true;
-}
-
 void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
 	IdleTransfiguration* tf = static_cast<IdleTransfiguration*>(this->GetTechnique());
 

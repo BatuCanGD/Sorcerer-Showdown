@@ -17,3 +17,7 @@ void MalevolentShrine::OnSureHit(CurseUser& user, Character& target) {
 double MalevolentShrine::GetUseCost() const {
     return domain_cost;
 }
+
+std::unique_ptr<Domain> MalevolentShrine::Clone() const {
+    return std::make_unique<MalevolentShrine>(*this);
+}

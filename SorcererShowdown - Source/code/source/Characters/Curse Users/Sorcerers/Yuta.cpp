@@ -156,7 +156,3 @@ bool Yuta::InfCheck(Character* strongest) {
     }
     return needs_amplification;
 }
-
-bool Yuta::CanBeHit() const {
-    return true;
-}

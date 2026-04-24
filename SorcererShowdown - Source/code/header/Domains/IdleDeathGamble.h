@@ -11,6 +11,7 @@ protected:
 	bool jackpot = false, info_dumped = false;
 public:
 	IdleDeathGamble();
+	std::unique_ptr<Domain> Clone() const override;
 	bool HasHitJackpot() const;
 	void SetJackpot(bool);
 	void OnSureHit(CurseUser& user, Character& target) override;

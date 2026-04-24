@@ -10,6 +10,7 @@ protected:
 	static constexpr double imbued_surehit_damage = 125.0;
 public:
 	AuthenticMutualLove();
+	std::unique_ptr<Domain> Clone() const override;
 	void OnSureHit(CurseUser& user, Character& target) override;
 	double GetUseCost() const override;
 };

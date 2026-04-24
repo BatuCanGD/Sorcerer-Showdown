@@ -25,3 +25,7 @@ void UnlimitedPurple::PerformSpecial(CurseUser* user) {
 		}
 	}
 }
+
+std::unique_ptr<Specials> UnlimitedPurple::Clone() const {
+	return std::make_unique<UnlimitedPurple>(*this);
+}

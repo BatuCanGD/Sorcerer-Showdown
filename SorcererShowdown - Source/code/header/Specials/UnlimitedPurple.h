@@ -4,5 +4,6 @@
 class UnlimitedPurple : public Specials {
 public:
 	UnlimitedPurple();
+	std::unique_ptr<Specials> Clone() const override;
 	void PerformSpecial(CurseUser* user) override;
 };

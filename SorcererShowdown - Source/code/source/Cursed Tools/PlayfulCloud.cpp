@@ -13,3 +13,7 @@ void PlayfulCloud::UseTool(Character* user, Character* target) {
 	target->Damage(dmg);
 	std::println("{} {}attacks{} {} with {}", user->GetNameWithID(), Color::Red, Color::Clear, target->GetNameWithID(), this->GetName());
 }
+
+std::unique_ptr<CursedTool> PlayfulCloud::Clone() const {
+	return std::make_unique<PlayfulCloud>(*this);
+}

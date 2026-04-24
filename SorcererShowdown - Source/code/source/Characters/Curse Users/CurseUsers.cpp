@@ -307,6 +307,10 @@ void CurseUser::CleanupShikigami() {
     shikigami.erase(removed_begin, removed_end);
 }
 
+int CurseUser::GetBlackFlashChance()const {
+    return black_flash_chance;
+}
+
 void CurseUser::RecoverBurnout() {
     if (is_strained) {
         burnout_time++;
@@ -331,6 +335,13 @@ void CurseUser::RecoverTechniqueBurnout(Technique* t) {
 }
 
 bool CurseUser::CanBeHit() const {
+    if (technique) {
+        if (auto l = dynamic_cast<Limitless*>(this->GetTechnique())) {
+            if (l->CheckInfinity()) {
+                return false;
+            }
+        }
+    }
     return true;
 }
 
