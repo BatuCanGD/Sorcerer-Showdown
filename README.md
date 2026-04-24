@@ -59,8 +59,6 @@ class MyCharacter : public Sorcerer {
 public:
     MyCharacter();
     std::unique_ptr<Character> Clone() const override;
-    std::string GetSimpleName() const override;
-    std::string GetName() const override;
     void OnCharacterTurn(Character*, Battlefield&) override;
     bool CanBeHit() const override;
 };
@@ -79,10 +77,10 @@ MyCharacter::MyCharacter() : Sorcerer(700.0, 3000.0, 100.0) {
     rct_skill  = RCTProficiency::Adept;
     black_flash_chance = 10;
     base_attack_damage = 30.0;
+    char_name = "My character";
+    name_color = "\033[36m";
 }
 std::unique_ptr<Character> MyCharacter::Clone() const { return std::make_unique<MyCharacter>(); }
-std::string MyCharacter::GetName() const        { return "\033[36mMyCharacter\033[0m"; }
-std::string MyCharacter::GetSimpleName() const  { return "MyCharacter"; }
 bool MyCharacter::CanBeHit() const              { return true; }
 
 void MyCharacter::OnCharacterTurn(Character*, Battlefield& bf) {
@@ -109,11 +107,8 @@ class MyTechnique : public Technique {
 protected:
     static constexpr double output_damage = 80.0;
 public:
-    std::string GetTechniqueName() const override;
-    std::string GetTechniqueSimpleName() const override;
-    void Chant() override;
+    MyTechnique();
     void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
-    void TechniqueSetting(CurseUser* user, Battlefield&) override;
     std::unique_ptr<Technique> Clone() const override;
     void UseMyAbility(CurseUser* user, Character* target);
 };
@@ -126,10 +121,10 @@ public:
 #include "Utils.h"
 import std;
 
-std::string MyTechnique::GetTechniqueName() const       { return "My Technique"; }
-std::string MyTechnique::GetTechniqueSimpleName() const { return "My Technique"; }
-void MyTechnique::Chant() {}
-
+MyTechnique::MyTechnique(){
+    tech_name = "My Technique";
+    tech_color = "\033[32m";
+}
 void MyTechnique::UseMyAbility(CurseUser* user, Character* target) {
     // CalculateDamage deducts CE cost and applies Boost/Burnout multipliers automatically
     double dmg = CalculateDamage(user, output_damage);
@@ -144,7 +139,6 @@ void MyTechnique::TechniqueMenu(CurseUser* user, Character* target, Battlefield&
     if (GetValidInput() == 1) UseMyAbility(user, target);
 }
 
-void MyTechnique::TechniqueSetting(CurseUser*, Battlefield&) {}
 std::unique_ptr<Technique> MyTechnique::Clone() const { return std::make_unique<MyTechnique>(*this); }
 ```
 
@@ -164,7 +158,6 @@ protected:
 public:
     MyDomain();
     void OnSureHit(CurseUser& user, Character& target) override;
-    std::string GetDomainName() const override;
     double GetUseCost() const override;
 };
 ```
@@ -179,6 +172,8 @@ import std;
 MyDomain::MyDomain() : Domain(600.0, 100.0, 14.0) {
     ref_level = Refinement::Refined;      // Unstable / Crude / Refined / Absolute
     hit_type  = HitType::HitsCurseUsers;  // or HitsEveryone
+    domain_name = "My Domain";
+    domain_color = "\033[31";
 }
 
 void MyDomain::OnSureHit(CurseUser& user, Character& target) {
@@ -187,7 +182,6 @@ void MyDomain::OnSureHit(CurseUser& user, Character& target) {
     std::println("{} is struck inside {}!", target.GetNameWithID(), GetDomainName());
 }
 
-std::string MyDomain::GetDomainName() const { return "\033[36mMy Domain\033[0m"; }
 double MyDomain::GetUseCost() const         { return domain_cost; }
 ```
 
@@ -198,7 +192,27 @@ double MyDomain::GetUseCost() const         { return domain_cost; }
 ### ➕ New Cursed Tool
 
 ```cpp
+// MyTool.h
+#pragma once
+#include "CursedTool.h"
+import std;
+
+class MyTool : public CursedTool{
+public:
+    MyTool();
+    void UseTool(Character*, Character*) override;
+}
+```
+
+
+
+```cpp
 // MyTool.cpp
+MyTool::MyTool(){
+    tool_name = "My Tool";
+    tool_color = "\033[35m";
+}
+
 void MyTool::UseTool(Character* user, Character* target) {
     // GetCalculatedStrength scales with Strength (PhysicallyGifted) or max HP (sorcerers)
     target->Damage(GetCalculatedStrength(user));
