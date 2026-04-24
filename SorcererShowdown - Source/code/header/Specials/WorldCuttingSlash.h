@@ -3,6 +3,6 @@
 
 class WorldCuttingSlash : public Specials {
 public:
+	WorldCuttingSlash();
 	void PerformSpecial(CurseUser* user) override;
-	std::string GetSpecialSimplifiedName() const override;
 };

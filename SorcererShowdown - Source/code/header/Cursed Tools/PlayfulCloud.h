@@ -3,7 +3,6 @@
 
 class PlayfulCloud : public CursedTool {
 public:
+	PlayfulCloud();
 	void UseTool(Character*, Character*) override;
-	std::string GetName() const override;
-	std::string GetSimpleName() const override;
 };

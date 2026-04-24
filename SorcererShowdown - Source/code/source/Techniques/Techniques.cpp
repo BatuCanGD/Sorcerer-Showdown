@@ -14,8 +14,14 @@ Technique::Status Technique::GetStatus() const {
 }
 
 std::string Technique::GetTechniqueName() const {
-    return "Technique";
+    return std::format("{}{}{}",tech_color,tech_name,Color::Clear);
 }
+std::string Technique::GetTechniqueSimpleName() const {
+    return tech_name;
+}
+
+void Technique::Chant() {}
+void Technique::TechniqueSetting(CurseUser*, Battlefield&) {}
 
 double Technique::GetTechniqueOutput() const {
     switch (state) {

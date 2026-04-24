@@ -6,6 +6,11 @@
 
 import std;
 
+PrivatePureLoveTrain::PrivatePureLoveTrain() {
+	tech_name = "Private Pure Love Train";
+	tech_color = "\033[92m";
+}
+
 bool PrivatePureLoveTrain::PlinkoUsed() const {
 	return plinko_used;
 }
@@ -20,13 +25,6 @@ void PrivatePureLoveTrain::TickPlinkoCooldown() {
 			plinko_cooldown_time = 0;
 		}
 	}
-}
-
-std::string PrivatePureLoveTrain::GetTechniqueName() const {
-	return "\033[92mPrivate Pure Love Train\033[0m";
-}
-std::string PrivatePureLoveTrain::GetTechniqueSimpleName() const {
-	return "Private Pure Love Train";
 }
 
 void PrivatePureLoveTrain::UsePlinkoBalls(CurseUser* user, Character* target) {
@@ -73,8 +71,6 @@ void PrivatePureLoveTrain::UseJackpotRush(CurseUser* user, Character* target) {
 	}
 }
 
-void PrivatePureLoveTrain::Chant() {}
-
 void PrivatePureLoveTrain::TechniqueMenu(CurseUser* user, Character* target, Battlefield&) {
 	if (user->DomainAmplificationActive()) {
 		std::println("You cannot use your innate technique due to domain amplification!");
@@ -109,8 +105,6 @@ void PrivatePureLoveTrain::TechniqueMenu(CurseUser* user, Character* target, Bat
 		std::println("Invalid Input");
 	}
 }
-
-void PrivatePureLoveTrain::TechniqueSetting(CurseUser*, Battlefield&) {}
 
 std::unique_ptr<Technique> PrivatePureLoveTrain::Clone() const {
 	return std::make_unique<PrivatePureLoveTrain>();

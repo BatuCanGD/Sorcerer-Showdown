@@ -11,6 +11,5 @@ protected:
 public:
 	AuthenticMutualLove();
 	void OnSureHit(CurseUser& user, Character& target) override;
-	std::string GetDomainName() const override;
 	double GetUseCost() const override;
 };

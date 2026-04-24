@@ -6,6 +6,9 @@ class CurseUser;
 
 class Domain {
 protected:
+	std::string domain_name = "";
+	std::string domain_color = "";
+
 	double domain_health;
 	const double base_health;
 	double domain_overwhelm_strength;
@@ -29,7 +32,7 @@ public:
 	void SetClashState(bool a);
 	double DomainRangeMult()const;
 	virtual void OnSureHit(CurseUser& user, Character& target) = 0;
-	virtual std::string GetDomainName() const = 0;
+	std::string GetDomainName() const;
 	virtual double GetUseCost() const = 0;
 
 	double GetDomainHealth() const;

@@ -16,17 +16,13 @@ Hakari::Hakari():Sorcerer(650.0, 5500.0, 75.0) {
     rct_skill = RCTProficiency::Absolute;
     domain_limit = 999;
     base_attack_damage = 55.0;
+
+    char_name = "Hakari";
+    name_color = "\033[38;5;157m";
 }
 
 std::unique_ptr<Character> Hakari::Clone() const {
     return std::make_unique<Hakari>();
-}
-
-std::string Hakari::GetName() const {
-    return "\033[38;5;157mHakari\033[0m";
-}
-std::string Hakari::GetSimpleName() const {
-    return "Hakari";
 }
 
 void Hakari::OnCharacterTurn(Character*, Battlefield& bf) {

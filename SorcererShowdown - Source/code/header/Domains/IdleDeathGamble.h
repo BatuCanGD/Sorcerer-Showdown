@@ -14,6 +14,5 @@ public:
 	bool HasHitJackpot() const;
 	void SetJackpot(bool);
 	void OnSureHit(CurseUser& user, Character& target) override;
-	std::string GetDomainName() const override;
 	double GetUseCost() const override;
 };

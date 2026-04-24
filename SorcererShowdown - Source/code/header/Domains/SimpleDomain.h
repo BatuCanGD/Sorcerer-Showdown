@@ -10,6 +10,5 @@ private:
 public:
 	SimpleDomain();
 	void OnSureHit(CurseUser& user, Character&) override;
-	std::string GetDomainName() const override;
 	double GetUseCost() const override;
 };

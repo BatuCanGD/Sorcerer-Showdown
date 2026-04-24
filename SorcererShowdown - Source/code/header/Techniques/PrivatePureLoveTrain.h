@@ -19,19 +19,16 @@ protected:
 	const int max_plinko_cooldown_time = 2;
 	bool plinko_used = false;
 public:
+	PrivatePureLoveTrain();
+
 	bool PlinkoUsed() const;
 	void SetPlinkoStatus(bool);
 	void TickPlinkoCooldown();
-
-	std::string GetTechniqueName() const override;
-	std::string GetTechniqueSimpleName() const override;
 
 	void UsePlinkoBalls(CurseUser* user, Character* target);
 	void UseShutterDoors(CurseUser* user, Character* target);
 	void UseJackpotRush(CurseUser* user, Character* target);
 
-	void Chant() override;
 	void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
-	void TechniqueSetting(CurseUser*, Battlefield&) override;
 	std::unique_ptr<Technique> Clone() const override;
 };

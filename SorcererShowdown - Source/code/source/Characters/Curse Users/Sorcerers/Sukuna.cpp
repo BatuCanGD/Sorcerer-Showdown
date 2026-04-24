@@ -22,17 +22,13 @@ Sukuna::Sukuna() : Sorcerer(1000.0, 20000.0, 200.0) {
     special = std::make_unique<WorldCuttingSlash>();
     black_flash_chance = 10;
     rct_skill = RCTProficiency::Expert;
+
+    char_name = "Sukuna";
+    name_color = "\033[31m";
 }
 
 std::unique_ptr<Character> Sukuna::Clone() const {
     return std::make_unique<Sukuna>();
-}
-
-std::string Sukuna::GetName() const {
-    return "\033[31mSukuna\033[0m";
-}
-std::string Sukuna::GetSimpleName() const {
-    return "Sukuna";
 }
 
 void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {

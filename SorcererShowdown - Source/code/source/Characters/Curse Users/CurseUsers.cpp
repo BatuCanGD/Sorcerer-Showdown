@@ -330,12 +330,6 @@ void CurseUser::RecoverTechniqueBurnout(Technique* t) {
     if (technique_burnout_time != 0 && !t->BurntOut()) technique_burnout_time = 0;
 }
 
-std::string CurseUser::GetSimpleName() const {
-    return "Curse User";
-}
-std::string CurseUser::GetName() const {
-    return "\033[34mCurse User\033[0m";
-}
 bool CurseUser::CanBeHit() const {
     return true;
 }

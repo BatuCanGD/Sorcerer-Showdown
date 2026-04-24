@@ -5,14 +5,10 @@ import std;
 
 HollowWickerBasket::HollowWickerBasket() : Domain(150.0, 2, 2) {
     is_neutralizer = true;
+    domain_name = "Hollow Wicker Basket";
+    domain_color = "\033[95m";
 }
-
 double HollowWickerBasket::GetUseCost() const {
     return domain_cost;
 }
-
 void HollowWickerBasket::OnSureHit(CurseUser&, Character&) {}
-
-std::string HollowWickerBasket::GetDomainName() const {
-    return "\033[95mHollow Wicker Basket\033[0m";
-}

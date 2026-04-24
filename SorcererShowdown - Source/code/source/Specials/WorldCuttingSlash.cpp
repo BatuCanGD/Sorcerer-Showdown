@@ -5,6 +5,11 @@
 
 import std;
 
+WorldCuttingSlash::WorldCuttingSlash() {
+	special_name = "World Cutting Slash";
+	special_color = "\033[31m";
+}
+
 void WorldCuttingSlash::PerformSpecial(CurseUser* user) {
 	Technique* currentTech = user->GetTechnique();
 	Shrine* shrinePtr = dynamic_cast<Shrine*>(currentTech);
@@ -24,7 +29,4 @@ void WorldCuttingSlash::PerformSpecial(CurseUser* user) {
 			}
 		}
 	}
-}
-std::string WorldCuttingSlash::GetSpecialSimplifiedName() const {
-	return "\033[31mWorld Cutting Slash\033[0m";
 }

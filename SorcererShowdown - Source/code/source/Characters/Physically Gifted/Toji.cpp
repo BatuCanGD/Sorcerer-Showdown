@@ -10,17 +10,13 @@ import std;
 Toji::Toji() : PhysicallyGifted(1000.0, 450.0) {
     inventory_curse.push_back(std::make_unique<InvertedSpearofHeaven>());
     inventory_curse.push_back(std::make_unique<PlayfulCloud>());
+
+    char_name = "Toji Fushiguro";
+    name_color = "\033[33m";
 }
 
 std::unique_ptr<Character> Toji::Clone() const {
     return std::make_unique<Toji>();
-}
-
-std::string Toji::GetName() const {
-    return "\033[33mToji Fushiguro\033[0m";
-}
-std::string Toji::GetSimpleName() const {
-    return "Toji Fushiguro";
 }
 
 void Toji::TickCharacterSpecialty() {

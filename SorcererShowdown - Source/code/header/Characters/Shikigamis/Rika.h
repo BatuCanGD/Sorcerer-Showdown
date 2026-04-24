@@ -17,7 +17,5 @@ public:
 	void SaveUserCursedEnergy(Character*);
 	void RikaCooldownRegeneration(Character*);
 
-	std::string GetSimpleName() const override;
-	std::string GetName() const override;
 	bool CanBeHit() const override;
 };

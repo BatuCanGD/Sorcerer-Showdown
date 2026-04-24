@@ -18,10 +18,6 @@ bool Shikigami::CanBeAssignedID() const {
     return false;
 }
 
-std::string Shikigami::GetSimpleName() const {
-    return "Shikigami";
-}
-
 void Shikigami::PartiallyManifest() {
     shikigami_state = State::Partial;
 }
@@ -67,10 +63,6 @@ std::string Shikigami::GetShikigamiStatus() const {
 
 bool Shikigami::IsShikigami() const {
     return true;
-}
-
-std::string Shikigami::GetName() const {
-    return "Shikigami";
 }
 
 bool Shikigami::CanBeHit() const {

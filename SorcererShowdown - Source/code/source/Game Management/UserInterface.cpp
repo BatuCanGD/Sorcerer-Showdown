@@ -141,7 +141,7 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 
 			speciald = (special == nullptr)
 				? std::format("3 - Special [{}None{}] ", Color::DimGray, Color::Clear)
-				: std::format("3 - Special [{}] ", special->GetSpecialSimplifiedName());
+				: std::format("3 - Special [{}] ", special->GetSpecialName());
 
 			domaind = (domain == nullptr && counter == nullptr)
 				? std::format("4 - Domain [{}Locked{}]", Color::DimGray, Color::Clear)

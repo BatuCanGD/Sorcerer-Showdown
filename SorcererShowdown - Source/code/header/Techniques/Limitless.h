@@ -17,6 +17,7 @@ protected:
 	static constexpr double purple_output = 150.0;
 	static constexpr double unlpurple_output = 1750.0;
 public:
+	Limitless();
 	std::unique_ptr<Technique> Clone() const override;
 
 	void SetInfinity(bool s);
@@ -37,8 +38,5 @@ public:
 
 	void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
 	void TechniqueSetting(CurseUser*, Battlefield&) override;
-
 	void Chant() override;
-	std::string GetTechniqueName() const override;
-	std::string GetTechniqueSimpleName() const override;
 };

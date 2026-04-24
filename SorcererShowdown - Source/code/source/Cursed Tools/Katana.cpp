@@ -5,6 +5,10 @@
 
 import std;
 
+Katana::Katana() {
+	tool_name = "a Katana";
+	tool_color = "\033[36";
+}
 void Katana::UseTool(Character* user, Character* target) {
 	auto pg = dynamic_cast<PhysicallyGifted*>(user);
 	double total_damage = pg ?
@@ -13,10 +17,4 @@ void Katana::UseTool(Character* user, Character* target) {
 
 	target->Damage(total_damage);
 	std::println("{} attacks {} using {}", user->GetNameWithID(), target->GetNameWithID(), this->GetName());
-}
-std::string Katana::GetName() const {
-	return "\033[36ma Katana\033[0m";
-}
-std::string Katana::GetSimpleName() const {
-	return "a Katana";
 }

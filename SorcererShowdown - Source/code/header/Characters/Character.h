@@ -11,6 +11,9 @@ protected:
 	static int global_id_counter;
 	int unique_id;
 
+	std::string char_name = "";
+	std::string name_color = "";
+
 	bool is_player = false;
 
 	double health;
@@ -52,6 +55,7 @@ public:
 	void SetCursedEnergy(double c);
 	void SetMaxCursedEnergy(double c);
 	void SetCursedEnergyRegen(double c);
+	std::string SetCharacterName(std::string name, std::string color);
 
 	bool IsThePlayer() const;
 	void SetAsPlayer(bool);
@@ -109,8 +113,9 @@ public:
 	virtual bool IsPhysicallyGifted() const;
 	virtual bool IsShikigami() const;
 
-	virtual std::string GetSimpleName() const = 0;
-	virtual std::string GetName() const = 0;
+	std::string GetSimpleName() const;
+	std::string GetName() const;
+
 	virtual bool CanBeHit() const = 0;
 
 	void AssignID();

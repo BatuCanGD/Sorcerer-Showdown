@@ -14,13 +14,12 @@ public:
 
 	void Attack(Character*) override;
 
+	void SetStrength(double);
 	double GetStrength() const;
 	double GetStrengthDamage()const;
 	double GetDamageReinforcement()const override;
 	double GetHealingFactor()const;
 	bool IsPhysicallyGifted() const override;
 
-	std::string GetSimpleName() const override;
-	std::string GetName() const override;
 	bool CanBeHit() const override;
 };

@@ -24,7 +24,5 @@ public:
 	void PrintStatus(Character*) const;
 	void UpdatePreviousState();
 
-	std::string GetSimpleName() const override;
-	std::string GetName() const override;
 	bool CanBeHit() const override;
 };

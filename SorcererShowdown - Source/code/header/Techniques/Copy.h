@@ -11,6 +11,7 @@ private:
 	static constexpr int max_copies = 5;
 	size_t active_copy;
 public:
+	Copy();
 	std::unique_ptr<Technique> Clone() const override;
 
 	void CopyFrom(CurseUser* target);
@@ -20,8 +21,5 @@ public:
 
 	void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
 	void TechniqueSetting(CurseUser* user, Battlefield&) override;
-
 	void Chant() override;
-	std::string GetTechniqueName() const override;
-	std::string GetTechniqueSimpleName() const override;
 };

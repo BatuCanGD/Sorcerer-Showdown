@@ -4,7 +4,10 @@
 
 import std;
 
-Rika::Rika() : Shikigami(INT32_MAX, 100000.0, 3000.0) {}
+Rika::Rika() : Shikigami(INT32_MAX, 100000.0, 3000.0) {
+    char_name = "Rika";
+    name_color = "\033[91m";
+}
 
 void Rika::OnCharacterTurn(Character* user, Battlefield& bf) {
     if (IsPartiallyActive()) {
@@ -59,13 +62,6 @@ bool Rika::CanBeHit() const {
         return true;
     }
     return false;
-}
-
-std::string Rika::GetName() const {
-    return "\033[91mRika\033[0m";
-}
-std::string Rika::GetSimpleName() const {
-    return "Rika";
 }
 
 std::unique_ptr<Character> Rika::Clone() const {

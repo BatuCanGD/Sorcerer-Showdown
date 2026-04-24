@@ -18,16 +18,11 @@ Gojo::Gojo() : Sorcerer(800.0, 4000.0, 150.0) {
     six_eyes = true;
     black_flash_chance = 15;
     rct_skill = RCTProficiency::Absolute;
+    char_name = "Gojo";
+    name_color = "\033[96m";
 }
 std::unique_ptr<Character> Gojo::Clone() const {
     return std::make_unique<Gojo>();
-}
-
-std::string Gojo::GetName() const {
-    return "\033[96mGojo\033[0m";
-}
-std::string Gojo::GetSimpleName() const {
-    return "Gojo";
 }
 
 void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {

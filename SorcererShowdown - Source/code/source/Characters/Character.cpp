@@ -68,6 +68,11 @@ void Character::SetCursedEnergyRegen(double c) {
 	ce_regen_efficiency = c;
 }
 
+std::string Character::SetCharacterName(std::string name, std::string color) {
+	char_name = name;
+	name_color = color;
+}
+
 void Character::Damage(double h) {
 	if (CanBeHit() && !is_invulnerable) {
 		health = std::max(health - (h / this->GetDamageReinforcement()), 0.0);
@@ -131,6 +136,13 @@ bool Character::HPMoreThanMax(double h) const {
 	return this->GetCharacterHealth() > this->GetCharacterMaxHealth() * h;
 }
 
+std::string Character::GetName() const {
+	return std::format("{}{}{}", name_color, char_name, Color::Clear);
+}
+std::string Character::GetSimpleName() const {
+	return char_name;
+}
+
 void Character::ClearStunTime() {
 	if (stun_duration <= 0) {
 		is_stunned = false;
@@ -146,7 +158,7 @@ int Character::GetID() const {
 }
 
 std::string Character::GetNameWithID()const {
-	return std::format("{} ({})", this->GetName(), unique_id);
+	return std::format("{}{}{} ({})",name_color ,char_name, Color::Clear, unique_id);
 }
 
 bool Character::IsaSorcerer() const {

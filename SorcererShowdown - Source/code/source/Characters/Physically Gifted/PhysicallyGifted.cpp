@@ -60,12 +60,10 @@ double PhysicallyGifted::GetDamageReinforcement() const {
 	return 1.0 + (strength / strength_to_reinforcement_ratio);
 }
 
-std::string PhysicallyGifted::GetSimpleName() const {
-	return "Physically Gifted";
+void PhysicallyGifted::SetStrength(double str) {
+    strength = str;
 }
-std::string PhysicallyGifted::GetName() const {
-	return "Heavenly Restricted User";
-}
+
 bool PhysicallyGifted::CanBeHit() const {
 	return true;
 }

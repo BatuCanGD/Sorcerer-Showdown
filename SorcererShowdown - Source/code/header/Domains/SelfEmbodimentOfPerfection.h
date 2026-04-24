@@ -11,6 +11,5 @@ protected:
 public:
 	SelfEmbodimentOfPerfection();
 	void OnSureHit(CurseUser& user, Character& target) override;
-	std::string GetDomainName() const override;
 	double GetUseCost() const override;
 };

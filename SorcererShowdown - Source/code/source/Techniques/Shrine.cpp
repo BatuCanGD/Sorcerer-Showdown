@@ -5,6 +5,11 @@
 
 import std;
 
+Shrine::Shrine() {
+    tech_name = "Shrine";
+    tech_color = "\033[31m";
+}
+
 void Shrine::SetWCS(bool s) {
     world_cutting_slash_allowed = s;
 }
@@ -30,13 +35,6 @@ void Shrine::UseTheWorldCuttingSlash(CurseUser* user, Character* target) {
     double dmg = CalculateDamage(user, wcs_output);
     target->DamageBypass(dmg);
     chant = ChantLevel::Zero;
-}
-
-std::string Shrine::GetTechniqueName() const {
-    return "\033[31mShrine\033[0m";
-}
-std::string Shrine::GetTechniqueSimpleName() const {
-    return "Shrine";
 }
 
 bool Shrine::WorldCuttingSlashUnlocked() const {

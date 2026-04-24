@@ -7,12 +7,11 @@
 
 import std;
 
-std::string IdleTransfiguration::GetTechniqueName() const {
-	return "\033[35mIdle Transfiguration\033[0m";
+IdleTransfiguration::IdleTransfiguration() {
+    tech_name = "Idle Transfiguration";
+    tech_color = "\033[35m";
 }
-std::string IdleTransfiguration::GetTechniqueSimpleName() const {
-	return "Idle Transfiguration";
-}
+
 
 void IdleTransfiguration::UseTransfiguration(CurseUser* user, Character* target) {
     println("{} tried to transfigure {}!", user->GetNameWithID(), target->GetNameWithID());

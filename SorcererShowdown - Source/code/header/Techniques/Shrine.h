@@ -12,6 +12,7 @@ protected:
 	static constexpr double wcs_output = 2500.0;
 	bool world_cutting_slash_allowed = false;
 public:
+	Shrine();
 	std::unique_ptr<Technique> Clone() const override;
 
 	void SetWCS(bool s);
@@ -23,8 +24,5 @@ public:
 
 	void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
 	void TechniqueSetting(CurseUser*, Battlefield&) override;
-
-	std::string GetTechniqueName() const override;
-	std::string GetTechniqueSimpleName() const override;
 	void Chant() override;
 };

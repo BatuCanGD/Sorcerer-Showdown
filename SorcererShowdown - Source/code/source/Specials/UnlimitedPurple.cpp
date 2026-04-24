@@ -7,6 +7,11 @@
 
 import std;
 
+UnlimitedPurple::UnlimitedPurple() {
+	special_name = "Unlimited Purple";
+	special_color = "\033[35m";
+}
+
 void UnlimitedPurple::PerformSpecial(CurseUser* user) {
 	if (Limitless* limitless = dynamic_cast<Limitless*>(user->GetTechnique())) {
 		if (limitless->GetUsedBlueAmount() >= 15 && limitless->GetUsedRedAmount() >= 15 && limitless->GetUsedPurpleAmount() >= 5) {
@@ -19,8 +24,4 @@ void UnlimitedPurple::PerformSpecial(CurseUser* user) {
 			std::println("\n{}Unlimited Hollow Purple fails to manifest, the limitless needs to be used more!{}",Color::DimGray,Color::Clear);
 		}
 	}
-}
-
-std::string UnlimitedPurple::GetSpecialSimplifiedName() const {
-	return "\033[35mUnlimited Hollow Purple\033[0m";
 }

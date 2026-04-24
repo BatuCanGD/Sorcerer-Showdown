@@ -83,8 +83,6 @@ public:
     void TickShikigami();
     void CleanupShikigami();
 
-	std::string GetSimpleName() const override;
-	std::string GetName() const override;
 	bool IsaCurseUser() const override;
 	bool CanBeHit() const override;
 };

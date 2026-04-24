@@ -5,14 +5,10 @@ import std;
 
 SimpleDomain::SimpleDomain() : Domain(INT32_MAX, 3, 3) {
     is_neutralizer = true;
+    domain_name = "Simple Domain";
+    domain_color = "\033[36m";
 }
-
 void SimpleDomain::OnSureHit(CurseUser&, Character&) {}
-
-std::string SimpleDomain::GetDomainName() const {
-    return "\033[36mSimple Domain\033[0m";
-}
-
 double SimpleDomain::GetUseCost() const {
     return domain_cost;
 }

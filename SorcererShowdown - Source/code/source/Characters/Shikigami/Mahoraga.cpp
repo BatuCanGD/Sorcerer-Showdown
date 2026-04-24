@@ -5,7 +5,10 @@
 
 import std;
 
-Mahoraga::Mahoraga() : Shikigami(400.0, 1000.0, 50.0) {}
+Mahoraga::Mahoraga() : Shikigami(400.0, 1000.0, 50.0) {
+    char_name = "Mahoraga";
+    name_color = "\033[33m";
+}
 
 void Mahoraga::Adapt() {
     if (!IsActive()) return;
@@ -67,12 +70,6 @@ void Mahoraga::OnCharacterTurn(Character* user, Battlefield& bf) {
     this->PrintStatus(user);
     this->UpdatePreviousState();
     user->SpendCE(keep_active_cost);
-}
-std::string Mahoraga::GetName() const {
-    return "\033[33mMahoraga\033[0m";
-}
-std::string Mahoraga::GetSimpleName() const {
-    return "Mahoraga";
 }
 
 bool Mahoraga::CanBeHit() const {

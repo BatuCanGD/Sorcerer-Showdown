@@ -9,6 +9,8 @@ import std;
 IdleDeathGamble::IdleDeathGamble() : Domain(800.0, 150.0, 16.0) {
     ref_level = Refinement::Absolute;
     hit_type = HitType::HitsEveryone;
+    domain_name = "Idle Death Gamble";
+    domain_color = "\033[92m";
 }
 void IdleDeathGamble::SetJackpot(bool t) {
     jackpot = t;
@@ -45,9 +47,6 @@ void IdleDeathGamble::OnSureHit(CurseUser& user, Character& target) {
 }
 bool IdleDeathGamble::HasHitJackpot() const {
     return jackpot;
-}
-std::string IdleDeathGamble::GetDomainName() const {
-    return "\033[92mIdle Death Gamble\033[0m";
 }
 double IdleDeathGamble::GetUseCost() const {
     return domain_cost;

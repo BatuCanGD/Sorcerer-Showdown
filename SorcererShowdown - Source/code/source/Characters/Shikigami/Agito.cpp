@@ -4,13 +4,9 @@
 
 import std;
 
-Agito::Agito() : Shikigami(150.0, 500.0, 20.0) {}
-
-std::string Agito::GetName() const {
-    return "\033[95mAgito\033[0m";
-}
-std::string Agito::GetSimpleName() const {
-    return "Agito";
+Agito::Agito() : Shikigami(150.0, 500.0, 20.0) {
+    char_name = "Agito";
+    name_color = "\033[95m";
 }
 
 void Agito::PassiveSupport(Character* user) {

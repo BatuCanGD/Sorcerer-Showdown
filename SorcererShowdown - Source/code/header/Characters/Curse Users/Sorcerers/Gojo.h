@@ -5,8 +5,6 @@ class Gojo : public Sorcerer {
 public:
 	Gojo();
 	std::unique_ptr<Character> Clone() const override;
-	std::string GetSimpleName() const override;
-	std::string GetName() const override;
 	void OnCharacterTurn(Character*, Battlefield&) override;
 	bool CanBeHit() const override;
 	bool InfCheck(Character*);

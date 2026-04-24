@@ -6,6 +6,11 @@
 
 import std;
 
+Limitless::Limitless() {
+    tech_name = "Limitless";
+    tech_color = "\033[36m";
+}
+
 void Limitless::UseBlue(CurseUser* user, Character* target) {
     if (chant == ChantLevel::Four) std::println("{}\"MAXIMUM OUTPUT: BLUE!\"{}", Color::Blue, Color::Clear);
     println("{} uses {}Blue{} on {}!", user->GetNameWithID(),Color::Blue,Color::Clear, target->GetNameWithID());
@@ -31,13 +36,6 @@ void Limitless::UsePurple(CurseUser* user, Character* target) {
     target->Damage(dmg);
     purple_used_amount++;
     chant = ChantLevel::Zero;
-}
-
-std::string Limitless::GetTechniqueName() const {
-    return "\033[36mLimitless\033[0m";
-}
-std::string Limitless::GetTechniqueSimpleName() const {
-    return "Limitless";
 }
 
 void Limitless::SetUnlimitedHollow(bool t) {

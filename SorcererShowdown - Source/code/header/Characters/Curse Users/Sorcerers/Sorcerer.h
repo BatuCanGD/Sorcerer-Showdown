@@ -45,9 +45,6 @@ public:
 	double GetRCTCost() const;
 	RCTProficiency GetRCTProficiency() const;
 
-	std::string GetSimpleName() const override;
-	std::string GetName() const override;
-
 	bool IsaSorcerer() const override;
 	bool CanBeHit() const override;
 };

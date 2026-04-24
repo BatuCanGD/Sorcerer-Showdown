@@ -22,17 +22,13 @@ Yuta::Yuta() : Sorcerer(800.0, 6000.0, 75.0) {
     shikigami.push_back(std::make_unique<Rika>());
     black_flash_chance = 10;
     rct_skill = RCTProficiency::Adept;
+
+    char_name = "Yuta Okkotsu";
+    name_color = "\033[38;5;183m";
 }
 
 std::unique_ptr<Character> Yuta::Clone() const {
     return std::make_unique<Yuta>();
-}
-
-std::string Yuta::GetName() const {
-    return "\033[38;5;183mYuta Okkotsu\033[0m";
-}
-std::string Yuta::GetSimpleName() const {
-    return "Yuta Okkotsu";
 }
 
 void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {

@@ -10,8 +10,7 @@ protected:
 	int transfigured_human_count = 3;
 	const double transfiguration_damage = 100.0;
 public:
-	std::string GetTechniqueName() const override;
-	std::string GetTechniqueSimpleName() const override;
+	IdleTransfiguration();
 
 	void UseTransfiguration(CurseUser* user, Character* target);
 	void SummonTransfiguredHumans(Battlefield&);

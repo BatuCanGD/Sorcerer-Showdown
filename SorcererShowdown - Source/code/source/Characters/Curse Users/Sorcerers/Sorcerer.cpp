@@ -86,20 +86,12 @@ void Sorcerer::UseRCT() {
     }
 }
 
-std::string Sorcerer::GetName() const {
-    return "Sorcerer";
-}
-
 bool Sorcerer::CanBeHit() const {
     return true;
 }
 
 bool Sorcerer::IsaSorcerer()const {
     return true;
-}
-
-std::string Sorcerer::GetSimpleName() const {
-    return "Sorcerer";
 }
 
 std::unique_ptr<Character> Sorcerer::Clone() const {

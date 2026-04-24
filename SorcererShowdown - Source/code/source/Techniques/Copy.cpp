@@ -6,6 +6,11 @@
 
 import std;
 
+Copy::Copy() {
+    tech_name = "Copy";
+    tech_color = "\033[95m";
+}
+
 std::unique_ptr<Technique> Copy::Clone() const {
     auto new_copy = std::make_unique<Copy>();
 
@@ -64,15 +69,6 @@ Technique* Copy::GetActive() const {
     if (active_copy < 0 || active_copy >= copied_techniques.size())
         return nullptr;
     return copied_techniques[active_copy].get();
-}
-
-std::string Copy::GetTechniqueName() const {
-    if (Technique* t = GetActive())
-        return std::format("Copy [{}]", t->GetTechniqueName());
-    return "\033[95mCopy\033[0m [\033[2;90mNone\033[0m";
-}
-std::string Copy::GetTechniqueSimpleName() const {
-    return "Copy";
 }
 
 void Copy::Chant() {

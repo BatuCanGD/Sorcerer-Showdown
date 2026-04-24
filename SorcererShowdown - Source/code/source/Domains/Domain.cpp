@@ -1,10 +1,9 @@
 #include "Domain.h"
 #include "CurseUser.h"
 #include "Character.h"
+#include "Utils.h"
 
 import std;
-
-// --- Base Domain  ---
 
 Domain::Domain(double hp, double as, double rn) : 
     domain_health(hp), 
@@ -13,7 +12,6 @@ Domain::Domain(double hp, double as, double rn) :
     base_range(rn), 
     current_range(rn) {
 }
-
 
 bool Domain::Clashing() const {
     return clashing;
@@ -36,7 +34,7 @@ double Domain::DomainRangeMult() const {
 }
 
 std::string Domain::GetDomainName() const {
-	return "Domain";
+	return std::format("{}{}{}",domain_color,domain_name,Color::Clear);
 }
 
 double Domain::GetDomainHealth() const {

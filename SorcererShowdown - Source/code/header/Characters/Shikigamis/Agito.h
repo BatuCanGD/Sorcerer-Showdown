@@ -9,11 +9,7 @@ protected:
 	const double summon_amount = 80.0;
 public:
 	std::unique_ptr<Character> Clone() const override;
-
 	void PassiveSupport(Character* user);
 	void OnCharacterTurn(Character*, Battlefield&) override;
-
-	std::string GetSimpleName() const override;
-	std::string GetName() const override;
 	bool CanBeHit() const override;
 };
