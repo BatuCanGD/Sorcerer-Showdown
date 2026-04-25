@@ -40,9 +40,12 @@ A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++** using m
 
 ## 🧩 Adding Custom Content
 
-### There are now two ways to expand the roster: writing a native C++ class for unique mechanics, or using the JSON system for quick, data-driven characters.
+There are two ways to expand the roster: writing a **native C++ class** for full control over AI behaviour and unique mechanics, or dropping a **`characters.json`** file in the same directory as the executable for quick, data-driven characters.
 
-## 1. Native C++ Characters:
+---
+
+## 1. Native C++ Characters
+
 ### ➕ New Character
 
 Pick your base class:
@@ -225,11 +228,44 @@ Add to `CursedToolList.h` and equip via `inventory_curse.push_back(std::make_uni
 
 ---
 
-## 2. JSON Modding (For Quick Expansion)
-### this only supports making custom characters for now, it doesnt support creating new techniques or domains
-### The json file must be in the same directory as the exe or the built project and must be named characters.json
-The custom json characters will use the fallback base character functions, which will make the AI dumber and unable to use techniques or domains except for domain amplification
-This will come to change as more updates and changes come
+## 2. JSON Modding
+
+Drop a file named `characters.json` next to the executable (or the built project directory) and the game will offer to load it at startup. JSON characters are built on the same base `Character` logic as native ones — they support all existing techniques, domains, tools, and shikigami — but their AI uses the default `OnCharacterTurn` fallback, so they won't tactically chain abilities or manage domains the way hand-coded characters do. Support for richer AI behaviour is planned for a future update.
+
+> **Current limitations:** JSON cannot define new techniques, domains, or tools — only assign existing ones by name.
+
+### Supported field reference
+
+| Field | Type | Description |
+|---|---|---|
+| `name` | string | Display name |
+| `type` | string | `"Sorcerer"`, `"Cursed Spirit"`, or `"Physically Gifted"` |
+| `hp` | number | Max health |
+| `ce` | number | Max cursed energy (`"Physically Gifted"` ignores this) |
+| `regen` | number | CE regen per turn (`"Physically Gifted"` ignores this) |
+| `strength` | number | Strength stat — **required** for `"Physically Gifted"`, ignored otherwise |
+| `six_eyes` | bool | Enables Six Eyes CE efficiency reduction (Sorcerer only) |
+| `rct_proficiency` | string | `"None"`, `"Crude"`, `"Adept"`, `"Expert"`, or `"Absolute"` |
+| `technique` | string | One of the available techniques listed below |
+| `domain` | string | Main domain expansion |
+| `counter_domain` | string | Counter-measure domain (Simple Domain / Hollow Wicker Basket) |
+| `special` | string | Special move |
+| `inventory` | string array | Cursed tools added to the character's inventory |
+| `shikigami` | string array | Shikigami assigned to the character |
+| `color` | string | ANSI escape code for the character's name colour |
+
+### Available assets
+
+| Category | Options |
+|---|---|
+| **Techniques** | `Limitless`, `Shrine`, `Private Pure Love Train`, `Idle Transfiguration`, `Copy` |
+| **Domains** | `Infinite Void`, `Malevolent Shrine`, `Authentic Mutual Love`, `Idle Death Gamble` |
+| **Counter Domains** | `Simple Domain`, `Hollow Wicker Basket` |
+| **Specials** | `Unlimited Purple`, `World Cutting Slash` |
+| **Tools** | `Inverted Spear of Heaven`, `Playful Cloud`, `Katana` |
+| **Shikigami** | `Rika`, `Mahoraga`, `Agito` |
+
+### Example `characters.json`
 
 ```json
 {
@@ -246,13 +282,8 @@ This will come to change as more updates and changes come
       "domain": "Infinite Void",
       "counter_domain": "Simple Domain",
       "special": "Unlimited Purple",
-      "inventory": [
-        "Playful Cloud"
-      ],
-      "shikigami": [
-        "Rika",
-        "Agito"
-      ],
+      "inventory": ["Playful Cloud"],
+      "shikigami": ["Rika", "Agito"],
       "color": "\u001b[36m"
     },
     {
@@ -266,9 +297,7 @@ This will come to change as more updates and changes come
       "technique": "Shrine",
       "domain": "Malevolent Shrine",
       "counter_domain": "Simple Domain",
-      "inventory": [
-        "Katana"
-      ],
+      "inventory": ["Katana"],
       "color": "\u001b[31m"
     },
     {
@@ -282,20 +311,15 @@ This will come to change as more updates and changes come
       "technique": "Copy",
       "domain": "Authentic Mutual Love",
       "counter_domain": "Hollow Wicker Basket",
-      "inventory": [
-        "Inverted Spear of Heaven"
-      ],
-      "shikigami": [
-        "Mahoraga"
-      ],
+      "inventory": ["Inverted Spear of Heaven"],
+      "shikigami": ["Mahoraga"],
       "color": "\u001b[35m"
     }
   ]
 }
 ```
 
-
-
+---
 
 ## 🗂 Project Structure
 
