@@ -5,10 +5,7 @@ import std;
 
 // --- Base Shikigami  ---
 
-Shikigami::Shikigami(double hp, double ce, double re) : Character(hp, ce, re) {
-    current_ce_reinforcement = 0.0;
-    max_ce_reinforcement = 0.0;
-}
+Shikigami::Shikigami(double hp) : Character(hp) {}
 
 bool Shikigami::CanBeAssignedID() const {
     return false;

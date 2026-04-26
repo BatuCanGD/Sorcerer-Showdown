@@ -14,8 +14,8 @@ PrivatePureLoveTrain::PrivatePureLoveTrain() {
 bool PrivatePureLoveTrain::PlinkoUsed() const {
 	return plinko_used;
 }
-void PrivatePureLoveTrain::SetPlinkoStatus(bool) {
-	plinko_used = false;
+void PrivatePureLoveTrain::SetPlinkoStatus(bool b) {
+	plinko_used = b;
 }
 void PrivatePureLoveTrain::TickPlinkoCooldown() {
 	if (plinko_used) {
@@ -108,4 +108,20 @@ void PrivatePureLoveTrain::TechniqueMenu(CurseUser* user, Character* target, Bat
 
 std::unique_ptr<Technique> PrivatePureLoveTrain::Clone() const {
 	return std::make_unique<PrivatePureLoveTrain>(*this);
+}
+
+void PrivatePureLoveTrain::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
+	if (GetRandomNumber(1, 30) <= 25 && !plinko_used) {
+		UsePlinkoBalls(user, target);
+		return;
+	}
+	if (user->GetDomain()) {
+		if (auto idg = dynamic_cast<IdleDeathGamble*>(user->GetDomain())) {
+			if (idg->HasHitJackpot()) {
+				UseJackpotRush(user, target);
+				return;
+			}
+		}
+	}
+	UseShutterDoors(user, target);
 }

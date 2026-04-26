@@ -25,10 +25,13 @@ void IdleTransfiguration::UseTransfiguration(CurseUser* user, Character* target)
 }
 
 void IdleTransfiguration::SummonTransfiguredHumans(Battlefield& bf) {
+    int c = 0;
     if (transfigured_human_count > 0) {
         bf.spawn_queue.push_back(std::make_unique<TransfiguredHuman>());
         transfigured_human_count--;
+        c++;
     }
+    std::println("{} Transfigured humans have been put into the battlefield!", c);
 }
 
 void IdleTransfiguration::TechniqueMenu(CurseUser* user, Character* target, Battlefield& bf) {
@@ -85,4 +88,14 @@ void IdleTransfiguration::TechniqueSetting(CurseUser*, Battlefield&) {
 
 std::unique_ptr<Technique> IdleTransfiguration::Clone() const {
     return std::make_unique<IdleTransfiguration>(*this);
+}
+
+void IdleTransfiguration::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
+    if (transfigured_human_count > 3) {
+        while(transfigured_human_count > 0){
+            SummonTransfiguredHumans(bf);
+        }
+        return;
+    }
+    UseTransfiguration(user, target);
 }

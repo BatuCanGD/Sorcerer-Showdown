@@ -244,6 +244,7 @@ Drop a file named `characters.json` next to the executable (or the built project
 |---|---|---|
 | `name` | string | Display name |
 | `type` | string | `"Sorcerer"`, `"Cursed Spirit"`, or `"Physically Gifted"` |
+| `ai_type` | string | `"Aggressive"` or `"Reactive"` |
 | `hp` | number | Max health |
 | `ce` | number | Max cursed energy (`"Physically Gifted"` ignores this) |
 | `regen` | number | CE regen per turn (`"Physically Gifted"` ignores this) |
@@ -277,6 +278,7 @@ Drop a file named `characters.json` next to the executable (or the built project
     {
       "name": "Legendary Six Eyes Wielder",
       "type": "Sorcerer",
+      "ai_type": "Aggressive",
       "hp": 2000.0,
       "ce": 12000.0,
       "regen": 50.0,
@@ -293,6 +295,7 @@ Drop a file named `characters.json` next to the executable (or the built project
     {
       "name": "Kyoto Grade 1",
       "type": "Sorcerer",
+      "ai_type": "Reactive",
       "hp": 550.0,
       "ce": 2500.0,
       "regen": 25.0,
@@ -307,6 +310,7 @@ Drop a file named `characters.json` next to the executable (or the built project
     {
       "name": "Shadow Weaver",
       "type": "Sorcerer",
+      "ai_type": "Aggressive",
       "hp": 950.0,
       "ce": 6000.0,
       "regen": 25.0,

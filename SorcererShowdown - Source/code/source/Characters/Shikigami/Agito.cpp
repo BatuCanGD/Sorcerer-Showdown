@@ -4,19 +4,19 @@
 
 import std;
 
-Agito::Agito() : Shikigami(150.0, 500.0, 20.0) {
+Agito::Agito() : Shikigami(150.0) {
     char_name = "Agito";
     name_color = "\033[95m";
 }
 
-void Agito::PassiveSupport(Character* user) {
+void Agito::PassiveSupport(CurseUser* user) {
     if (IsActive()) {
         user->Regen(passive_heal_amount);
         std::println("{} has healed {}",this->GetName(), user->GetNameWithID());
     }
 }
 
-void Agito::OnCharacterTurn(Character* user, Battlefield& bf) {
+void Agito::OnShikigamiTurn(CurseUser* user, Battlefield& bf) {
     if (!IsActive()) {
         this->Regen(shadow_health_regen);
         return;

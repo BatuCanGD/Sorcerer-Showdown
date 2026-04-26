@@ -5,7 +5,7 @@
 
 import std;
 
-Mahoraga::Mahoraga() : Shikigami(400.0, 1000.0, 50.0) {
+Mahoraga::Mahoraga() : Shikigami(400.0) {
     char_name = "Mahoraga";
     name_color = "\033[33m";
 }
@@ -31,7 +31,7 @@ void Mahoraga::Adapt() {
 
 }
 
-void Mahoraga::PrintStatus(Character* s) const {
+void Mahoraga::PrintStatus(CurseUser* s) const {
     if (PrevState != InfStage) {
         switch (InfStage) {
         case InfinityAdaptation::None: break;
@@ -55,7 +55,7 @@ bool Mahoraga::FullyAdapted() const {
     return InfStage == InfinityAdaptation::FourthSpin;
 }
 
-void Mahoraga::OnCharacterTurn(Character* user, Battlefield& bf) {
+void Mahoraga::OnShikigamiTurn(CurseUser* user, Battlefield& bf) {
     if (!IsActive()) {
         this->Regen(shadow_health_regen);
         return;

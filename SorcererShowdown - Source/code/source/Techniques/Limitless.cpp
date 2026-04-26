@@ -1,5 +1,6 @@
 #include "Limitless.h"
 #include "BattlefieldHeader.h"
+#include "UnlimitedPurple.h"
 #include "CurseUser.h"
 #include "Character.h"
 #include "Utils.h"
@@ -207,4 +208,29 @@ void Limitless::Chant() {
 
 std::unique_ptr<Technique> Limitless::Clone() const {
     return std::make_unique<Limitless>(*this);
+}
+
+void Limitless::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
+    if (GetRandomNumber(1, 30) >= 20 && user->CEMoreThanMax(0.10)) {
+        UsePurple(user, target);
+        return;
+    }
+    if (user->GetSpecial()) {
+        if (auto up = dynamic_cast<UnlimitedPurple*>(user->GetSpecial())) {
+            if (unlimited_hollow_purple_allowed && user->CEMoreThanMax(0.20) && chant == ChantLevel::Four) {
+                UseUnlimitedHollowPurple(user, bf);
+            }
+        }
+    }
+    if (GetRandomNumber(1, 50) >= 33 || unlimited_hollow_purple_allowed) {
+        Chant();
+    }
+    else {
+        if (GetRandomNumber(0, 1) == 1) {
+            UseRed(user, target);
+        }
+        else {
+            UseBlue(user, target);
+        }
+    }
 }

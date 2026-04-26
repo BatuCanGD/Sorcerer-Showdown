@@ -11,7 +11,14 @@
 import std;
 
 
-CurseUser::CurseUser(double hp, double ce, double re) : Character(hp, ce, re) {
+CurseUser::CurseUser(double hp, double ce, double re) : Character(hp) {
+    cursed_energy = ce;
+    max_cursed_energy = ce;
+    prev_cursed_energy = ce;
+
+    ce_regen = re;
+    saved_ce_regen = re;
+
     current_ce_reinforcement = 50.0;
     max_ce_reinforcement = 200.0;
 }
@@ -26,6 +33,10 @@ Shikigami* CurseUser::ChooseShikigami(size_t index)  const {
         return shikigami[index].get();
     }
     return nullptr;
+}
+
+bool CurseUser::IsStrained() const {
+    return is_strained;
 }
 
 Domain* CurseUser::GetCounterDomain() const {
@@ -52,15 +63,81 @@ void CurseUser::SetAmplification(bool t) {
     domain_amplification_active = t;
 }
 
+void CurseUser::SetCursedEnergy(double c) {
+    cursed_energy = c;
+}
+
+void CurseUser::SetMaxCursedEnergy(double c) {
+    max_cursed_energy = c;
+}
+
+void CurseUser::SetCursedEnergyRegen(double c) {
+    ce_regen = c;
+}
+double CurseUser::GetCharacterCE() const {
+    return cursed_energy;
+}
+
+void CurseUser::SpendCE(double c) {
+    cursed_energy = std::max(cursed_energy - c, 0.0);
+}
+
+void CurseUser::RegenCE() {
+    cursed_energy = std::min(cursed_energy + ce_regen, max_cursed_energy);
+}
+
+double CurseUser::GetCEregen() const {
+    return ce_regen;
+}
+
+double CurseUser::GetCharacterMaxCE() const {
+    return max_cursed_energy;
+}
+
+bool CurseUser::CEMoreThanMax(double c) const {
+    return this->GetCharacterCE() > this->GetCharacterMaxCE() * c;
+}
+
+double CurseUser::GetReinforcement() const {
+    return current_ce_reinforcement;
+}
+double CurseUser::GetMaxReinforcement()const {
+    return max_ce_reinforcement;
+}
+
+double CurseUser::GetDamageReinforcement()const {
+    if (max_ce_reinforcement <= 0.0) return 1.0;
+    return 1.0 + ((current_ce_reinforcement / max_ce_reinforcement) * 2);
+}
+
+void CurseUser::SetCurrentReinforcement(double r) {
+    current_ce_reinforcement = std::clamp(r, 0.0, max_ce_reinforcement);
+}
+void CurseUser::SetMaxReinforcement(double max) {
+    max_ce_reinforcement = max;
+}
+void CurseUser::AddReinforcement(double r) {
+    current_ce_reinforcement = std::clamp(current_ce_reinforcement + r, 0.0, max_ce_reinforcement);
+}
+
+void CurseUser::TickReinforcement() {
+    if (current_ce_reinforcement <= 0.0) return;
+    double maintain_cost = current_ce_reinforcement;
+    this->SpendCE(maintain_cost);
+    if (this->GetCharacterCE() < this->GetReinforcement()) {
+        current_ce_reinforcement = 0.0;
+        std::println("{}'s CE reinforcement collapsed due to a lack of Cursed Energy!", this->GetName());
+    }
+}
+
 std::string CurseUser::GetDomainStatus()const {
     if (domain_active) return "\033[35mActive\033[0m";
     else return "\033[2;90mInactive\033[0m";
 }
-void CurseUser::TickShikigami() {
-    std::vector<std::unique_ptr<Character>> empty;
-    Battlefield bf;
+
+void CurseUser::TickShikigami(Battlefield& bf) {
     for (const auto& s : shikigami) {
-        s->OnCharacterTurn(this, bf);
+        s->OnShikigamiTurn(this, bf);
     }
 }
 
@@ -68,9 +145,14 @@ std::string CurseUser::GetDAstatus() const {
     if (domain_amplification_active) return std::format("{}Active{}", Color::Cyan, Color::Clear);
     return std::format("{}Inactive{}", Color::Red, Color::Clear);
 }
+
 std::string CurseUser::GetCounterStatus() const {
     if (counter_domain_active) return std::format("{}Active{}", Color::Purple, Color::Clear);
     return std::format("{}Inactive{}", Color::Red, Color::Clear);
+}
+
+void CurseUser::UpdatePreviousCE() {
+    prev_cursed_energy = cursed_energy;
 }
 
 std::string CurseUser::GetReinforcementStatus() const {
@@ -95,10 +177,6 @@ std::string CurseUser::GetReinforcementStatus() const {
     return std::format("{}{:.1f}/{:.1f}{}", currentcolor, current_ce_reinforcement, max_ce_reinforcement, clear);
 }
 
-void CurseUser::SpendCE(double ce) {
-    cursed_energy = std::max(cursed_energy - ce, 0.0);
-}
-
 void CurseUser::SpendCEdirect(double ce) {
     cursed_energy = std::max(cursed_energy - ce, 0.0);
 }
@@ -109,7 +187,7 @@ void CurseUser::TickZone() {
     if (!this->DomainActive() && this->GetTechnique()->GetStatus() == Technique::Status::DomainBoost) {
         the_zone_time++;
         if (!zone_ce_boost) {
-            this->SetCursedEnergyRegen(ce_regen_efficiency + 50.0);
+            this->SetCursedEnergyRegen(ce_regen + 50.0);
             zone_ce_boost = true;
         }
         if (the_zone_time > 3) {
@@ -120,7 +198,7 @@ void CurseUser::TickZone() {
     else {
         the_zone_time = 0;
         if (zone_ce_boost) {
-            this->SetCursedEnergyRegen(previous_ce_regen);
+            this->SetCursedEnergyRegen(saved_ce_regen);
             zone_ce_boost = false;
         }
     }
@@ -293,9 +371,15 @@ void CurseUser::DomainDrain() {
         this->SpendCE(this->GetDomain()->GetUseCost());
     }
 }
+
 bool CurseUser::DomainAmplificationActive() const {
     return domain_amplification_active;
 }
+
+double CurseUser::GetCharacterPreviousCE() const {
+    return prev_cursed_energy;
+}
+
 void CurseUser::CleanupShikigami() {
     auto [removed_begin, removed_end] = std::ranges::remove_if(shikigami, [](const auto& s) {
         if (s->GetCharacterHealth() <= 0.0) {

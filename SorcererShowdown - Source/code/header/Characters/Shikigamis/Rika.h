@@ -1,6 +1,9 @@
 #pragma once
 #include "Shikigami.h"
 
+class CurseUser;
+struct Battlefield;
+
 class Rika : public Shikigami {
 private:
 	bool value_saved = false;
@@ -12,7 +15,7 @@ private:
 	int active_cooldown = 5;
 public:
 	Rika();
-	void OnCharacterTurn(Character*, Battlefield&) override;
-	void SaveUserCursedEnergy(Character*);
-	void RikaCooldownRegeneration(Character*);
+	void OnShikigamiTurn(CurseUser* user, Battlefield& bf) override;
+	void SaveUserCursedEnergy(CurseUser*);
+	void RikaCooldownRegeneration(CurseUser*);
 };

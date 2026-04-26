@@ -21,7 +21,7 @@ bool Sorcerer::HasSixEyes() const {
 }
 
 std::unique_ptr<Character> Sorcerer::Clone() const {
-    auto s = std::make_unique<Sorcerer>(max_health, max_cursed_energy, ce_regen_efficiency);
+    auto s = std::make_unique<Sorcerer>(max_health, max_cursed_energy, ce_regen);
 
     if (this->technique) s->SetTechnique(this->technique->Clone());
     if (this->domain)    s->SetDomain(this->domain->Clone());

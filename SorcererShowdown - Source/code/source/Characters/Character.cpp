@@ -2,6 +2,7 @@
 #include "BattlefieldHeader.h"
 #include "PhysicallyGifted.h"
 #include "Limitless.h"
+#include "Domain.h"
 #include "Utils.h"
 #include "CursedTool.h"
 #include "Sorcerer.h"
@@ -11,37 +12,162 @@ import std;
 
 int Character::global_id_counter = 0;
 
-Character::Character(double hp, double ce, double regen)
-	: health(hp),max_health(hp),previous_health(hp),
-	cursed_energy(ce),max_cursed_energy(ce),
-	ce_regen_efficiency(regen),previous_ce_regen(regen) {
+Character::Character(double hp)
+	: health(hp),max_health(hp),previous_health(hp){
 }
 Character::~Character() = default;
 
-void Character::OnCharacterTurn(Character * unused, Battlefield & bf) {
+void Character::OnCharacterTurn(Character*, Battlefield& bf) {
 	if (this->GetCharacterHealth() <= 0) return;
 
+	auto* cu = dynamic_cast<CurseUser*>(this);
+	CharacterAI ai = this->GetCustomAI();
+
 	Character* target = nullptr;
+	double best_score = -1.0;
+	std::vector<CurseUser*> domain_users;
 
 	for (const auto& entity : bf.battlefield) {
-		if (entity.get() == this || entity->GetCharacterHealth() <= 0) {
-			continue;
-		}
-		if (GetRandomNumber(0, 1) == 1) { target = entity.get(); }
-		if (!target) target = entity.get();
-	}
-	if (!target) return; 
+		if (entity.get() == this || entity->GetCharacterHealth() <= 0) continue;
 
-	if (auto* cu = dynamic_cast<CurseUser*>(this)) {
-		if (auto* target_cu = dynamic_cast<CurseUser*>(target)) {
-			if (auto* tech = target_cu->GetTechnique()) {
-				if (tech->GetTechniqueSimpleName() == "Limitless" && !cu->DomainAmplificationActive()) {
-					cu->SetAmplification(true);
+		double score = 0.0;
+		double hp_ratio = entity->GetCharacterHealth() / entity->GetCharacterMaxHealth();
+
+		switch (ai) {
+		case CharacterAI::Aggressive:
+			score = hp_ratio;
+			break;
+		case CharacterAI::Reactive:
+			score = 1.0 - hp_ratio;
+			break;
+		}
+
+		if (auto* target_cu = dynamic_cast<CurseUser*>(entity.get())) {
+			if (target_cu->DomainActive()) {
+				domain_users.push_back(target_cu);
+				score += 0.50;
+			}
+			if (target_cu->GetTechnique()) {
+				std::string tech = target_cu->GetTechnique()->GetTechniqueSimpleName();
+				if (tech == "Shrine")    score += 1.0;
+				if (tech == "Limitless") score += 0.15;
+			}
+		}
+		else if (dynamic_cast<PhysicallyGifted*>(entity.get())) {
+			score += 0.25;
+		}
+
+		score += GetRandomNumber(-5, 5) * 0.01;
+
+		if (score > best_score) {
+			best_score = score;
+			target = entity.get();
+		}
+	}
+
+	if (!target) return;
+
+	if (GetRandomNumber(1, 10) <= 3) {
+		this->Taunt(target);
+	}
+
+	if (cu) {
+		switch (ai) {
+		case CharacterAI::Aggressive:
+			if (cu->CEMoreThanMax(0.50)) cu->SetCurrentReinforcement(200.0);
+			else if (cu->CEMoreThanMax(0.30)) cu->SetCurrentReinforcement(100.0);
+			else if (cu->CEMoreThanMax(0.20)) cu->SetCurrentReinforcement(50.0);
+			else cu->SetCurrentReinforcement(0.0);
+			break;
+		case CharacterAI::Reactive:
+			if (!this->HPMoreThanMax(0.35)) cu->SetCurrentReinforcement(200.0);
+			else if (cu->CEMoreThanMax(0.40)) cu->SetCurrentReinforcement(100.0);
+			else cu->SetCurrentReinforcement(0.0);
+			break;
+		}
+
+		if (!domain_users.empty()) {
+			switch (ai) {
+			case CharacterAI::Aggressive:
+				if (cu->GetDomain() && cu->GetCharacterCE() >= cu->GetDomain()->GetUseCost()
+					&& !cu->DomainActive() && !cu->IsStrained() && cu->GetDomainUses() < 5) {
+
+					if (!cu->GetTechnique() || !cu->GetTechnique()->BurntOut()) {
+						cu->ActivateDomain();
+						return;
+					}
 				}
+				break;
+			case CharacterAI::Reactive:
+				if (cu->GetCounterDomain() && !cu->CounterDomainActive()) {
+					cu->ActivateCounterDomain();
+					return;
+				}
+				break;
+			}
+		}
+		else {
+			if (cu->CounterDomainActive()) cu->DeactivateCounterDomain();
+
+			switch (ai) {
+			case CharacterAI::Aggressive:
+				if (cu->GetDomain() && !cu->DomainActive() && !cu->IsStrained()
+					&& cu->GetDomainUses() < 5 && GetRandomNumber(1, 100) <= 25) {
+					if (!cu->GetTechnique() || !cu->GetTechnique()->BurntOut()) {
+						cu->ActivateDomain();
+						return;
+					}
+				}
+				break;
+			case CharacterAI::Reactive:
+				if (cu->GetDomain() && !cu->DomainActive() && !cu->IsStrained()
+					&& cu->GetDomainUses() < 5 && !this->HPMoreThanMax(0.40)) {
+					if (!cu->GetTechnique() || !cu->GetTechnique()->BurntOut()) {
+						cu->ActivateDomain();
+						return;
+					}
+				}
+				break;
+			}
+		}
+
+		bool needs_da = false;
+		if (auto* target_cu = dynamic_cast<CurseUser*>(target)) {
+			if (auto* lim = dynamic_cast<Limitless*>(target_cu->GetTechnique())) {
+				if (lim->CheckInfinity()) needs_da = true;
+			}
+		}
+		if (needs_da) cu->SetAmplification(true);
+		else if (cu->DomainAmplificationActive()) cu->SetAmplification(false);
+
+		if (cu->GetTechnique() && !cu->GetTechnique()->BurntOut()
+			&& (cu->GetTechnique()->Usable() || cu->GetTechnique()->Boosted())
+			&& !cu->DomainAmplificationActive()) {
+
+			switch (ai) {
+			case CharacterAI::Aggressive:
+				if (cu->CEMoreThanMax(0.20)) {
+					cu->GetTechnique()->AutoTechniqueUse(cu, target, bf);
+					return;
+				}
+				break;
+			case CharacterAI::Reactive:
+				if (!this->HPMoreThanMax(0.50) || cu->GetTechnique()->Boosted()) {
+					cu->GetTechnique()->AutoTechniqueUse(cu, target, bf);
+					return;
+				}
+				break;
 			}
 		}
 	}
 	this->Attack(target);
+	if (cu && cu->DomainAmplificationActive()) cu->SetAmplification(false);
+}
+
+void Character::SetAIType(const std::string& str) {
+	if (str == "Reactive") ai_type = CharacterAI::Reactive;
+	else if (str == "Aggressive") ai_type = CharacterAI::Aggressive;
+	else ai_type = CharacterAI::Aggressive;
 }
 
 bool Character::CanBeAssignedID() const {
@@ -67,7 +193,6 @@ void Character::Attack(Character* target) {
 			}
 		}
 	}
-
 	if (me_cuser && me_cuser->DomainAmplificationActive()) {
 		double ce_addon = std::sqrt(std::max(0.0, me_cuser->GetCharacterCE())) * 0.888;
 		double amp_damage = this->base_attack_damage + ce_addon;
@@ -77,9 +202,8 @@ void Character::Attack(Character* target) {
 			this->GetNameWithID(), target->GetNameWithID());
 		return;
 	}
-
-	if (!this->inventory_curse.empty() && this->inventory_curse[0]) {
-		this->inventory_curse[0]->UseTool(this, target);
+	if (cursed_tool) {
+		cursed_tool->UseTool(this, target);
 		return;
 	}
 
@@ -142,18 +266,6 @@ void Character::SetHealth(double h) {
 	health = h;
 }
 
-void Character::SetCursedEnergy(double c) {
-	cursed_energy = c;
-}
-
-void Character::SetMaxCursedEnergy(double c) {
-	max_cursed_energy = c;
-}
-
-void Character::SetCursedEnergyRegen(double c) {
-	ce_regen_efficiency = c;
-}
-
 void Character::SetCharacterName(std::string name, std::string color) {
 	char_name = name;
 	name_color = color;
@@ -173,14 +285,23 @@ std::unique_ptr<Character> Character::Clone() const {
 	return nullptr;
 }
 
+double Character::GetDamageReinforcement()const { return 1.0f; }
+
 void Character::Damage(double h) {
-	if (CanBeHit() && !is_invulnerable) {
-		health = std::max(health - (h / this->GetDamageReinforcement()), 0.0);
+	if (!CanBeHit() || is_invulnerable) return;
+	if (this->IsaCurseUser()) { auto crs = static_cast<CurseUser*>(this);
+		health = std::max(health - (h / crs->GetDamageReinforcement()), 0.0);
+		return;
 	}
+	health = std::max(health - h, 0.0);
 }
 void Character::DamageBypass(double h) {
 	if (is_invulnerable) return;
-	health = std::max(health - (h / this->GetDamageReinforcement()), 0.0);
+	if (this->IsaCurseUser()) { auto crs = static_cast<CurseUser*>(this);
+		health = std::max(health - (h / crs->GetDamageReinforcement()), 0.0);
+		return;
+	}
+	health = std::max(health - h, 0.0);
 }
 
 void Character::Regen(double h) {
@@ -193,26 +314,7 @@ double Character::GetCharacterHealth() const {
 double Character::GetCharacterMaxHealth() const {
 	return max_health;
 }
-double Character::GetCharacterCE() const {
-	return cursed_energy;
-}
 
-void Character::SpendCE(double c) { 
-	cursed_energy = std::max(cursed_energy - c, 0.0);
-}
-
-void Character::RegenCE() {
-	if (is_heavenly_restricted) return;
-	cursed_energy = std::min(cursed_energy + ce_regen_efficiency, max_cursed_energy);
-}
-
-double Character::GetCEregen() const {
-	return ce_regen_efficiency;
-}
-
-double Character::GetCharacterMaxCE() const {
-	return max_cursed_energy;
-}
 double Character::GetCharacterPreviousHealth() const {
 	return previous_health;
 }
@@ -229,9 +331,6 @@ bool Character::IsCharacterStunned() const {
 	return is_stunned;
 }
 
-bool Character::CEMoreThanMax(double c) const {
-	return this->GetCharacterCE() > this->GetCharacterMaxCE() * c;
-}
 bool Character::HPMoreThanMax(double h) const {
 	return this->GetCharacterHealth() > this->GetCharacterMaxHealth() * h;
 }
@@ -277,17 +376,6 @@ bool Character::IsaCursedSpirit() const {
 	return false;
 }
 
-double Character::GetReinforcement() const {
-	return current_ce_reinforcement;
-}
-double Character::GetMaxReinforcement()const {
-	return max_ce_reinforcement;
-}
-double Character::GetDamageReinforcement()const {
-	if (max_ce_reinforcement <= 0.0) return 1.0;
-	return 1.0 + ((current_ce_reinforcement / max_ce_reinforcement) * 2);
-}
-
 void Character::CursedToolChoice(int choice) {
 	if (choice == 0) {
 		if (cursed_tool != nullptr) {
@@ -322,28 +410,7 @@ void Character::EquipToolByName(const std::string& weaponName) {
 	}
 }
 
-void Character::SetCurrentReinforcement(double r) {
-	current_ce_reinforcement = std::clamp(r, 0.0, max_ce_reinforcement);
-}
-void Character::SetMaxReinforcement(double max) {
-	max_ce_reinforcement = max;
-}
-void Character::AddReinforcement(double r) {
-	current_ce_reinforcement = std::clamp(current_ce_reinforcement + r, 0.0, max_ce_reinforcement);
-}
-
 void Character::TickCharacterSpecialty() {};
-
-void Character::TickReinforcement() {
-	if (this->IsPhysicallyGifted()) return;
-	if (current_ce_reinforcement <= 0.0) return;
-	double maintain_cost = current_ce_reinforcement;
-	this->SpendCE(maintain_cost);
-	if (this->GetCharacterCE() < this->GetReinforcement()) {
-		current_ce_reinforcement = 0.0;
-		std::println("{}'s CE reinforcement collapsed due to a lack of Cursed Energy!", this->GetName());
-	}
-}
 
 const std::vector<std::unique_ptr<CursedTool>>& Character::GetCursedTools() const {
 	return inventory_curse;
@@ -422,4 +489,8 @@ void Character::Taunt(Character* taunted) const { // pure aura
 			std::println("I'll make you wish you were never born {}!", taunted->GetNameWithID());
 		}
 	}
+}
+
+Character::CharacterAI Character::GetCustomAI() const {
+	return ai_type;
 }

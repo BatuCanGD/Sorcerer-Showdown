@@ -11,9 +11,17 @@ Katana::Katana() {
 }
 void Katana::UseTool(Character* user, Character* target) {
 	auto pg = dynamic_cast<PhysicallyGifted*>(user);
-	double total_damage = pg ?
-		(base_tool_damage * special_tool_mult) * pg->GetStrengthDamage() :
-		(base_tool_damage * special_tool_mult) * (1 + (user->GetCharacterCE() / 5000));
+	auto sr = dynamic_cast<CurseUser*>(user);
+	double total_damage;
+	if (pg) {
+		total_damage = (base_tool_damage * special_tool_mult) * pg->GetStrengthDamage();
+	}
+	else if (sr) {
+		total_damage = (base_tool_damage * special_tool_mult) * (1 + (sr->GetCharacterCE() / 5000));
+	}
+	else {
+		total_damage = 10.0;
+	}
 
 	target->Damage(total_damage);
 	std::println("{} attacks {} using {}", user->GetNameWithID(), target->GetNameWithID(), this->GetName());

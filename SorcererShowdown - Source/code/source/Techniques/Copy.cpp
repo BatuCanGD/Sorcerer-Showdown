@@ -142,3 +142,16 @@ void Copy::TechniqueSetting(CurseUser* user, Battlefield& bf) {
         std::println("Invalid Input!");
     }
 }
+
+void Copy::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
+    auto crs = dynamic_cast<CurseUser*>(target);
+    if (GetRandomNumber(1, 10) >= 6 && crs && crs->GetTechnique()) {
+        CopyFrom(crs);
+        return;
+    }
+    Technique* active = GetActive();
+    if (active) {
+        active->AutoTechniqueUse(user, target, bf);
+        return;
+    }
+}

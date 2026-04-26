@@ -7,7 +7,7 @@
 import std;
 
 PhysicallyGifted::PhysicallyGifted(double hp, double str) 
-	: Character(hp, -1, -1) 
+	: Character(hp) 
 {
 	is_heavenly_restricted = true;
 	strength = str;

@@ -17,6 +17,13 @@ protected:
 	std::unique_ptr<Specials> special = nullptr;
 	std::vector<std::unique_ptr<Shikigami>> shikigami;
 
+	double cursed_energy;
+	double max_cursed_energy;
+	double prev_cursed_energy;
+
+	double ce_regen;
+	double saved_ce_regen;
+
 	bool domain_amplification_active = false;
 	bool counter_domain_active = false;
 	bool domain_active = false;
@@ -25,11 +32,15 @@ protected:
 	bool zone_ce_boost = false;
 
 	int total_domain_uses = 0;
+
 	int technique_burnout_time = 0;
 	int burnout_time = 0;
+
 	int active_domain_time = 0;
-	int active_counter_time = 0;  // active domain is based on technique recovery speed
-	int counter_recover_time = 0;//  counters need an actual timer with them
+	int active_counter_time = 0; 
+
+	int counter_recover_time = 0;
+
 	int black_flash_chance = 5;  
 	int the_zone_time = 0;
 
@@ -55,8 +66,30 @@ public:
 	std::string GetCounterStatus() const;
 	std::string GetReinforcementStatus() const;
 
-	void SpendCE(double ce) override;
+	virtual void SpendCE(double ce);
 	void SpendCEdirect(double ce);
+	void SetCursedEnergy(double c);
+	void SetMaxCursedEnergy(double c);
+	void SetCursedEnergyRegen(double c);
+	void RegenCE();
+
+	bool CEMoreThanMax(double) const;
+
+	double GetCEregen() const;
+	double GetCharacterCE() const;
+	double GetCharacterMaxCE() const;
+	double GetCharacterPreviousCE() const;
+
+	void UpdatePreviousCE();
+	
+	double GetDamageReinforcement()const override;
+	double GetReinforcement()const;
+	double GetMaxReinforcement()const;
+
+	void SetMaxReinforcement(double);
+	void SetCurrentReinforcement(double);
+	void AddReinforcement(double);
+	void TickReinforcement();
 
 	void Attack(Character*) override;
 
@@ -80,7 +113,7 @@ public:
 
     Shikigami* ChooseShikigami(size_t) const;
     const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
-    void TickShikigami();
+    void TickShikigami(Battlefield& bf);
     void CleanupShikigami();
 
 	void SetTechnique(std::unique_ptr<Technique>);
@@ -93,4 +126,6 @@ public:
 
 	bool IsaCurseUser() const override;
 	bool CanBeHit() const override;
+
+	bool IsStrained() const;
 };

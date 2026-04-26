@@ -1,6 +1,9 @@
 #pragma once
 #include "Shikigami.h"
 
+class CurseUser;
+struct Battlefield;
+
 class Mahoraga : public Shikigami {
 public:
 	Mahoraga();
@@ -18,7 +21,7 @@ protected:
 public:
 	void Adapt();
 	bool FullyAdapted()const;
-	void OnCharacterTurn(Character*, Battlefield&) override;
-	void PrintStatus(Character*) const;
+	void OnShikigamiTurn(CurseUser* user, Battlefield& bf) override;
+	void PrintStatus(CurseUser*) const;
 	void UpdatePreviousState();
 };

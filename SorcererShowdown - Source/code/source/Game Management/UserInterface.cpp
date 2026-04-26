@@ -51,16 +51,14 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 
 	std::print("Health: [{}{:.1f}/{:.1f}{}] | ",hp_color, hp, max_hp, Color::Clear);
 	
-	if (!s->IsPhysicallyGifted()) {
-		double ce = s->GetCharacterCE();
-		double max_ce = s->GetCharacterMaxCE();
+	if (s->IsaCurseUser()) {
+		auto crs = static_cast<CurseUser*>(s);
+		double ce = crs->GetCharacterCE();
+		double max_ce = crs->GetCharacterMaxCE();
 		std::string ce_color = Color::Cyan;
 
-		if (!s->CEMoreThanMax(0.10)) {
+		if (!crs->CEMoreThanMax(0.10)) {
 			ce_color = Color::DimGray;
-		}
-		else {
-			ce_color = Color::Cyan;
 		}
 
 		std::println("Cursed Energy: [{}{:.1f}/{:.1f}{}]",
@@ -69,6 +67,11 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 			auto sorcerer = static_cast<Sorcerer*>(s);
 			std::print("Domain Amplification: [{}] | Reverse Cursed Technique: [{}] | CE Reinforcement: [{}]",
 				sorcerer->GetDAstatus(), sorcerer->GetRCTstatus(), sorcerer->GetReinforcementStatus());
+		}
+		else if (s->IsaCurseUser()){
+			auto crs = static_cast<CurseUser*>(s);
+			std::print("Domain Amplification: [{}] | CE Reinforcement: [{}]",
+				crs->GetDAstatus(), crs->GetReinforcementStatus());
 		}
 	}
 
@@ -129,11 +132,12 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 		std::string shikigami = std::format("10 - Shikigami [{}None{}]", Color::DimGray, Color::Clear);
 
 		if (s->IsaCurseUser()) {
-			auto* p_sorcerer = static_cast<Sorcerer*>(s);
-			Domain* domain = p_sorcerer->GetDomain();
-			Domain* counter = p_sorcerer->GetCounterDomain();
-			Technique* tech = p_sorcerer->GetTechnique();
-			Specials* special = p_sorcerer->GetSpecial();
+			CurseUser* p_cuser = static_cast<CurseUser*>(s);
+			Domain* domain = p_cuser->GetDomain();
+			Domain* counter = p_cuser->GetCounterDomain();
+			Technique* tech = p_cuser->GetTechnique();
+			Specials* special = p_cuser->GetSpecial();
+			
 
 			techniqued = (tech == nullptr)
 				? std::format("1 - Technique [{}None{}] ", Color::DimGray, Color::Clear)
@@ -151,15 +155,15 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 				? std::format("9 - Technique Settings [{}Locked{}]", Color::DimGray, Color::Clear)
 				: "9 - Technique Settings";
 
-			rctd = p_sorcerer->IsPhysicallyGifted()
-				? std::format("6 - Reverse Cursed Technique [{}Locked{}]", Color::DimGray, Color::Clear)
-				: std::format("6 - Reverse Cursed Technique [{}]", p_sorcerer->GetRCTstatus());
+			rctd = p_cuser->IsaSorcerer()
+				? std::format("6 - Reverse Cursed Technique [{}]", static_cast<Sorcerer*>(p_cuser)->GetRCTstatus())
+				: std::format("6 - Reverse Cursed Technique [{}Locked{}]", Color::DimGray, Color::Clear);
 
-			amplificationd = p_sorcerer->IsPhysicallyGifted()
+			amplificationd = p_cuser->IsPhysicallyGifted()
 				? std::format("7 - Domain Amplification [{}Locked{}]", Color::DimGray, Color::Clear)
-				: std::format("7 - Domain Amplification [{}]", p_sorcerer->GetDAstatus());
+				: std::format("7 - Domain Amplification [{}]", p_cuser->GetDAstatus());
 
-			shikigami = p_sorcerer->GetShikigami().empty()
+			shikigami = p_cuser->GetShikigami().empty()
 				? std::format("10 - Shikigami [{}None{}]", Color::DimGray, Color::Clear)
 				: "10 - Shikigami";
 		}

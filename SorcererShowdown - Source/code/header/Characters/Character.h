@@ -14,17 +14,17 @@ protected:
 	std::string char_name = "";
 	std::string name_color = "";
 
+	enum class CharacterAI {
+		Aggressive,
+		Reactive
+	};
+	CharacterAI ai_type = CharacterAI::Aggressive;
+
 	bool is_player = false;
 
 	double health;
 	double max_health;
 	double previous_health;
-
-	double cursed_energy;
-	double max_cursed_energy;
-
-	double ce_regen_efficiency;
-	double previous_ce_regen;
 	
 	std::unique_ptr<CursedTool> cursed_tool = nullptr;
 	std::vector<std::unique_ptr<CursedTool>> inventory_curse;
@@ -40,7 +40,7 @@ protected:
 	double current_ce_reinforcement;
 	double max_ce_reinforcement;
 public:
-	Character(double hp, double ce, double regen);
+	Character(double hp);
 
 	virtual ~Character();
 
@@ -52,9 +52,6 @@ public:
 	void SetVulnerability(bool);
 
 	void SetHealth(double h);
-	void SetCursedEnergy(double c);
-	void SetMaxCursedEnergy(double c);
-	void SetCursedEnergyRegen(double c);
 	void SetCharacterName(std::string name, std::string color);
 
 	bool IsThePlayer() const;
@@ -66,21 +63,16 @@ public:
 
 	virtual void Attack(Character*);
 
+	void Regen(double h);
 	void Damage(double h);
 	void DamageBypass(double h);
-	void Regen(double h);
-	virtual void SpendCE(double c);
-	void RegenCE();
-	double GetCEregen() const;
 	void UpdatePreviousHP();
 	void SetStunState(bool s);
 	void ClearStunTime();
 
-	bool CEMoreThanMax(double) const;
 	bool HPMoreThanMax(double) const;
 
-	double GetCharacterCE() const;
-	double GetCharacterMaxCE() const;
+	virtual double GetDamageReinforcement() const;
 
 	double GetCharacterHealth() const;
 	double GetCharacterMaxHealth() const;
@@ -90,15 +82,6 @@ public:
 
 	void CursedToolChoice(int);
 	void EquipToolByName(const std::string& weaponname);
-
-	virtual double GetDamageReinforcement()const; // this for damage checks
-	double GetReinforcement()const; // for the value
-	double GetMaxReinforcement()const;
-
-	void SetMaxReinforcement(double);
-	void SetCurrentReinforcement(double);
-	void AddReinforcement(double);
-	void TickReinforcement();
 
 	virtual void TickCharacterSpecialty();
 
@@ -122,4 +105,7 @@ public:
 	virtual bool CanBeAssignedID() const;
 	double GetBaseAttackDamage() const;
 	void AddToolToInventory(std::unique_ptr<CursedTool>);
+
+	CharacterAI GetCustomAI() const; // for custom characters not premade by me
+	void SetAIType(const std::string& str);
 };

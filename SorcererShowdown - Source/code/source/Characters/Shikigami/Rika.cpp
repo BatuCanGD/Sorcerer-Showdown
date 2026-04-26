@@ -4,12 +4,12 @@
 
 import std;
 
-Rika::Rika() : Shikigami(INT32_MAX, 100000.0, 3000.0) {
+Rika::Rika() : Shikigami(INT32_MAX) {
     char_name = "Rika";
     name_color = "\033[91m";
 }
 
-void Rika::OnCharacterTurn(Character* user, Battlefield& bf) {
+void Rika::OnShikigamiTurn(CurseUser* user, Battlefield& bf) {
     if (IsPartiallyActive()) {
         this->Manifest();
     }
@@ -33,7 +33,7 @@ void Rika::OnCharacterTurn(Character* user, Battlefield& bf) {
     }
 }
 
-void Rika::RikaCooldownRegeneration(Character* user) {
+void Rika::RikaCooldownRegeneration(CurseUser* user) {
     if (!IsActivePhysically() && value_saved) {
         if (active_turn_amount >= 5) {
             active_cooldown--;
@@ -50,7 +50,7 @@ void Rika::RikaCooldownRegeneration(Character* user) {
     }
 }
 
-void Rika::SaveUserCursedEnergy(Character* user) {
+void Rika::SaveUserCursedEnergy(CurseUser* user) {
     if (value_saved) return;
     user_ce = user->GetCharacterMaxCE();
     user_regen = user->GetCEregen();

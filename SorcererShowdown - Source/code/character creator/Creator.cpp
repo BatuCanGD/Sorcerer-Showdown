@@ -45,19 +45,23 @@ std::unique_ptr<Character> CharacterCreator::CreateFromJson(const json& j) {
 
         character = std::move(s);
     }
-    else if (type == "CursedSpirit") {
+    else if (type == "Cursed Spirit") {
         character = std::make_unique<CursedSpirit>(
             j.at("hp").get<double>(),
             j.at("ce").get<double>(),
             j.at("regen").get<double>());
     }
-    else if (type == "PhysicallyGifted") {
+    else if (type == "Physically Gifted") {
         character = std::make_unique<PhysicallyGifted>(
             j.at("hp").get<double>(),
             j.at("strength").get<double>());
     }
 
     if (!character) return nullptr;
+
+    if (j.contains("ai_type")) {
+        character->SetAIType(j.at("ai_type").get<std::string>());
+    }
 
     if (auto* curse_ptr = dynamic_cast<CurseUser*>(character.get())) {
 

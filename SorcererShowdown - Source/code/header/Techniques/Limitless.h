@@ -37,6 +37,7 @@ public:
 	void UsePurple(CurseUser* user, Character* target);
 
 	void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
+	void AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) override;
 	void TechniqueSetting(CurseUser*, Battlefield&) override;
 	void Chant() override;
 };

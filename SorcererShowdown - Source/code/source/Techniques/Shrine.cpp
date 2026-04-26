@@ -115,6 +115,25 @@ void Shrine::Chant() {
     }
 }
 
+void Shrine::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
+    if (user->CEMoreThanMax(0.20) && GetRandomNumber(1, 30) >= 25) {
+        UseCleave(user, target);
+    }
+    else {
+        if (world_cutting_slash_allowed && chant == ChantLevel::Four && user->CEMoreThanMax(0.15)){
+            UseTheWorldCuttingSlash(user, target);
+        }
+        else {
+            if (GetRandomNumber(1, 10) >= 6 || world_cutting_slash_allowed) {
+                Chant();
+            }
+            else {
+                UseDismantle(user, target);
+            }
+        }
+    }
+}
+
 std::unique_ptr<Technique> Shrine::Clone() const {
     return std::make_unique<Shrine>(*this);
 }

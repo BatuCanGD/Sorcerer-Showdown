@@ -66,17 +66,19 @@ void PlayerManager::OnPlayerTurn(Character& s, Battlefield& bf) {
 		}
 		break;
 	}
-	case 6:
+	case 6: {
 		if (!s.IsaSorcerer()) {
 			std::println("You cant use Reverse Cursed Technique!");
 			return;
 		}
-		else if (s.GetCharacterMaxCE() < 500.0f) {
+		auto src = static_cast<Sorcerer*>(&s);
+		if (src->GetCharacterMaxCE() < 500.0f) {
 			std::println("You dont have enough cursed energy to continuously maintain Reverse Cursed Technique");
 			return;
 		}
 		PlayerRCTusage(s);
 		break;
+	}
 	case 7:
 		if (!s.IsaCurseUser()) {
 			std::println("You cant use Domain Amplification.");
@@ -213,16 +215,16 @@ void PlayerManager::PlayerRCTusage(Character& s) {
 }
 
 void PlayerManager::PlayerDAusage(Character& s) {
-	auto p_sorcerer = static_cast<Sorcerer*>(&s);
+	auto p_cuser = static_cast<CurseUser*>(&s);
 	std::println("1-On, 2-Off\n=>");
 	int choice = GetValidInput();
 
 	switch (choice) {
 	case 1:
-		p_sorcerer->SetAmplification(true);
+		p_cuser->SetAmplification(true);
 		break;
 	case 2:
-		p_sorcerer->SetAmplification(false);
+		p_cuser->SetAmplification(false);
 		break;
 	}
 }
@@ -309,17 +311,17 @@ void PlayerManager::PlayerReinforcement(Character& s) {
 	if (ch == 1) {
 		std::println("\nWrite out the amount you would like to reinforce by");
 		std::print("=> "); double vl = GetPreciseInput();
-		s.AddReinforcement(vl);
+		p->AddReinforcement(vl);
 	}
 	else if (ch == 2) {
 		std::println("\nWrite out the amount you would like reduce reinforcement by");
 		std::print("=> "); double vl = -GetPreciseInput();
-		s.AddReinforcement(vl);
+		p->AddReinforcement(vl);
 	}
 	else if (ch == 3) {
 		std::println("\nWrite out the amount that you would like to set the reinforcement to");
 		std::print("=> "); double vl = GetPreciseInput();
-		s.SetCurrentReinforcement(vl);
+		p->SetCurrentReinforcement(vl);
 	}
 	else {
 		std::println("Invalid Input.");
@@ -333,7 +335,11 @@ Character* PlayerManager::TargetSelector(Battlefield& bf, Character* player) {
 		if (current.GetCharacterHealth() <= 0) continue;
 
 		double health = current.GetCharacterHealth();
-		double cursed_energy = current.GetCharacterCE();
+		double cursed_energy = 0;
+		if (current.IsaCurseUser()) {
+			auto crs = static_cast<CurseUser*>(&current);
+			cursed_energy = crs->GetCharacterCE();
+		}
 
 		auto sorcerer = dynamic_cast<Sorcerer*>(&current);
 

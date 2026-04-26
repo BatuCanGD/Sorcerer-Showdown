@@ -2,7 +2,8 @@
 #include "Character.h"
 #include <string>
 
-class Sorcerer;
+struct Battlefield;
+class CurseUser;
 
 class Shikigami : public Character {
 protected:
@@ -15,8 +16,10 @@ protected:
 	};
 	State shikigami_state = State::Shadow;
 public:
-	Shikigami(double hp, double ce, double re);
+	Shikigami(double hp);
 	bool CanBeAssignedID() const override;
+
+	virtual void OnShikigamiTurn(CurseUser* user, Battlefield& bf) = 0;
 
 	void PartiallyManifest();
 	void Manifest();

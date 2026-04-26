@@ -150,6 +150,7 @@ bool BattleManager::ManageEndOfTurn(Battlefield& bf, bool spectator_mode) {
 	for (const auto& c : bf.battlefield) {
 		double health_before_regen = c->GetCharacterHealth();
 		if (auto curse_user = dynamic_cast<CurseUser*>(c.get())) {
+			double ce_before_regen = curse_user->GetCharacterCE();
 			if (auto sorcerer = dynamic_cast<Sorcerer*>(curse_user)) {
 				if (auto limitless = dynamic_cast<Limitless*>(sorcerer->GetTechnique())) {
 					limitless->InfinityNerf(sorcerer);
@@ -157,10 +158,26 @@ bool BattleManager::ManageEndOfTurn(Battlefield& bf, bool spectator_mode) {
 				sorcerer->UseRCT();
 			}
 			curse_user->CleanupShikigami();
-			curse_user->TickShikigami();
+			curse_user->TickShikigami(bf);
 			curse_user->RecoverBurnout();
 			curse_user->RecoverTechniqueBurnout(curse_user->GetTechnique());
 			curse_user->TickZone();
+			curse_user->RegenCE();
+			curse_user->TickReinforcement();
+
+			double current_ce = curse_user->GetCharacterCE();
+			double total_ce = curse_user->GetCharacterPreviousCE();
+			if (current_ce < ce_before_regen) {
+				double ce_spent = ce_before_regen - current_ce;
+				std::println("{} expended {:.1f} {}Cursed Energy{} this turn.", c->GetNameWithID(), ce_spent, Color::Cyan, Color::Clear);
+				std::println("{} {}lost{} more {}Cursed Energy{} than they recovered!", c->GetNameWithID(),Color::Red, Color::Clear, Color::Cyan, Color::Clear);
+			}
+			else if (current_ce > ce_before_regen) {
+				double ce_gained = current_ce - ce_before_regen;
+				std::println("{} gained {:.1f} {}Cursed Energy{} this turn.", c->GetNameWithID(), ce_gained, Color::Cyan, Color::Clear);
+				std::println("{}'s {}Cursed Energy reserves{} are {}recovering!{}", c->GetNameWithID(), Color::Cyan, Color::Clear, Color::Green, Color::Clear);
+			}
+			curse_user->UpdatePreviousCE();
 		}
 		double total_damage = c->GetCharacterPreviousHealth() - health_before_regen;
 		double healed_amount = c->GetCharacterHealth() - health_before_regen;
@@ -173,17 +190,11 @@ bool BattleManager::ManageEndOfTurn(Battlefield& bf, bool spectator_mode) {
 				std::println("{} {}partially healed their wounds.{}", c->GetNameWithID(), Color::Yellow, Color::Clear);
 			}
 		}
-		else {
-		}
-
 		if (c->IsThePlayer() || spectator_mode) {
 			player_alive = true;
 		}
-
 		c->UpdatePreviousHP();
-		c->RegenCE();
 		c->ClearStunTime();
-		c->TickReinforcement();
 		c->TickCharacterSpecialty();
 	}
 	std::println("{}======================================================={}", Color::Yellow, Color::Clear);
