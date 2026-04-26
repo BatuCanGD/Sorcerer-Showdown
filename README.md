@@ -179,7 +179,7 @@ MyDomain::MyDomain() : Domain(600.0, 100.0, 14.0) {
     ref_level = Refinement::Refined;      // Unstable / Crude / Refined / Absolute
     hit_type  = HitType::HitsCurseUsers;  // or HitsEveryone
     domain_name = "My Domain";
-    domain_color = "\033[31";
+    domain_color = "\033[31m";
 }
 
 void MyDomain::OnSureHit(CurseUser& user, Character& target) {
@@ -201,12 +201,12 @@ double MyDomain::GetUseCost() const         { return domain_cost; }
 ```cpp
 #pragma once
 #include "CursedTool.h"
-import std;
 
 class MyTool : public CursedTool{
 public:
     MyTool();
     void UseTool(Character*, Character*) override;
+    std::unique_ptr<CursedTool> Clone() const override;
 }
 ```
 
@@ -221,6 +221,10 @@ void MyTool::UseTool(Character* user, Character* target) {
     // GetCalculatedStrength scales with Strength (PhysicallyGifted) or max HP (sorcerers)
     target->Damage(GetCalculatedStrength(user));
     std::println("{} attacks {} with {}!", user->GetNameWithID(), target->GetNameWithID(), GetName());
+}
+
+std::unique_ptr<CursedTool> MyTool::Clone() const {
+	return std::make_unique<MyTool>(*this);
 }
 ```
 
