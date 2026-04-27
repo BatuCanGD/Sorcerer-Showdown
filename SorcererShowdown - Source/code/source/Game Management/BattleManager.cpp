@@ -169,16 +169,15 @@ bool BattleManager::ManageEndOfTurn(Battlefield& bf, bool spectator_mode) {
 			double total_ce = curse_user->GetCharacterPreviousCE();
 			if (current_ce < ce_before_regen) {
 				double ce_spent = ce_before_regen - current_ce;
-				std::println("{} expended {:.1f} {}Cursed Energy{} this turn.", c->GetNameWithID(), ce_spent, Color::Cyan, Color::Clear);
-				std::println("{} {}lost{} more {}Cursed Energy{} than they recovered!", c->GetNameWithID(),Color::Red, Color::Clear, Color::Cyan, Color::Clear);
+				std::println("{} {}expended{} {:.1f} {}Cursed Energy{} this turn.", c->GetNameWithID(),Color::Red,Color::Clear, ce_spent, Color::Cyan, Color::Clear);
 			}
 			else if (current_ce > ce_before_regen) {
 				double ce_gained = current_ce - ce_before_regen;
-				std::println("{} gained {:.1f} {}Cursed Energy{} this turn.", c->GetNameWithID(), ce_gained, Color::Cyan, Color::Clear);
-				std::println("{}'s {}Cursed Energy reserves{} are {}recovering!{}", c->GetNameWithID(), Color::Cyan, Color::Clear, Color::Green, Color::Clear);
+				std::println("{} {}gained{} {:.1f} {}Cursed Energy{} this turn.", c->GetNameWithID(),Color::Green,Color::Clear, ce_gained, Color::Cyan, Color::Clear);
 			}
 			curse_user->UpdatePreviousCE();
 		}
+		c->TickCharacterSpecialty();
 		double total_damage = c->GetCharacterPreviousHealth() - health_before_regen;
 		double healed_amount = c->GetCharacterHealth() - health_before_regen;
 		if (total_damage > 0) {
@@ -195,7 +194,6 @@ bool BattleManager::ManageEndOfTurn(Battlefield& bf, bool spectator_mode) {
 		}
 		c->UpdatePreviousHP();
 		c->ClearStunTime();
-		c->TickCharacterSpecialty();
 	}
 	std::println("{}======================================================={}", Color::Yellow, Color::Clear);
 	return player_alive;

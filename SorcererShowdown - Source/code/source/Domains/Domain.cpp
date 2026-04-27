@@ -102,6 +102,12 @@ void Domain::CollapseDomain() {
     clashing = false;
 }
 
+void Domain::OnSureHit(CurseUser&, Character&) {}
+
+double Domain::GetUseCost() const {
+    return domain_cost;
+}
+
 bool Domain::CheckDomainSurehit(Character& target) const {
     switch (hit_type) {
     case HitType::HitsCurseUsers:

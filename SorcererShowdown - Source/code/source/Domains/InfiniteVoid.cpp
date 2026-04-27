@@ -8,15 +8,14 @@ InfiniteVoid::InfiniteVoid() : Domain(800.0, 150.0, 16.0) {
     hit_type = HitType::HitsCurseUsers;
     domain_name = "Infinite Void";
     domain_color = "\033[34m";
+    domain_cost = 1000.0;
+    surehit_damage = 100.0;
 }
 void InfiniteVoid::OnSureHit(CurseUser& user, Character& target) {
     if (CheckDomainSurehit(target)) return;
-    target.DamageBypass(surehit_braindamage * DomainRangeMult());
+    target.DamageBypass(surehit_damage * DomainRangeMult());
     target.SetStunState(true);
     std::println("{} got hit by {}'s SureHit!", target.GetNameWithID(), this->GetDomainName());
-}
-double InfiniteVoid::GetUseCost() const {
-    return domain_cost;
 }
 
 std::unique_ptr<Domain> InfiniteVoid::Clone() const {

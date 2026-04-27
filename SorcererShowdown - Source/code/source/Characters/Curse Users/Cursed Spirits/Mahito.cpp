@@ -72,9 +72,3 @@ void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
 	}
 	this->Attack(weakest);
 }
-
-void Mahito::TickCharacterSpecialty() {
-	if (this->GetCharacterHealth() != this->GetCharacterMaxHealth()) {
-		this->Regen(passive_health_regen);
-	}
-}

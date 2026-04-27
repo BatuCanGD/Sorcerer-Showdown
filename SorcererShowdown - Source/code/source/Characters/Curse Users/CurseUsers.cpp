@@ -348,12 +348,16 @@ void CurseUser::Attack(Character* target) {
     bool is_black_flash = false;
     if (GetRandomNumber(1, 100) <= black_flash_chance) {
         is_black_flash = true;
+        blackflash_chain++;
         if (this->technique) {
             technique->Set(Technique::Status::DomainBoost);
         }
     }
+    else {
+        blackflash_chain = 0;
+    }
 
-    double final_damage = base_attack_damage * (is_black_flash ? black_flash_multiplier : 1.0);
+    double final_damage = base_attack_damage * (is_black_flash ? GetBlackflashMult() : 1.0);
 
     target->Damage(final_damage);
 
@@ -364,6 +368,10 @@ void CurseUser::Attack(Character* target) {
     else {
         std::println("{} landed a {}heavy strike{} on {}!", this->GetNameWithID(), Color::BrightRed, Color::Clear, target->GetNameWithID());
     }
+}
+
+double CurseUser::GetBlackflashMult() const {
+    return blackflash_mult * blackflash_chain;
 }
 
 void CurseUser::DomainDrain() {
@@ -434,3 +442,5 @@ void CurseUser::SetDomain(std::unique_ptr<Domain> d) { domain = std::move(d); }
 void CurseUser::SetSpecial(std::unique_ptr<Specials> s) { special = std::move(s); }
 void CurseUser::AddShikigami(std::unique_ptr<Shikigami> s) { shikigami.push_back(std::move(s)); }
 void CurseUser::SetCounterDomain(std::unique_ptr<Domain> cd) { counter_domain = std::move(cd); }
+
+void CurseUser::SetBlackflashChance(int d) { black_flash_chance = d; }

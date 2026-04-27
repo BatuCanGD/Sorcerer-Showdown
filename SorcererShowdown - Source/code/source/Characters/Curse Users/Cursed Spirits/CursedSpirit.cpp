@@ -11,6 +11,8 @@ std::unique_ptr<Character> CursedSpirit::Clone() const {
     if (this->technique) cs->SetTechnique(this->technique->Clone());
     if (this->domain)    cs->SetDomain(this->domain->Clone());
 
+    cs->SetBaseDamage(this->base_attack_damage);      
+    cs->SetBlackflashChance(this->black_flash_chance);
     cs->SetCharacterName(this->char_name, this->name_color);
 
     return cs;
@@ -18,4 +20,8 @@ std::unique_ptr<Character> CursedSpirit::Clone() const {
 
 bool CursedSpirit::IsaCursedSpirit() const {
     return true;
+}
+
+void CursedSpirit::TickCharacterSpecialty() {
+    this->Regen(passive_health_regen);
 }

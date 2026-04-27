@@ -62,21 +62,26 @@ std::unique_ptr<Character> CharacterCreator::CreateFromJson(const json& j) {
     if (j.contains("ai_type")) {
         character->SetAIType(j.at("ai_type").get<std::string>());
     }
+    if (j.contains("base_attack_damage")) {
+        character->SetBaseDamage(j.at("base_attack_damage").get<double>());
+    }
 
     if (auto* curse_ptr = dynamic_cast<CurseUser*>(character.get())) {
-
-        if (j.contains("technique"))
+        if (j.contains("blackflash_chance")) {
+            curse_ptr->SetBlackflashChance(j.at("blackflash_chance").get<int>());
+        }
+        if (j.contains("technique")) {
             curse_ptr->SetTechnique(GetTechniqueByName(j.at("technique").get<std::string>()));
-
-        if (j.contains("domain"))
+        }
+        if (j.contains("domain")) {
             curse_ptr->SetDomain(GetDomainByName(j.at("domain").get<std::string>()));
-
-        if (j.contains("counter_domain"))
+        }
+        if (j.contains("counter_domain")) {
             curse_ptr->SetCounterDomain(GetCounterDomainByName(j.at("counter_domain").get<std::string>()));
-
-        if (j.contains("special"))
+        }
+        if (j.contains("special")) {
             curse_ptr->SetSpecial(GetSpecialByName(j.at("special").get<std::string>()));
-
+        }
         if (j.contains("shikigami") && j.at("shikigami").is_array()) {
             for (const auto& name : j.at("shikigami")) {
                 curse_ptr->AddShikigami(GetShikigamiByName(name.get<std::string>()));

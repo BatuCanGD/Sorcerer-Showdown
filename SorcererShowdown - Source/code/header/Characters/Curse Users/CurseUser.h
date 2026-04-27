@@ -44,7 +44,11 @@ protected:
 	int black_flash_chance = 5;  
 	int the_zone_time = 0;
 
-	const double black_flash_multiplier = 4.0;
+	double blackflash_mult = 4.5;
+	int blackflash_chain = 0;
+
+	double current_ce_reinforcement;
+	double max_ce_reinforcement;
 
 	int domain_limit = 5;
 	const int max_counter_time = 3;
@@ -123,6 +127,8 @@ public:
 	void AddShikigami(std::unique_ptr<Shikigami>);
 
 	int GetBlackFlashChance() const;
+	double GetBlackflashMult() const;
+	void SetBlackflashChance(int);
 
 	bool IsaCurseUser() const override;
 	bool CanBeHit() const override;

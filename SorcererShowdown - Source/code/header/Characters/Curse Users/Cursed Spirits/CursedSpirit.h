@@ -8,5 +8,6 @@ protected:
 public:
 	CursedSpirit(double hp, double ce, double regen);
 	bool IsaCursedSpirit() const override;
+	void TickCharacterSpecialty() override;
 	std::unique_ptr<Character> Clone() const override;
 };

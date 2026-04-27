@@ -30,6 +30,9 @@ std::unique_ptr<Character> Sorcerer::Clone() const {
     s->SetCharacterName(this->char_name, this->name_color);
     s->SetSixEyes(this->six_eyes);
 
+    s->SetBaseDamage(this->base_attack_damage); 
+    s->SetBlackflashChance(this->black_flash_chance);
+
     for (const auto& tool : this->inventory_curse) {
         if (tool) s->AddToolToInventory(tool->Clone());
     }

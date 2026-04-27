@@ -7,10 +7,7 @@ SimpleDomain::SimpleDomain() : Domain(INT32_MAX, 3, 3) {
     is_neutralizer = true;
     domain_name = "Simple Domain";
     domain_color = "\033[36m";
-}
-void SimpleDomain::OnSureHit(CurseUser&, Character&) {}
-double SimpleDomain::GetUseCost() const {
-    return domain_cost;
+    domain_cost = 150.0;
 }
 std::unique_ptr<Domain> SimpleDomain::Clone() const {
     return std::make_unique<SimpleDomain>(*this);

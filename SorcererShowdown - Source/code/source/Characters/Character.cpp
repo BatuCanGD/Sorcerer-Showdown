@@ -304,6 +304,10 @@ void Character::DamageBypass(double h) {
 	health = std::max(health - h, 0.0);
 }
 
+void Character::SetBaseDamage(double d) {
+	base_attack_damage = d;
+}
+
 void Character::Regen(double h) {
 	health = std::min(health + h, max_health);
 }

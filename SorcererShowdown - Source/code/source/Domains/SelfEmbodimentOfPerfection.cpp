@@ -8,14 +8,13 @@ SelfEmbodimentOfPerfection::SelfEmbodimentOfPerfection() : Domain(500.0, 100.0, 
     hit_type = HitType::HitsCurseUsers;
     domain_name = "Self Embodiment Of Perfection";
     domain_color = "\033[35m";
+    domain_cost = 500.0;
+    surehit_damage = 150.0;
 };
 void SelfEmbodimentOfPerfection::OnSureHit(CurseUser& user, Character& target) {
     if (CheckDomainSurehit(target)) return;
     target.DamageBypass(surehit_damage * DomainRangeMult());
     std::println("{} got hit by {}'s SureHit!", target.GetNameWithID(), this->GetDomainName());
-}
-double SelfEmbodimentOfPerfection::GetUseCost() const {
-	return domain_cost;
 }
 
 std::unique_ptr<Domain> SelfEmbodimentOfPerfection::Clone() const {

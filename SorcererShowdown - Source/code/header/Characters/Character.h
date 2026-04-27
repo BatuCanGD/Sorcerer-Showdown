@@ -36,9 +36,6 @@ protected:
 	bool is_stunned = false;
 	bool is_heavenly_restricted;
 	bool is_invulnerable = false;
-
-	double current_ce_reinforcement;
-	double max_ce_reinforcement;
 public:
 	Character(double hp);
 
@@ -108,4 +105,5 @@ public:
 
 	CharacterAI GetCustomAI() const; // for custom characters not premade by me
 	void SetAIType(const std::string& str);
+	void SetBaseDamage(double);
 };

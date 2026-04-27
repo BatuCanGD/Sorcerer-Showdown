@@ -18,6 +18,9 @@ protected:
 	bool clashing = false;
 	bool is_neutralizer = false;
 
+	double domain_cost = 0.0;
+	double surehit_damage = 0.0;
+
 	enum class Refinement {
 		Unstable, Crude, Refined, Absolute
 	};
@@ -33,9 +36,9 @@ public:
 	bool Clashing() const;
 	void SetClashState(bool a);
 	double DomainRangeMult()const;
-	virtual void OnSureHit(CurseUser& user, Character& target) = 0;
+	virtual void OnSureHit(CurseUser& user, Character& target);
 	std::string GetDomainName() const;
-	virtual double GetUseCost() const = 0;
+	double GetUseCost() const;
 
 	double GetDomainHealth() const;
 	double GetDomainStrength() const;

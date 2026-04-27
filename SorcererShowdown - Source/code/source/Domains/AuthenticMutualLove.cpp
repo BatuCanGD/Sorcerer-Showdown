@@ -9,14 +9,14 @@ AuthenticMutualLove::AuthenticMutualLove() : Domain(600.0, 125.0, 16.0) {
 
     domain_color = "Authentic Mutual Love";
     domain_color = "\033[95m";
+
+    domain_cost = 500.0;
+    surehit_damage = 125.0;
 }
 void AuthenticMutualLove::OnSureHit(CurseUser& user, Character& target) {
     if (CheckDomainSurehit(target)) return;
-    target.DamageBypass(imbued_surehit_damage * DomainRangeMult());
+    target.DamageBypass(surehit_damage * DomainRangeMult());
     std::println("{} got bombarded by a barrage of copied techniques inside {}!", target.GetNameWithID(), this->GetDomainName());
-}
-double AuthenticMutualLove::GetUseCost() const {
-    return domain_cost;
 }
 
 std::unique_ptr<Domain> AuthenticMutualLove::Clone() const {

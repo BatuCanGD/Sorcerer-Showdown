@@ -11,6 +11,7 @@ IdleDeathGamble::IdleDeathGamble() : Domain(800.0, 150.0, 16.0) {
     hit_type = HitType::HitsEveryone;
     domain_name = "Idle Death Gamble";
     domain_color = "\033[92m";
+    domain_cost = 25.0;
 }
 void IdleDeathGamble::SetJackpot(bool t) {
     jackpot = t;
@@ -47,9 +48,6 @@ void IdleDeathGamble::OnSureHit(CurseUser& user, Character& target) {
 }
 bool IdleDeathGamble::HasHitJackpot() const {
     return jackpot;
-}
-double IdleDeathGamble::GetUseCost() const {
-    return domain_cost;
 }
 
 std::unique_ptr<Domain> IdleDeathGamble::Clone() const {
