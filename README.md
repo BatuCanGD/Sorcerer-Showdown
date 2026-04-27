@@ -158,13 +158,9 @@ std::unique_ptr<Technique> MyTechnique::Clone() const { return std::make_unique<
 #include "Domain.h"
 
 class MyDomain : public Domain {
-protected:
-    static constexpr double domain_cost    = 400.0;
-    static constexpr double surehit_damage = 90.0;
 public:
     MyDomain();
     void OnSureHit(CurseUser& user, Character& target) override;
-    double GetUseCost() const override;
 };
 ```
 
@@ -180,6 +176,8 @@ MyDomain::MyDomain() : Domain(600.0, 100.0, 14.0) {
     hit_type  = HitType::HitsCurseUsers;  // or HitsEveryone
     domain_name = "My Domain";
     domain_color = "\033[31m";
+	domain_cost    = 400.0;
+	surehit_damage = 90.0;
 }
 
 void MyDomain::OnSureHit(CurseUser& user, Character& target) {
@@ -187,8 +185,6 @@ void MyDomain::OnSureHit(CurseUser& user, Character& target) {
     target.DamageBypass(surehit_damage * DomainRangeMult());
     std::println("{} is struck inside {}!", target.GetNameWithID(), GetDomainName());
 }
-
-double MyDomain::GetUseCost() const         { return domain_cost; }
 ```
 
 **Domain constructor params:** `health` (clash barrier HP), `overwhelm_strength` (damage to opposing domain per tick), `range` (larger range wins clash at equal refinement).
@@ -245,10 +241,12 @@ Drop a file named `characters.json` next to the executable (or the built project
 | `name` | string | Display name |
 | `type` | string | `"Sorcerer"`, `"Cursed Spirit"`, or `"Physically Gifted"` |
 | `ai_type` | string | `"Aggressive"` or `"Reactive"` |
-| `hp` | number | Max health |
-| `ce` | number | Max cursed energy (`"Physically Gifted"` ignores this) |
-| `regen` | number | CE regen per turn (`"Physically Gifted"` ignores this) |
-| `strength` | number | Strength stat — **required** for `"Physically Gifted"`, ignored otherwise |
+| `base_attack_damage` | float | Amount of damage that can be dealt by a character without techniques or cursed tools |
+| `blackflash_chance` | int | The chance of a blackflash happening when attacking without cursed tools, domain amplification or cursed techniques |
+| `hp` | float | Max health |
+| `ce` | float | Max cursed energy (`"Physically Gifted"` ignores this) |
+| `regen` | float | CE regen per turn (`"Physically Gifted"` ignores this) |
+| `strength` | int | Strength stat — **required** for `"Physically Gifted"`, ignored otherwise |
 | `six_eyes` | bool | Enables Six Eyes CE efficiency reduction (Sorcerer only) |
 | `rct_proficiency` | string | `"None"`, `"Crude"`, `"Adept"`, `"Expert"`, or `"Absolute"` |
 | `technique` | string | One of the available techniques listed below |
@@ -279,6 +277,8 @@ Drop a file named `characters.json` next to the executable (or the built project
       "name": "Legendary Six Eyes Wielder",
       "type": "Sorcerer",
       "ai_type": "Aggressive",
+      "base_attack_damage": 70.0,
+      "blackflash_chance": 30,
       "hp": 2000.0,
       "ce": 12000.0,
       "regen": 50.0,
@@ -288,40 +288,53 @@ Drop a file named `characters.json` next to the executable (or the built project
       "domain": "Infinite Void",
       "counter_domain": "Simple Domain",
       "special": "Unlimited Purple",
-      "inventory": ["Playful Cloud"],
-      "shikigami": ["Rika", "Agito"],
+      "inventory": [
+        "Playful Cloud",
+        "Inverted Spear of Heaven"
+      ],
+      "shikigami": [
+        "Rika",
+        "Agito"
+      ],
       "color": "\u001b[36m"
     },
     {
-      "name": "Kyoto Grade 1",
+      "name": "Yuji Itadori",
       "type": "Sorcerer",
       "ai_type": "Reactive",
-      "hp": 550.0,
-      "ce": 2500.0,
-      "regen": 25.0,
+      "base_attack_damage": 300.0,
+      "blackflash_chance": 100,
+      "hp": 2000.0,
+      "ce": 4000.0,
+      "regen": 50.0,
       "six_eyes": false,
-      "rct_proficiency": "Adept",
+      "rct_proficiency": "Absolute",
       "technique": "Shrine",
       "domain": "Malevolent Shrine",
       "counter_domain": "Simple Domain",
-      "inventory": ["Katana"],
-      "color": "\u001b[31m"
+      "inventory": [],
+      "color": "\u001b[38;5;201m"
     },
     {
-      "name": "Shadow Weaver",
-      "type": "Sorcerer",
+      "name": "Pirate King",
+      "type": "Cursed Spirit",
       "ai_type": "Aggressive",
-      "hp": 950.0,
-      "ce": 6000.0,
-      "regen": 25.0,
-      "six_eyes": false,
-      "rct_proficiency": "Expert",
-      "technique": "Copy",
-      "domain": "Authentic Mutual Love",
+      "base_attack_damage": 30.0,
+      "blackflash_chance": 20,
+      "hp": 10000.0,
+      "ce": 50000.0,
+      "regen": 500.0,
+      "six_eyes": true,
+      "technique": "Shrine",
+      "domain": "Malevolent Shrine",
       "counter_domain": "Hollow Wicker Basket",
-      "inventory": ["Inverted Spear of Heaven"],
-      "shikigami": ["Mahoraga"],
-      "color": "\u001b[35m"
+      "inventory": [
+        "Inverted Spear of Heaven"
+      ],
+      "shikigami": [
+        "Mahoraga"
+      ],
+      "color": "\u001b[32m"
     }
   ]
 }
