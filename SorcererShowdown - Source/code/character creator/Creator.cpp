@@ -46,15 +46,18 @@ std::unique_ptr<Character> CharacterCreator::CreateFromJson(const json& j) {
         character = std::move(s);
     }
     else if (type == "Cursed Spirit") {
-        character = std::make_unique<CursedSpirit>(
+        auto cs = std::make_unique<CursedSpirit>(
             j.at("hp").get<double>(),
             j.at("ce").get<double>(),
             j.at("regen").get<double>());
+        if (j.contains("passive_regen")) cs->SetPassiveRegen(j.at("passive_regen").get<double>());
+        character = std::move(cs);
     }
     else if (type == "Physically Gifted") {
-        character = std::make_unique<PhysicallyGifted>(
+        auto pg = std::make_unique<PhysicallyGifted>(
             j.at("hp").get<double>(),
             j.at("strength").get<double>());
+        character = std::move(pg);
     }
 
     if (!character) return nullptr;

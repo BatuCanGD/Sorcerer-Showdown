@@ -135,13 +135,13 @@ void Character::OnCharacterTurn(Character*, Battlefield& bf) {
 				}
 				if (cu->GetCounterDomain() && !cu->CounterDomainActive()) {
 					cu->ActivateCounterDomain();
-					return;
+					if (cu->CounterDomainActive()) return;
 				}
 				break;
 			case CharacterAI::Reactive:
 				if (cu->GetCounterDomain() && !cu->CounterDomainActive()) {
 					cu->ActivateCounterDomain();
-					return;
+					if (cu->CounterDomainActive()) return;
 				}
 				break;
 			}
@@ -201,8 +201,17 @@ void Character::OnCharacterTurn(Character*, Battlefield& bf) {
 	}
 	if (target_has_infinity) {
 		if (!cursed_tool || cursed_tool->GetSimpleName() != "The Inverted Spear of Heaven") {
-			this->EquipToolByName("The Inverted Spear of Heaven");
-			return;
+			bool has_spear = false;
+			for (const auto& tool : inventory_curse) {
+				if (tool->GetSimpleName() == "The Inverted Spear of Heaven") {
+					has_spear = true;
+					break;
+				}
+			}
+			if (has_spear) {
+				this->EquipToolByName("The Inverted Spear of Heaven");
+				return;
+			}
 		}
 	}
 	else if (!inventory_curse.empty() && !cursed_tool) {

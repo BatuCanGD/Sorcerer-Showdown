@@ -2,7 +2,8 @@
   "characters": [
     {
       "name": "Legendary Six Eyes Wielder",
-      "type": "Sorcerer",
+      "type": "Cursed Spirit",
+      "passive_regen": 100.0,
       "ai_type": "Aggressive",
       "base_attack_damage": 70.0,
       "blackflash_chance": 30,
