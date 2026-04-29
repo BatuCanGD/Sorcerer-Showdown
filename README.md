@@ -240,7 +240,7 @@ Drop a file named `characters.json` next to the executable (or the built project
 |---|---|---|
 | `name` | string | Display name |
 | `type` | string | `"Sorcerer"`, `"Cursed Spirit"`, or `"Physically Gifted"` |
-| `ai_type` | string | `"Aggressive"` or `"Reactive"` |
+| `ai_type` | string | `"Aggressive"`, `"Reactive"` or `"Randomized"`; Necessary for the custom character to have a brain |
 | `base_attack_damage` | float | Amount of damage that can be dealt by a character without techniques or cursed tools |
 | `blackflash_chance` | int | The chance of a blackflash happening when attacking without cursed tools, domain amplification or cursed techniques |
 | `hp` | float | Max health |
@@ -276,22 +276,19 @@ Drop a file named `characters.json` next to the executable (or the built project
     {
       "name": "Legendary Six Eyes Wielder",
       "type": "Sorcerer",
-      "ai_type": "Aggressive",
-      "base_attack_damage": 70.0,
-      "blackflash_chance": 30,
-      "hp": 2000.0,
-      "ce": 12000.0,
-      "regen": 50.0,
+      "ai_type": "Randomized",
+      "base_attack_damage": 100.0,
+      "blackflash_chance": 50,
+      "hp": 3500.0,
+      "ce": 20000.0,
+      "regen": 300.0,
       "six_eyes": true,
       "rct_proficiency": "Absolute",
       "technique": "Limitless",
       "domain": "Infinite Void",
       "counter_domain": "Simple Domain",
       "special": "Unlimited Purple",
-      "inventory": [
-        "Playful Cloud",
-        "Inverted Spear of Heaven"
-      ],
+      "inventory": [],
       "shikigami": [
         "Rika",
         "Agito"
@@ -311,28 +308,23 @@ Drop a file named `characters.json` next to the executable (or the built project
       "rct_proficiency": "Absolute",
       "technique": "Shrine",
       "domain": "Malevolent Shrine",
+      "domain_limit": 10,
       "counter_domain": "Simple Domain",
       "inventory": [],
+      "shikigami": [],
       "color": "\u001b[38;5;201m"
     },
     {
-      "name": "Pirate King",
-      "type": "Cursed Spirit",
+      "name": "Maki Zenin",
+      "type": "Physically Gifted",
       "ai_type": "Aggressive",
-      "base_attack_damage": 30.0,
-      "blackflash_chance": 20,
-      "hp": 10000.0,
-      "ce": 50000.0,
-      "regen": 500.0,
-      "six_eyes": true,
-      "technique": "Shrine",
-      "domain": "Malevolent Shrine",
-      "counter_domain": "Hollow Wicker Basket",
+      "base_attack_damage": 75.0,
+      "hp": 5000.0,
+      "strength": 1250.0,
       "inventory": [
-        "Inverted Spear of Heaven"
-      ],
-      "shikigami": [
-        "Mahoraga"
+        "The Inverted Spear of Heaven",
+        "Playful Cloud",
+        "Katana"
       ],
       "color": "\u001b[32m"
     }
