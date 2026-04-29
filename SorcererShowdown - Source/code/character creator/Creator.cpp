@@ -1,4 +1,5 @@
 #include "CharacterCreator.h"
+#include "CharacterAI.h"
 #include "BattlefieldHeader.h"
 #include "Rika.h"
 #include "Limitless.h"
@@ -24,6 +25,7 @@
 import std;
 
 std::unique_ptr<Technique> GetTechniqueByName(const std::string& name);
+CharacterBrain::AIType GetCustomAIType(const std::string& name);
 std::unique_ptr<Domain> GetDomainByName(const std::string& name);
 std::unique_ptr<Domain> GetCounterDomainByName(const std::string& name);
 std::unique_ptr<Specials> GetSpecialByName(const std::string& name);
@@ -50,7 +52,7 @@ std::unique_ptr<Character> CharacterCreator::CreateFromJson(const json& j) {
             j.at("hp").get<double>(),
             j.at("ce").get<double>(),
             j.at("regen").get<double>());
-        if (j.contains("passive_regen")) cs->SetPassiveRegen(j.at("passive_regen").get<double>());
+        if (j.contains("passive_health_regen")) cs->SetPassiveRegen(j.at("passive_health_regen").get<double>());
         character = std::move(cs);
     }
     else if (type == "Physically Gifted") {
@@ -63,8 +65,10 @@ std::unique_ptr<Character> CharacterCreator::CreateFromJson(const json& j) {
     if (!character) return nullptr;
 
     if (j.contains("ai_type")) {
-        character->SetAIType(j.at("ai_type").get<std::string>());
+        character->SetCustomAI(GetCustomAIType(j.at("ai_type").get<std::string>()));
+        character->SetBrain(std::make_unique<CharacterBrain>());
     }
+
     if (j.contains("base_attack_damage")) {
         character->SetBaseDamage(j.at("base_attack_damage").get<double>());
     }
@@ -146,6 +150,13 @@ static std::unique_ptr<Technique> GetTechniqueByName(const std::string& name) {
     if (name == "Idle Transfiguration") return std::make_unique<IdleTransfiguration>();
     if (name == "Copy") return std::make_unique<Copy>();
     return nullptr;
+}
+
+static CharacterBrain::AIType GetCustomAIType(const std::string& name) {
+    if (name == "Aggressive") return CharacterBrain::AIType::Aggressive;
+    if (name == "Reactive") return CharacterBrain::AIType::Reactive;
+    if (name == "Randomized") return CharacterBrain::AIType::Randomized;
+    return CharacterBrain::AIType::Randomized;
 }
 
 static std::unique_ptr<Domain> GetDomainByName(const std::string& name) {

@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "CharacterAI.h"
+
 class CursedTool;
 struct Battlefield;
 
@@ -14,14 +16,6 @@ protected:
 	std::string char_name = "";
 	std::string name_color = "";
 
-	enum class CharacterAI {
-		Aggressive,
-		Reactive
-	};
-	CharacterAI ai_type = CharacterAI::Aggressive;
-
-	bool is_player = false;
-
 	double health;
 	double max_health;
 	double previous_health;
@@ -29,10 +23,14 @@ protected:
 	std::unique_ptr<CursedTool> cursed_tool = nullptr;
 	std::vector<std::unique_ptr<CursedTool>> inventory_curse;
 
+	std::unique_ptr<CharacterBrain> brain = nullptr;
+	CharacterBrain::AIType ai_type = CharacterBrain::AIType::Aggressive;
+
 	int stun_duration = 3;
 
 	double base_attack_damage = 20.0;
 
+	bool is_player = false;
 	bool is_stunned = false;
 	bool is_heavenly_restricted;
 	bool is_invulnerable = false;
@@ -104,8 +102,9 @@ public:
 	double GetBaseAttackDamage() const;
 	void AddToolToInventory(std::unique_ptr<CursedTool>);
 
-	CharacterAI GetCustomAI() const; // for custom characters not premade by me
-	void SetAIType(const std::string& str);
 	void SetBaseDamage(double);
 	void SetEquippedTool(std::unique_ptr<CursedTool> tool);
+	void SetCustomAI(CharacterBrain::AIType type);
+	void SetBrain(std::unique_ptr<CharacterBrain>);
+	CharacterBrain::AIType GetCustomAI() const;
 };

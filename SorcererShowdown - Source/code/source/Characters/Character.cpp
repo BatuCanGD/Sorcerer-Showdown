@@ -9,6 +9,7 @@
 #include "CursedTool.h"
 #include "Sorcerer.h"
 #include "Techniques.h"
+#include "CharacterAI.h"
 
 import std;
 
@@ -24,222 +25,13 @@ void Character::OnCharacterTurn(Character*, Battlefield& bf) {
 		std::println("{} is stunned and their turn will be skipped", this->GetNameWithID());
 		return;
 	}
-
-	auto* cu = dynamic_cast<CurseUser*>(this);
-	auto* sr = dynamic_cast<Sorcerer*>(this);
-
-	CharacterAI ai = this->GetCustomAI();
-
-	Character* target = nullptr;
-	double best_score = -1.0;
-	std::vector<CurseUser*> domain_users;
-
-	for (const auto& entity : bf.battlefield) {
-		if (entity.get() == this || entity->GetCharacterHealth() <= 0) continue;
-
-		double score = 0.0;
-		double hp_ratio = entity->GetCharacterHealth() / entity->GetCharacterMaxHealth();
-
-		switch (ai) {
-		case CharacterAI::Aggressive: score = hp_ratio;       break;
-		case CharacterAI::Reactive:   score = 1.0 - hp_ratio; break;
-		}
-
-		if (auto* target_cu = dynamic_cast<CurseUser*>(entity.get())) {
-			if (target_cu->DomainActive()) {
-				domain_users.push_back(target_cu);
-				score += 0.50;
-			}
-			if (target_cu->GetTechnique()) {
-				std::string tech = target_cu->GetTechnique()->GetTechniqueSimpleName();
-				if (tech == "Shrine")    score += 1.0;
-				if (tech == "Limitless") score += 0.15;
-			}
-		}
-		else if (dynamic_cast<PhysicallyGifted*>(entity.get())) {
-			score += 0.25;
-		}
-
-		score += GetRandomNumber(-5, 5) * 0.025;
-
-		if (score > best_score) {
-			best_score = score;
-			target = entity.get();
-		}
+	if (brain) {
+		brain->ExecuteTurn(this, bf, ai_type);
 	}
-
-	if (!target) return;
-	bool target_has_infinity = false;
-	if (auto cr = dynamic_cast<CurseUser*>(target)) {
-		if (cr->GetTechnique()) {
-			if (auto lim = dynamic_cast<Limitless*>(cr->GetTechnique())) {
-				if (lim->CheckInfinity()) target_has_infinity = true;
-			}
-		}
+	else {
+		std::println("if you see this, it means that you havent assigned"
+					 "an AI type to this character, you must add it");
 	}
-
-	if (GetRandomNumber(1, 10) <= 3) {
-		this->Taunt(target);
-	}
-
-	if (cu) {
-		if (sr) {
-			switch (ai) {
-			case CharacterAI::Aggressive:
-				if (!this->HPMoreThanMax(0.25) && cu->CEMoreThanMax(0.20)) sr->BoostRCT();
-				else if (!this->HPMoreThanMax(0.60) && cu->CEMoreThanMax(0.10))  sr->EnableRCT();
-				else sr->DisableRCT();
-				break;
-			case CharacterAI::Reactive:
-				if (!this->HPMoreThanMax(0.35) && cu->CEMoreThanMax(0.15)) sr->BoostRCT();
-				else if (!this->HPMoreThanMax(0.65) && cu->CEMoreThanMax(0.10)) sr->EnableRCT();
-				else sr->DisableRCT();
-				break;
-			}
-		}
-
-		switch (ai) {
-		case CharacterAI::Aggressive:
-			if (cu->CEMoreThanMax(0.50))      cu->SetCurrentReinforcement(200.0);
-			else if (cu->CEMoreThanMax(0.30)) cu->SetCurrentReinforcement(100.0);
-			else if (cu->CEMoreThanMax(0.20)) cu->SetCurrentReinforcement(50.0);
-			else                              cu->SetCurrentReinforcement(0.0);
-			break;
-		case CharacterAI::Reactive:
-			if (!this->HPMoreThanMax(0.35))   cu->SetCurrentReinforcement(200.0);
-			else if (cu->CEMoreThanMax(0.40)) cu->SetCurrentReinforcement(100.0);
-			else                              cu->SetCurrentReinforcement(0.0);
-			break;
-		}
-
-		if (!cu->GetShikigami().empty()) {
-			for (const auto& shiki : cu->GetShikigami()) {
-				if (!shiki->IsActive()) {
-					if (cu->CEMoreThanMax(0.30)) shiki->Manifest();
-				}
-				else if (shiki->IsActivePhysically() && !cu->CEMoreThanMax(0.15)) {
-					shiki->Withdraw();
-				}
-			}
-		}
-
-		if (!domain_users.empty()) {
-			switch (ai) {
-			case CharacterAI::Aggressive:
-				if (cu->GetDomain() && cu->GetCharacterCE() >= cu->GetDomain()->GetUseCost()
-					&& !cu->DomainActive() && !cu->IsStrained() && cu->GetDomainUses() < 5) {
-					if (!cu->GetTechnique() || !cu->GetTechnique()->BurntOut()) {
-						cu->ActivateDomain();
-						return;
-					}
-				}
-				if (cu->GetCounterDomain() && !cu->CounterDomainActive()) {
-					cu->ActivateCounterDomain();
-					if (cu->CounterDomainActive()) return;
-				}
-				break;
-			case CharacterAI::Reactive:
-				if (cu->GetCounterDomain() && !cu->CounterDomainActive()) {
-					cu->ActivateCounterDomain();
-					if (cu->CounterDomainActive()) return;
-				}
-				break;
-			}
-		}
-		else {
-			if (cu->CounterDomainActive()) cu->DeactivateCounterDomain();
-
-			switch (ai) {
-			case CharacterAI::Aggressive:
-				if (cu->GetDomain() && !cu->DomainActive() && !cu->IsStrained()
-					&& cu->GetDomainUses() < 5 && GetRandomNumber(1, 100) <= 25) {
-					if (!cu->GetTechnique() || !cu->GetTechnique()->BurntOut()) {
-						cu->ActivateDomain();
-						return;
-					}
-				}
-				break;
-			case CharacterAI::Reactive:
-				if (cu->GetDomain() && !cu->DomainActive() && !cu->IsStrained()
-					&& cu->GetDomainUses() < 5 && !this->HPMoreThanMax(0.40)) {
-					if (!cu->GetTechnique() || !cu->GetTechnique()->BurntOut()) {
-						cu->ActivateDomain();
-						return;
-					}
-				}
-				break;
-			}
-		}
-
-		if (cu->GetSpecial() && cu->CEMoreThanMax(0.35) && GetRandomNumber(1, 100) <= 20) {
-			cu->GetSpecial()->PerformSpecial(cu);
-			return;
-		}
-
-		if (target_has_infinity) cu->SetAmplification(true);
-		else if (cu->DomainAmplificationActive()) cu->SetAmplification(false);
-
-		if (cu->GetTechnique() && !cu->GetTechnique()->BurntOut()
-			&& (cu->GetTechnique()->Usable() || cu->GetTechnique()->Boosted())
-			&& !cu->DomainAmplificationActive()) {
-
-			switch (ai) {
-			case CharacterAI::Aggressive:
-				if (cu->CEMoreThanMax(0.20)) {
-					cu->GetTechnique()->AutoTechniqueUse(cu, target, bf);
-					return;
-				}
-				break;
-			case CharacterAI::Reactive:
-				if (!this->HPMoreThanMax(0.50) || cu->GetTechnique()->Boosted()) {
-					cu->GetTechnique()->AutoTechniqueUse(cu, target, bf);
-					return;
-				}
-				break;
-			}
-		}
-	}
-	if (target_has_infinity) {
-		if (!cursed_tool || cursed_tool->GetSimpleName() != "The Inverted Spear of Heaven") {
-			bool has_spear = false;
-			for (const auto& tool : inventory_curse) {
-				if (tool->GetSimpleName() == "The Inverted Spear of Heaven") {
-					has_spear = true;
-					break;
-				}
-			}
-			if (has_spear) {
-				this->EquipToolByName("The Inverted Spear of Heaven");
-				return;
-			}
-		}
-	}
-	else if (!inventory_curse.empty() && !cursed_tool) {
-		if (GetRandomNumber(1, 100) <= 50) {
-			CursedToolChoice(static_cast<size_t>(GetRandomNumber(1, static_cast<int>(inventory_curse.size())))); 
-			return;
-		}
-	}
-	else if (cursed_tool && !inventory_curse.empty()) {
-		int roll = GetRandomNumber(1, 100);
-		if (roll <= 5) {
-			CursedToolChoice(size_t(0));
-			return;
-		}
-		else if (roll <= 20) {
-			CursedToolChoice(static_cast<size_t>(GetRandomNumber(1, static_cast<int>(inventory_curse.size()))));
-			return;
-		}
-	}
-
-	this->Attack(target);
-	if (cu && cu->DomainAmplificationActive()) cu->SetAmplification(false);
-}
-
-void Character::SetAIType(const std::string& str) {
-	if (str == "Reactive") ai_type = CharacterAI::Reactive;
-	else if (str == "Aggressive") ai_type = CharacterAI::Aggressive;
-	else ai_type = CharacterAI::Aggressive;
 }
 
 bool Character::CanBeAssignedID() const {
@@ -247,68 +39,9 @@ bool Character::CanBeAssignedID() const {
 }
 
 void Character::Attack(Character* target) {
-	if (!target || target->GetCharacterHealth() <= 0) return;
-
-	CurseUser* me_cuser = dynamic_cast<CurseUser*>(this);
-	CurseUser* target_cuser = dynamic_cast<CurseUser*>(target);
-	PhysicallyGifted* me_gifted = dynamic_cast<PhysicallyGifted*>(this);
-
-	if (target_cuser) {
-		if (auto* tech = target_cuser->GetTechnique()) {
-			if (auto* limitless = dynamic_cast<Limitless*>(tech)) {
-				bool has_da = me_cuser && me_cuser->DomainAmplificationActive();
-				if (limitless->CheckInfinity() && !has_da) {
-					std::println("{}'s strike was slowed to a halt by {}'s {}Infinity{}!",
-						this->GetNameWithID(), target_cuser->GetNameWithID(), Color::Cyan, Color::Clear);
-					return;
-				}
-			}
-		}
-	}
-	if (me_cuser && me_cuser->DomainAmplificationActive()) {
-		double ce_addon = std::sqrt(std::max(0.0, me_cuser->GetCharacterCE())) * 0.888;
-		double amp_damage = this->base_attack_damage + ce_addon;
-
-		target->DamageBypass(amp_damage); 
-		std::println("{} neutralizes {}'s Infinity and hits them using Domain Amplification!",
-			this->GetNameWithID(), target->GetNameWithID());
-		return;
-	}
-	if (cursed_tool) {
-		cursed_tool->UseTool(this, target);
-		return;
-	}
-
-	double current_base = this->base_attack_damage;
-	double multiplier = 1.0;
-	bool is_black_flash = false;
-
-	if (me_cuser) {
-		if (GetRandomNumber(1, 100) <= me_cuser->GetBlackFlashChance()) {
-			is_black_flash = true;
-			multiplier = 4.0;
-
-			if (auto* tech = me_cuser->GetTechnique()) {
-				tech->Set(Technique::Status::DomainBoost);
-			}
-			me_cuser->TickZone();
-		}
-	}
-	else if (me_gifted) {
-		current_base += me_gifted->GetStrengthDamage();
-	}
-
-	target->Damage(current_base * multiplier);
-
-	if (is_black_flash) {
-		std::println("\n{}*** {}BLACK FLASH!{} ***{}", Color::BrightMagenta, Color::Red, Color::BrightMagenta, Color::Clear);
-		std::println("The space distorts! {} lands a devastating blow on {}!",
-			this->GetNameWithID(), target->GetNameWithID());
-	}
-	else {
-		std::println("{} lands a {}solid strike{} on {}!",
-			this->GetNameWithID(), Color::BrightRed, Color::Clear, target->GetNameWithID());
-	}
+	std::println("this is not supposed to be reached"
+				 "i realized it way too late"
+				 "characters with their chosen types use their own attack function");
 }
 
 void Character::AssignID() {
@@ -566,11 +299,15 @@ void Character::Taunt(Character* taunted) const { // pure aura
 		}
 	}
 }
-
-Character::CharacterAI Character::GetCustomAI() const {
-	return ai_type;
-}
-
 void Character::SetEquippedTool(std::unique_ptr<CursedTool> tool) {
 	cursed_tool = std::move(tool);
+}
+void Character::SetCustomAI(CharacterBrain::AIType type) {
+	ai_type = type;
+}
+CharacterBrain::AIType Character::GetCustomAI() const {
+	return ai_type;
+}
+void Character::SetBrain(std::unique_ptr<CharacterBrain> new_brain) {
+	brain = std::move(new_brain);
 }

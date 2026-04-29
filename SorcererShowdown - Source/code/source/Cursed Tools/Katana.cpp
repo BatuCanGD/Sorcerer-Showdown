@@ -7,7 +7,7 @@ import std;
 
 Katana::Katana() {
 	tool_name = "a Katana";
-	tool_color = "\033[36";
+	tool_color = "\033[36m";
 }
 void Katana::UseTool(Character* user, Character* target) {
 	auto pg = dynamic_cast<PhysicallyGifted*>(user);

@@ -15,12 +15,14 @@ void Shrine::SetWCS(bool s) {
 }
 
 void Shrine::UseCleave(CurseUser* user, Character* target) {
+    if (chant == ChantLevel::Four) std::println("{}\"Maximum Output; ClEAVE!\"{}", Color::Red, Color::Clear);
     println("{} uses {}Cleave{} on {}!", user->GetNameWithID(),Color::Red,Color::Clear, target->GetNameWithID());
     double dmg = CalculateDamage(user, cleave_output * GetChantPower());
     target->Damage(dmg);
     chant = ChantLevel::Zero;
 }
 void Shrine::UseDismantle(CurseUser* user, Character* target) {
+    if (chant == ChantLevel::Four) std::println("{}\"Maximum Output; DISMANTLE!\"{}", Color::Red, Color::Clear);
     println("{} uses {}Dismantle{} on {}!", user->GetNameWithID(),Color::Red,Color::Clear, target->GetNameWithID());
     double dmg = CalculateDamage(user, slash_output * GetChantPower());
     target->Damage(dmg);

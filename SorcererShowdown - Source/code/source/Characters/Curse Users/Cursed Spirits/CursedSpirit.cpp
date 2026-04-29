@@ -12,7 +12,9 @@ std::unique_ptr<Character> CursedSpirit::Clone() const {
     if (this->technique) cs->SetTechnique(this->technique->Clone());
     if (this->domain)    cs->SetDomain(this->domain->Clone());
     if (this->cursed_tool) cs->SetEquippedTool(this->cursed_tool->Clone());
+    if (this->brain) cs->SetBrain(std::make_unique<CharacterBrain>());
 
+    cs->SetCustomAI(this->ai_type);
     cs->SetBaseDamage(this->base_attack_damage);      
     cs->SetBlackflashChance(this->black_flash_chance);
     cs->SetCharacterName(this->char_name, this->name_color);

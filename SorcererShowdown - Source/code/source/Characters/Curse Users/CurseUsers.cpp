@@ -322,8 +322,9 @@ void CurseUser::DeactivateCounterDomain() {
 }
 
 void CurseUser::Attack(Character* target) {
-    CurseUser* target_cuser = dynamic_cast<CurseUser*>(target);
-    if (target_cuser) {
+    
+    if (target->IsaCurseUser()) {
+        auto target_cuser = static_cast<CurseUser*>(target);
         if (Limitless* limitless = dynamic_cast<Limitless*>(target_cuser->GetTechnique())) {
             if (limitless->CheckInfinity() && !this->DomainAmplificationActive()) {
                 std::println("{}'s attack was blocked by {}'s {}Infinity{}!", this->GetNameWithID(), target_cuser->GetNameWithID(), Color::Cyan, Color::Clear);

@@ -20,6 +20,9 @@ std::unique_ptr<Character> PhysicallyGifted::Clone() const {
 
     pg->SetCharacterName(this->char_name, this->name_color);
     pg->SetBaseDamage(this->base_attack_damage);    
+    if (this->brain) pg->SetBrain(std::make_unique<CharacterBrain>());
+
+    pg->SetCustomAI(this->ai_type);
     
     for (const auto& tool : this->inventory_curse) {
         if (tool) pg->AddToolToInventory(tool->Clone());
