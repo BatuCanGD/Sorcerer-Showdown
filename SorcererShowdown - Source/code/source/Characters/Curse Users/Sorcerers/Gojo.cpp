@@ -181,9 +181,10 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
 bool Gojo::InfCheck(Character* strongest) {
     bool needs_amplification = false;
 
-    if (auto curse_user = dynamic_cast<CurseUser*>(strongest)) {
-        if (auto str = dynamic_cast<Limitless*>(curse_user->GetTechnique())) {
-            if (str && str->CheckInfinity()) {
+    if (strongest->IsaCurseUser()) {
+        auto curse_user = static_cast<CurseUser*>(strongest);
+        if (auto* tech = curse_user->GetTechnique()) {
+            if (tech->IsLimitless() && tech->IsInfinityActive()) {
                 needs_amplification = true;
             }
         }

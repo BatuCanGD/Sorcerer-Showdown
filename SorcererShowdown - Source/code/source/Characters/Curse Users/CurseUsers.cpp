@@ -324,8 +324,8 @@ void CurseUser::DeactivateCounterDomain() {
 void CurseUser::Attack(Character* target) {
     if (target->IsaCurseUser()) {
         auto target_cuser = static_cast<CurseUser*>(target);
-        if (Limitless* limitless = dynamic_cast<Limitless*>(target_cuser->GetTechnique())) {
-            if (limitless->CheckInfinity() && !this->DomainAmplificationActive()) {
+        if (auto* tech = target_cuser->GetTechnique()) {
+            if (tech->IsLimitless() && tech->IsInfinityActive()) {
                 std::println("{}'s attack was blocked by {}'s {}Infinity{}!", this->GetNameWithID(), target_cuser->GetNameWithID(), Color::Cyan, Color::Clear);
                 return;
             }
@@ -416,12 +416,8 @@ void CurseUser::RecoverTechniqueBurnout(Technique* t) {
 }
 
 bool CurseUser::CanBeHit() const {
-    if (technique) {
-        if (auto l = dynamic_cast<Limitless*>(this->GetTechnique())) {
-            if (l->CheckInfinity()) {
-                return false;
-            }
-        }
+    if (technique && technique->IsLimitless() && technique->IsInfinityActive()) {
+        return false;
     }
     return true;
 }

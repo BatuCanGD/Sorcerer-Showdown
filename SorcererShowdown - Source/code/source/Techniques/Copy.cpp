@@ -117,8 +117,9 @@ void Copy::TechniqueSetting(CurseUser* user, Battlefield& bf) {
         std::print("=> ");
         size_t tdex = GetValidInput();
         if (tdex < bf.battlefield.size() && bf.battlefield[tdex].get() != user && bf.battlefield[tdex]->GetCharacterHealth() > 0) {
-            if (auto sorcerer = dynamic_cast<CurseUser*>(bf.battlefield[tdex].get())) {
-                this->CopyFrom(sorcerer);
+            if (bf.battlefield[tdex].get()->IsaCurseUser()) {
+                auto cr = static_cast<CurseUser*>(bf.battlefield[tdex].get());
+                this->CopyFrom(cr);
             }
         }
         else {

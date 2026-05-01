@@ -152,11 +152,14 @@ bool BattleManager::ManageEndOfTurn(Battlefield& bf, bool spectator_mode) {
 		if (c->IsaCurseUser()) {
 			auto curse_user = static_cast<CurseUser*>(c.get());
 			double ce_before_regen = curse_user->GetCharacterCE();
+			if (auto* tech = curse_user->GetTechnique()) {
+				if (tech->IsLimitless()) {
+					auto lim = static_cast<Limitless*>(tech);
+					lim->InfinityNerf(curse_user);
+				}
+			}
 			if (curse_user->IsaSorcerer()) {
 				auto sorcerer = static_cast<Sorcerer*>(curse_user);
-				if (auto limitless = dynamic_cast<Limitless*>(sorcerer->GetTechnique())) {
-					limitless->InfinityNerf(sorcerer);
-				}
 				sorcerer->UseRCT();
 			}
 			curse_user->TickShikigami(bf);

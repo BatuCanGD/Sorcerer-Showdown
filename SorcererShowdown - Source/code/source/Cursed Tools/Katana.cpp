@@ -10,17 +10,14 @@ Katana::Katana() {
 	tool_color = "\033[36m";
 }
 void Katana::UseTool(Character* user, Character* target) {
-	auto pg = dynamic_cast<PhysicallyGifted*>(user);
-	auto sr = dynamic_cast<CurseUser*>(user);
-	double total_damage;
-	if (pg) {
+	double total_damage = 20.0;
+	if (user->IsPhysicallyGifted()) {
+		auto pg = static_cast<PhysicallyGifted*>(user);
 		total_damage = (base_tool_damage * special_tool_mult) * pg->GetStrengthDamage();
 	}
-	else if (sr) {
+	else if (user->IsaCurseUser()) {
+		auto sr = static_cast<CurseUser*>(user);
 		total_damage = (base_tool_damage * special_tool_mult) * (1 + (sr->GetCharacterCE() / 5000));
-	}
-	else {
-		total_damage = 10.0;
 	}
 
 	target->Damage(total_damage);

@@ -192,8 +192,8 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
     bool needs_da = false;
     if (strongest->IsaCurseUser()) {
         auto* cu = static_cast<CurseUser*>(strongest);
-        if (auto* lim = dynamic_cast<Limitless*>(cu->GetTechnique())) {
-            if (lim && lim->CheckInfinity()) needs_da = true;
+        if (auto* ct = cu->GetTechnique()) {
+            if (ct->IsLimitless() && ct->IsInfinityActive()) needs_da = true;
         }
     }
 
