@@ -30,7 +30,7 @@
       "blackflash_chance": 100,
       "hp": 2000.0,
       "ce": 4000.0,
-      "regen": 50.0,
+      "regen": 250.0,
       "six_eyes": false,
       "rct_proficiency": "Absolute",
       "technique": "Shrine",

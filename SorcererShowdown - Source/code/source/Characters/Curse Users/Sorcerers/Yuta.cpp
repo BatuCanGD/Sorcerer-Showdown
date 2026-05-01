@@ -130,6 +130,10 @@ void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {
         }
     }
     InfCheck(strongest);
+    if (strongest && !this->GetTechnique()->BurntOut()) {
+        this->GetTechnique()->AutoTechniqueUse(this, strongest, bf);
+        return;
+    }
     HitCharacter(strongest);
 }
 

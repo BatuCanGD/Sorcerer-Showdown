@@ -54,6 +54,9 @@ void Copy::CopyFrom(CurseUser* target) {
     cloned->Set(this->state);
     std::println("Copied {}'s {}!", target->GetName(), cloned->GetTechniqueName());
     copied_techniques.push_back(std::move(cloned));
+    if (!copied_techniques.empty()) {
+        active_copy = copied_techniques.size() - 1; 
+    }
 }
 
 void Copy::SwitchCopy(size_t index) {
@@ -146,9 +149,20 @@ void Copy::TechniqueSetting(CurseUser* user, Battlefield& bf) {
 
 void Copy::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
     auto crs = dynamic_cast<CurseUser*>(target);
-    if (GetRandomNumber(1, 10) >= 6 && crs && crs->GetTechnique()) {
-        CopyFrom(crs);
-        return;
+    bool dont_copy = false;
+    if (crs && crs->GetTechnique()) {
+        if (copied_techniques.size() >= max_copies) {
+            dont_copy = true;
+        }
+        std::string ttname = crs->GetTechnique()->GetTechniqueName();
+        for (const auto& tech : copied_techniques) {
+            if (tech->GetTechniqueName() == ttname) {
+                dont_copy = true;
+            }
+        }
+        if (!dont_copy) {
+            CopyFrom(crs);
+        }
     }
     Technique* active = GetActive();
     if (active) {
