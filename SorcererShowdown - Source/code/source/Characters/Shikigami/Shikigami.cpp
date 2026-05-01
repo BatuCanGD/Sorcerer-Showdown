@@ -3,8 +3,6 @@
 
 import std;
 
-// --- Base Shikigami  ---
-
 Shikigami::Shikigami(double hp) : Character(hp) {}
 
 bool Shikigami::CanBeAssignedID() const {
@@ -62,5 +60,12 @@ bool Shikigami::CanBeHit() const {
     if (IsActivePhysically()) {
         return true;
     }
+    return false;
+}
+
+bool Shikigami::IsMahoraga() const {
+    return false;
+}
+bool Shikigami::IsAgito() const {
     return false;
 }

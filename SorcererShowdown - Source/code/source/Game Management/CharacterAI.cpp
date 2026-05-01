@@ -48,10 +48,9 @@ Character* CharacterBrain::GetTarget(Character* user, Battlefield& bf, AIType ty
             if (ch->IsaCurseUser()) {
                 auto target_cu = static_cast<CurseUser*>(ch.get());
                 if (target_cu->DomainActive()) score += 1.0;
-                if (target_cu->GetTechnique()) {
-                    std::string tech = target_cu->GetTechnique()->GetTechniqueSimpleName();
-                    if (tech == "Shrine") score += 0.55;
-                    if (tech == "Limitless") score += 0.60;
+                if (auto* tech = target_cu->GetTechnique()) {
+                    if (tech->IsShrine()) score += 0.55;
+                    if (tech->IsLimitless()) score += 0.60;
                 }
             }
             else if (ch->IsPhysicallyGifted()) {
@@ -75,10 +74,9 @@ Character* CharacterBrain::GetTarget(Character* user, Battlefield& bf, AIType ty
             if (ch->IsaCurseUser()) {
                 auto target_cu = static_cast<CurseUser*>(ch.get());
                 if (target_cu->DomainActive()) score -= 0.5; 
-                if (target_cu->GetTechnique()) {
-                    std::string tech = target_cu->GetTechnique()->GetTechniqueSimpleName();
-                    if (tech == "Shrine") score -= 0.5;
-                    if (tech == "Limitless") score -= 0.2;
+                if (auto* tech = target_cu->GetTechnique()) {
+                    if (tech->IsShrine()) score -= 0.5;
+                    if (tech->IsLimitless()) score -= 0.2;
                 }
             }
             else if (ch->IsPhysicallyGifted()) {
@@ -101,7 +99,7 @@ Character* CharacterBrain::GetTarget(Character* user, Battlefield& bf, AIType ty
             }
         }
         if (!valid_targets.empty()) {
-            target = valid_targets[GetRandomNumber(0, static_cast<int>(valid_targets.size() - 1))];
+            target = valid_targets[size_t(GetRandomNumber(0, static_cast<int>(valid_targets.size() - 1)))];
         }
         break;
     }
@@ -110,14 +108,11 @@ Character* CharacterBrain::GetTarget(Character* user, Battlefield& bf, AIType ty
 }
 
 void CharacterBrain::UseRCT(Sorcerer* user, AIType type) {
-    auto* cu = dynamic_cast<CurseUser*>(user);
-    if (!cu) return;
-
     bool low_hp = !user->HPMoreThanMax(type == AIType::Aggressive ? 0.25 : 0.35);
     bool mid_hp = !user->HPMoreThanMax(type == AIType::Aggressive ? 0.60 : 0.65);
 
-    if (low_hp && cu->CEMoreThanMax(type == AIType::Aggressive ? 0.20 : 0.15)) user->BoostRCT();
-    else if (mid_hp && cu->CEMoreThanMax(0.10)) user->EnableRCT();
+    if (low_hp && user->CEMoreThanMax(type == AIType::Aggressive ? 0.20 : 0.15)) user->BoostRCT();
+    else if (mid_hp && user->CEMoreThanMax(0.10)) user->EnableRCT();
     else user->DisableRCT();
 }
 
@@ -211,9 +206,9 @@ bool CharacterBrain::TryDomainActions(CurseUser* user, Battlefield& bf, Characte
 bool CharacterBrain::TryTechniqueActions(CurseUser* user, Battlefield& bf, Character* target, AIType type) {
     bool target_infinity = false;
     if (target->IsaCurseUser()) {
-        auto tr_cr = static_cast<CurseUser*>(target);
-        if (auto* lim = dynamic_cast<Limitless*>(tr_cr->GetTechnique())) {
-            if (lim->CheckInfinity()) target_infinity = true;
+        auto tr = static_cast<CurseUser*>(target);
+        if (auto* tech = tr->GetTechnique()) {
+            if (tech->IsLimitless() && tech->IsInfinityActive()) target_infinity = true;
         }
     }
 
@@ -247,19 +242,19 @@ bool CharacterBrain::TryInventoryActions(Character* user, Character* target, AIT
 
     bool target_infinity = false;
     if (target->IsaCurseUser()) {
-        auto tr_cr = static_cast<CurseUser*>(target);
-        if (auto* lim = dynamic_cast<Limitless*>(tr_cr->GetTechnique())) {
-            if (lim->CheckInfinity()) target_infinity = true;
+        auto tr = static_cast<CurseUser*>(target);
+        if (auto* tech = tr->GetTechnique()) {
+            if (tech->IsLimitless() && tech->IsInfinityActive()) target_infinity = true;
         }
     }
 
     if (target_infinity) {
-        if (!tool || tool->GetSimpleName() != "The Inverted Spear of Heaven") {
-            for (const auto& t : inv) {
-                if (t->GetSimpleName() == "The Inverted Spear of Heaven") {
-                    user->EquipToolByName("The Inverted Spear of Heaven");
-                    return true;
-                }
+        if (tool && tool->IsAntiTechniqueWeapon()) return false;
+
+        for (size_t i = 0; i < inv.size(); ++i) {
+            if (inv[i]->IsAntiTechniqueWeapon()) {
+                user->CursedToolChoice(i + 1);
+                return true;
             }
         }
     }

@@ -34,16 +34,16 @@ void Toji::OnCharacterTurn(Character*, Battlefield& bf) {
 
     for (const auto& t : bf.battlefield) {
         if (t.get() == this || t->GetCharacterHealth() <= 0.0) continue;
-
-        auto* curse_user = dynamic_cast<CurseUser*>(t.get());
         
         double hp_ratio = t->GetCharacterHealth() / t->GetCharacterMaxHealth();
         double score = 1.0 - hp_ratio;
 
-        if (curse_user && curse_user->GetTechnique()) {
-            auto* limitless = dynamic_cast<Limitless*>(curse_user->GetTechnique());
-            if (limitless && limitless->CheckInfinity()) {
-                score += 0.15;
+        if (t.get()->IsaCurseUser()) {
+            auto* crs = static_cast<CurseUser*>(t.get());
+            if (auto* tech = crs->GetTechnique()) {
+                if (tech->IsLimitless()) {
+                    score += 0.15;
+                }
             }
         }
         score += GetRandomNumber(-5, 5) * 0.01;
@@ -63,27 +63,33 @@ void Toji::OnCharacterTurn(Character*, Battlefield& bf) {
         this->Taunt(target);
     }
 
-    auto* curse_user_t = dynamic_cast<CurseUser*>(target);
-    auto* limitless = curse_user_t ? dynamic_cast<Limitless*>(curse_user_t->GetTechnique()) : nullptr;
-
-    if (limitless && limitless->CheckInfinity()) {
-        if (!this->GetTool() || this->GetTool()->GetSimpleName() != "The Inverted Spear of Heaven") {
-            this->EquipToolByName("The Inverted Spear of Heaven");
-            return;
+    bool needs_spear = false;
+    if (target->IsaCurseUser()) {
+        auto crs = static_cast<CurseUser*>(target);
+        if (auto* tech = crs->GetTechnique()) {
+            if (tech->IsLimitless() && tech->IsInfinityActive()) needs_spear = true;
+        }
+    }
+    const auto& inv = this->GetCursedTools();
+    if (needs_spear) {
+        if (!this->GetTool() || !this->GetTool()->IsAntiTechniqueWeapon()) {
+            for (size_t i = 0; i < inv.size(); ++i) {
+                if (inv[i]->IsAntiTechniqueWeapon()) {
+                    this->CursedToolChoice(i + 1);
+                    return;
+                }
+            }
         }
     }
     else {
-        if (!this->GetTool() || this->GetTool()->GetSimpleName() != "Playful Cloud") {
-            this->EquipToolByName("Playful Cloud");
-            return;
+        if (!this->GetTool() || this->GetTool()->IsAntiTechniqueWeapon()) {
+            for (size_t i = 0; i < inv.size(); ++i) {
+                if (!inv[i]->IsAntiTechniqueWeapon()) {
+                    this->CursedToolChoice(i + 1);
+                    return;
+                }
+            }
         }
     }
-
-    if (this->GetTool()) {
-        this->GetTool()->UseTool(this, target);
-    }
-    else {
-        std::println("{} strikes {} with his bare hands!", this->GetNameWithID(), target->GetNameWithID());
-        target->Damage(10.0 * this->GetStrengthDamage());
-    }
+    this->Attack(target);
 }

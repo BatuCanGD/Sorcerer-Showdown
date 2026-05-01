@@ -30,3 +30,7 @@ void Agito::OnShikigamiTurn(CurseUser* user, Battlefield& bf) {
     PassiveSupport(user);
     user->SpendCE(summon_amount);
 }
+
+bool Agito::IsAgito() const {
+    return true;
+}

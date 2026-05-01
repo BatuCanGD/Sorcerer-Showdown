@@ -82,3 +82,15 @@ std::string Technique::GetStringChantLevel() const {
     default: return "One";
     }
 }
+
+bool Technique::IsShrine() const {
+    return false;
+}
+
+bool Technique::IsLimitless() const { 
+    return false; 
+}
+
+bool Technique::IsInfinityActive() const {
+    return false;
+}

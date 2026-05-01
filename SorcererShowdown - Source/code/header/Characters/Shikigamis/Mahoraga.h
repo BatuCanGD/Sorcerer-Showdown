@@ -24,4 +24,5 @@ public:
 	void OnShikigamiTurn(CurseUser* user, Battlefield& bf) override;
 	void PrintStatus(CurseUser*) const;
 	void UpdatePreviousState();
+	bool IsMahoraga() const override;
 };

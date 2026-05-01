@@ -33,4 +33,7 @@ public:
 
 	bool IsShikigami() const override;
 	bool CanBeHit() const override;
+
+	virtual bool IsMahoraga() const;
+	virtual bool IsAgito() const;
 };

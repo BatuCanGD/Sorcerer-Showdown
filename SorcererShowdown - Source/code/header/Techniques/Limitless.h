@@ -40,4 +40,7 @@ public:
 	void AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) override;
 	void TechniqueSetting(CurseUser*, Battlefield&) override;
 	void Chant() override;
+
+	bool IsLimitless() const override;
+	bool IsInfinityActive() const override;
 };

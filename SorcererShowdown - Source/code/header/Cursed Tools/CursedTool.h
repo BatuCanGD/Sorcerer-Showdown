@@ -21,4 +21,6 @@ public:
 	virtual void UseTool(Character*, Character*) = 0;
 	std::string GetName() const;
 	std::string GetSimpleName() const;
+
+	virtual bool IsAntiTechniqueWeapon() const;
 };

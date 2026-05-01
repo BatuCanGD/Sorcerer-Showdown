@@ -37,3 +37,7 @@ void CursedSpirit::TickCharacterSpecialty() {
 void CursedSpirit::SetPassiveRegen(double p) {
     passive_health_regen = p;
 }
+
+bool CursedSpirit::IsTransfigured() const {
+    return false;
+}

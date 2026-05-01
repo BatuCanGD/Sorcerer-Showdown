@@ -25,13 +25,13 @@ void TransfiguredHuman::OnCharacterTurn(Character*, Battlefield& bf) {
 
 		if (tar.get() != this)
 		{
-			if (auto cursedspirit = dynamic_cast<CursedSpirit*>(tar.get())) {
-				continue;
-			}
 			if (!target) {
 				target = tar.get();
 				continue;
 			} 
+			if (tar->IsaCursedSpirit()) {
+				continue;
+			}
 			if (GetRandomNumber(0, 1) == 1) {
 				target = tar.get();
 			}
@@ -42,4 +42,8 @@ void TransfiguredHuman::OnCharacterTurn(Character*, Battlefield& bf) {
 		return;
 	}
 	this->Attack(target);
+}
+
+bool TransfiguredHuman::IsTransfigured() const {
+	return true;
 }

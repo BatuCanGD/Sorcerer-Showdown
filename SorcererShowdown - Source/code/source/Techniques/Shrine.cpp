@@ -139,3 +139,7 @@ void Shrine::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& b
 std::unique_ptr<Technique> Shrine::Clone() const {
     return std::make_unique<Shrine>(*this);
 }
+
+bool Shrine::IsShrine() const {
+    return true;
+}

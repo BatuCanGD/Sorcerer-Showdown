@@ -17,3 +17,7 @@ void InvertedSpearofHeaven::UseTool(Character* user, Character* target) {
 std::unique_ptr<CursedTool> InvertedSpearofHeaven::Clone() const {
 	return std::make_unique<InvertedSpearofHeaven>(*this);
 }
+
+bool InvertedSpearofHeaven::IsAntiTechniqueWeapon() const {
+	return true;
+}

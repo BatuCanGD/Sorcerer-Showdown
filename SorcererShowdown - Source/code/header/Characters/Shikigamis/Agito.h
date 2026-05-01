@@ -13,4 +13,5 @@ protected:
 public:
 	void PassiveSupport(CurseUser* user);
 	void OnShikigamiTurn(CurseUser* user, Battlefield& bf) override;
+	bool IsAgito() const override;
 };

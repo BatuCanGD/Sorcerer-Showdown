@@ -118,7 +118,6 @@ public:
     Shikigami* ChooseShikigami(size_t) const;
     const std::vector<std::unique_ptr<Shikigami>>& GetShikigami() const;
     void TickShikigami(Battlefield& bf);
-    void CleanupShikigami();
 
 	void SetTechnique(std::unique_ptr<Technique>);
 	void SetDomain(std::unique_ptr<Domain>);

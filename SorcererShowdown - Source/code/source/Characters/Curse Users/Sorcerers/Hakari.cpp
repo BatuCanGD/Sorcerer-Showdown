@@ -54,16 +54,17 @@ void Hakari::OnCharacterTurn(Character*, Battlefield& bf) {
         if (s.get() == this) continue;
         double score = s->GetCharacterHealth() / this->GetCharacterMaxHealth();
 
-        if (auto curse_user = dynamic_cast<CurseUser*>(s.get())) {
+        if (s->IsaCurseUser()) {
+            auto curse_user = static_cast<CurseUser*>(s.get());
             if (curse_user->DomainActive()) {
                 domain_users.push_back(curse_user);
                 score += 0.50;
             }
         }
-        else if (dynamic_cast<PhysicallyGifted*>(s.get())) {
+        else if (s->IsPhysicallyGifted()) {
             score += 0.25;
         }
-        else if (dynamic_cast<CursedSpirit*>(s.get())) {
+        else if (s->IsaCursedSpirit()) {
             score += 0.35;
         }
 
@@ -111,7 +112,7 @@ void Hakari::TickCharacterSpecialty() {
     auto pplt = static_cast<PrivatePureLoveTrain*>(this->GetTechnique());
 
     if (idg->HasHitJackpot()) {
-        this->SetCursedEnergyRegen(std::min(ce_regen_efficiency * 50.0, 5500.0));
+        this->SetCursedEnergyRegen(std::min(ce_regen * 50.0, 5500.0));
         this->BoostRCT();
         jackpot_tick++;
         if (jackpot_tick > 5) {
@@ -120,7 +121,7 @@ void Hakari::TickCharacterSpecialty() {
             burnout_time = 0;
             technique_burnout_time = 0;
             is_strained = false;
-            this->SetCursedEnergyRegen(previous_ce_regen);
+            this->SetCursedEnergyRegen(saved_ce_regen);
             this->DisableRCT();
             std::println("{}'s Jackpot has worn off!", this->GetNameWithID());
         }

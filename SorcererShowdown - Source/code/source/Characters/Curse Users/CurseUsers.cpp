@@ -322,7 +322,6 @@ void CurseUser::DeactivateCounterDomain() {
 }
 
 void CurseUser::Attack(Character* target) {
-    
     if (target->IsaCurseUser()) {
         auto target_cuser = static_cast<CurseUser*>(target);
         if (Limitless* limitless = dynamic_cast<Limitless*>(target_cuser->GetTechnique())) {
@@ -387,17 +386,6 @@ bool CurseUser::DomainAmplificationActive() const {
 
 double CurseUser::GetCharacterPreviousCE() const {
     return prev_cursed_energy;
-}
-
-void CurseUser::CleanupShikigami() {
-    auto [removed_begin, removed_end] = std::ranges::remove_if(shikigami, [](const auto& s) {
-        if (s->GetCharacterHealth() <= 0.0) {
-            std::println("{} has been destroyed!", s->GetName());
-            return true;
-        }
-        return false;
-        });
-    shikigami.erase(removed_begin, removed_end);
 }
 
 int CurseUser::GetBlackFlashChance()const {

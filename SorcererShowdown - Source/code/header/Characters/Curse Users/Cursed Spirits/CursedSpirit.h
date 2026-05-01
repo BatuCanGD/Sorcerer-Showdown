@@ -11,4 +11,5 @@ public:
 	void TickCharacterSpecialty() override;
 	std::unique_ptr<Character> Clone() const override;
 	void SetPassiveRegen(double);
+	virtual bool IsTransfigured() const;
 };

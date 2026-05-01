@@ -72,23 +72,23 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
         double hp_ratio = target->GetCharacterHealth() / this->GetCharacterMaxHealth();
         double score = hp_ratio;
 
-        if (auto curse_user = dynamic_cast<CurseUser*>(target.get())) {
+        if (target->IsaCurseUser()) {
+            auto curse_user = static_cast<CurseUser*>(target.get());
+
             if (curse_user->DomainActive()) {
                 domain_users.push_back(curse_user);
                 score += 0.50;
             }
-            if (curse_user->GetTechnique()) {
-                std::string tech_name = curse_user->GetTechnique()->GetTechniqueSimpleName();
-                if (tech_name == "Shrine") {
+            if (auto* tech = curse_user->GetTechnique()) {
+                if (tech->IsShrine()) {
                     score += 1.0;
                 }
-                if (tech_name == "Limitless") {
-                    auto* limitless = dynamic_cast<Limitless*>(curse_user->GetTechnique());
-                    score += (limitless && !limitless->CheckInfinity()) ? 0.30 : 0.15;
+                if (tech->IsLimitless()) {
+                    score += (tech->IsInfinityActive() ? 0.30 : 0.15);
                 }
             }
         }
-        else if (auto physically_gifted = dynamic_cast<PhysicallyGifted*>(target.get())) {
+        else if (target->IsPhysicallyGifted()) {
             score += 0.25;
         }
 
@@ -109,11 +109,11 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
     Agito* agito = nullptr;
 
     for (const auto& s : shikigami) {
-        if (s->GetSimpleName() == "Mahoraga") {
-            makora = dynamic_cast<Mahoraga*>(s.get());
+        if (s->IsMahoraga()) {
+            makora = static_cast<Mahoraga*>(s.get());
         }
-        else if (s->GetSimpleName() == "Agito") {
-            agito = dynamic_cast<Agito*>(s.get());
+        else if (s->IsAgito()) {
+            agito = static_cast<Agito*>(s.get());
         }
     }
 
@@ -190,7 +190,8 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
     }
 
     bool needs_da = false;
-    if (auto* cu = dynamic_cast<CurseUser*>(strongest)) {
+    if (strongest->IsaCurseUser()) {
+        auto* cu = static_cast<CurseUser*>(strongest);
         if (auto* lim = dynamic_cast<Limitless*>(cu->GetTechnique())) {
             if (lim && lim->CheckInfinity()) needs_da = true;
         }

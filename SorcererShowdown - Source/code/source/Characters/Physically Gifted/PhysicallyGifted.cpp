@@ -36,7 +36,8 @@ double PhysicallyGifted::GetHealingFactor() const {
 }
 
 void  PhysicallyGifted::Attack(Character* target) {
-    if (auto* target_cuser = dynamic_cast<CurseUser*>(target)) {
+    if (target->IsaCurseUser()) {
+        auto* target_cuser = static_cast<CurseUser*>(target);
         if (auto* limitless = dynamic_cast<Limitless*>(target_cuser->GetTechnique())) {
             bool has_spear = cursed_tool && cursed_tool->GetSimpleName() == "The Inverted Spear of Heaven";
             if (limitless->CheckInfinity() && !has_spear) {

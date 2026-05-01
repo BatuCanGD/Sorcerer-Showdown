@@ -34,8 +34,9 @@ void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
 
 	for (const auto& chr : bf.battlefield) {
 		if (chr.get() == this) continue;
-		if (chr.get()->GetSimpleName() == "Transfigured Human") {
-			tf_amount++;
+		if (chr->IsaCursedSpirit()) {
+			auto cs = static_cast<CursedSpirit*>(chr.get());
+			if (cs->IsTransfigured()) tf_amount++;
 		}
 		double character_pr = chr->GetCharacterHealth() / chr->GetCharacterMaxHealth();
 		if (character_pr < weakest_hp_pr || !weakest) {

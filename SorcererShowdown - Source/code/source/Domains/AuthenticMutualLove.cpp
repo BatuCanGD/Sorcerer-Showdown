@@ -7,7 +7,7 @@ AuthenticMutualLove::AuthenticMutualLove() : Domain(600.0, 125.0, 16.0) {
     ref_level = Refinement::Refined;
     hit_type = HitType::HitsCurseUsers;
 
-    domain_color = "Authentic Mutual Love";
+    domain_name = "Authentic Mutual Love";
     domain_color = "\033[95m";
 
     domain_cost = 500.0;

@@ -44,5 +44,9 @@ public:
 	bool Boosted() const;
 	bool BurntOut() const;
 	bool Usable() const;
+
+	virtual bool IsShrine() const;
+	virtual bool IsLimitless() const;
+	virtual bool IsInfinityActive() const;
 };
 

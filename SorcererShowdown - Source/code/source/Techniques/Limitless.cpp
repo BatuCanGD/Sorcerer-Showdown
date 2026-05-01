@@ -97,7 +97,7 @@ void Limitless::InfinityNerf(CurseUser* user) {
         return;
     }
     if (this->CheckInfinity()) {
-        double maintain_cost = 100.0;
+        double maintain_cost = 125.0;
         if (user->GetCharacterCE() < maintain_cost) {
             std::println("{}{}'s concentration wavers due to low CE!{}{} Infinity is deactivated.{}",Color::Red,user->GetNameWithID(),Color::Clear,Color::Cyan,Color::Clear);
             SetInfinity(false);
@@ -233,4 +233,12 @@ void Limitless::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield
             UseBlue(user, target);
         }
     }
+}
+
+bool Limitless::IsLimitless() const {
+    return true;
+}
+
+bool Limitless::IsInfinityActive() const {
+    return Infinity;
 }

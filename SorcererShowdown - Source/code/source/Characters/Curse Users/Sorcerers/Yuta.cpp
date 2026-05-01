@@ -73,19 +73,19 @@ void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {
         if (s.get() == this) continue;
         double score = s->GetCharacterHealth() / this->GetCharacterMaxHealth();
 
-        if (auto curse_user = dynamic_cast<CurseUser*>(s.get())) {
+        if (s->IsaCurseUser()) {
+            auto curse_user = static_cast<CurseUser*>(s.get());
             if (curse_user->DomainActive()) {
                 domain_users.push_back(curse_user);
                 score += 0.50;
             }
 
-            if (curse_user->GetTechnique()) {
-                std::string tech = curse_user->GetTechnique()->GetTechniqueSimpleName();
-                if (tech == "Shrine") score += 0.80;
-                if (tech == "Limitless") score += 0.15;
+            if (auto* tech = curse_user->GetTechnique()) {
+                if (tech->IsShrine()) score += 0.80;
+                if (tech->IsLimitless()) score += 0.15;
             }
         }
-        else if (dynamic_cast<PhysicallyGifted*>(s.get())) {
+        else if (s->IsPhysicallyGifted()) {
             score += 0.25;
         }
 
@@ -140,14 +140,15 @@ void Yuta::HitCharacter(Character* strongest) {
 
 bool Yuta::InfCheck(Character* strongest) {
     bool needs_amplification = false;
-
-    if (auto curse_user = dynamic_cast<CurseUser*>(strongest)) {
-        if (auto str = dynamic_cast<Limitless*>(curse_user->GetTechnique())) {
-            if (str && str->CheckInfinity()) {
+    if (strongest->IsaCurseUser()) {
+        auto crs = static_cast<CurseUser*>(strongest);
+        if (auto* tech = crs->GetTechnique()) {
+            if (tech->IsLimitless() && tech->IsInfinityActive()) {
                 needs_amplification = true;
             }
         }
     }
+
     if (needs_amplification) {
         this->SetAmplification(true);
     }

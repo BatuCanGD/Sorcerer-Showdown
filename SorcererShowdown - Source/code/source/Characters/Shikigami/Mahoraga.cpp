@@ -71,3 +71,7 @@ void Mahoraga::OnShikigamiTurn(CurseUser* user, Battlefield& bf) {
     this->UpdatePreviousState();
     user->SpendCE(keep_active_cost);
 }
+
+bool Mahoraga::IsMahoraga() const {
+    return true;
+}

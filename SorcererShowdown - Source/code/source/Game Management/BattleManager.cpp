@@ -149,15 +149,16 @@ bool BattleManager::ManageEndOfTurn(Battlefield& bf, bool spectator_mode) {
 
 	for (const auto& c : bf.battlefield) {
 		double health_before_regen = c->GetCharacterHealth();
-		if (auto curse_user = dynamic_cast<CurseUser*>(c.get())) {
+		if (c->IsaCurseUser()) {
+			auto curse_user = static_cast<CurseUser*>(c.get());
 			double ce_before_regen = curse_user->GetCharacterCE();
-			if (auto sorcerer = dynamic_cast<Sorcerer*>(curse_user)) {
+			if (curse_user->IsaSorcerer()) {
+				auto sorcerer = static_cast<Sorcerer*>(curse_user);
 				if (auto limitless = dynamic_cast<Limitless*>(sorcerer->GetTechnique())) {
 					limitless->InfinityNerf(sorcerer);
 				}
 				sorcerer->UseRCT();
 			}
-			curse_user->CleanupShikigami();
 			curse_user->TickShikigami(bf);
 			curse_user->RecoverBurnout();
 			curse_user->RecoverTechniqueBurnout(curse_user->GetTechnique());
@@ -205,7 +206,8 @@ void BattleManager::DomainCheckAndPerform(Battlefield& bf) {
 	std::vector<CurseUser*> active_domains;
 
 	for (const auto& s : bf.battlefield) {
-		if (auto curse_user = dynamic_cast<CurseUser*>(s.get())) {
+		if (s->IsaCurseUser()) {
+			auto curse_user = static_cast<CurseUser*>(s.get());
 			if (curse_user->GetDomain() == nullptr) continue;
 			if (curse_user->DomainActive()) {
 				active_domains.push_back(curse_user);
@@ -250,8 +252,9 @@ void BattleManager::DomainCheckAndPerform(Battlefield& bf) {
 		}
 	}
 	for (const auto& s : bf.battlefield) {
-		if (auto sr = dynamic_cast<CurseUser*>(s.get())) {
-			sr->TickDomain();
+		if (s->IsaCurseUser()) {
+			auto cr = static_cast<CurseUser*>(s.get());
+			cr->TickDomain();
 		}
 	}
 }

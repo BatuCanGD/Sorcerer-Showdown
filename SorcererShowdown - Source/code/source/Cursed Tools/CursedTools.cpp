@@ -19,3 +19,7 @@ std::string CursedTool::GetName() const {
 std::string CursedTool::GetSimpleName()const {
 	return tool_name;
 }
+
+bool CursedTool::IsAntiTechniqueWeapon() const {
+	return false;
+}

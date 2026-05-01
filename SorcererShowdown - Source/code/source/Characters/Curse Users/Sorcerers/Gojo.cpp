@@ -71,23 +71,22 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
         double hp_ratio = target->GetCharacterHealth() / this->GetCharacterMaxHealth();
         double score = hp_ratio;
 
-        if (auto curse_user = dynamic_cast<CurseUser*>(target.get())) {
+        if (target->IsaCurseUser()) {
+            auto curse_user = static_cast<CurseUser*>(target.get());
             if (curse_user->DomainActive()) {
                 domain_users.push_back(curse_user);
                 score += 0.50;
             }
-            if (curse_user->GetTechnique()) {
-                std::string tech_name = curse_user->GetTechnique()->GetTechniqueSimpleName();
-                if (tech_name == "Shrine") {
+            if (auto* tech = curse_user->GetTechnique()) {
+                if (tech->IsShrine()) {
                     score += 1.0;
                 }
-                if (tech_name == "Limitless") {
-                    auto* limitless = dynamic_cast<Limitless*>(curse_user->GetTechnique());
-                    score += (limitless && !limitless->CheckInfinity()) ? 0.30 : 0.15;
+                if (tech->IsLimitless()) {
+                    score += (tech->IsInfinityActive() ? 0.30 : 0.15);
                 }
             }
         }
-        else if (auto physically_gifted = dynamic_cast<PhysicallyGifted*>(target.get())) {
+        else if (target->IsPhysicallyGifted()) {
             score += 0.25;
         }
         score += GetRandomNumber(-5, 5) * 0.01;
@@ -138,21 +137,20 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
             }
         }
     }
+    if (strongest && strongest->IsaCurseUser()) {
+        auto* cur = static_cast<CurseUser*>(strongest);
+        if (auto* tech = cur->GetTechnique()) {
+            if (tech->IsLimitless() && tech->IsInfinityActive()) {
+                this->SetAmplification(true);
+                HitCharacter(strongest);
+                return;
+            }
+        }
+    }
+
     if (strongest && 
         (limitless->Usable() || limitless->Boosted()) && 
         (this->GetCharacterCE() >= this->GetCharacterMaxCE() * 0.2)) {
-
-        CurseUser* cur = dynamic_cast<CurseUser*>(strongest);
-        if (cur) {
-            auto* target_tech = cur->GetTechnique();
-            if (target_tech && target_tech->GetTechniqueSimpleName() == "Limitless") {
-                bool checked = InfCheck(strongest);
-                if (checked) {
-                    HitCharacter(strongest);
-                    return;
-                }
-            }
-        }
 
         int roll = GetRandomNumber(1, 100);
         int croll = GetRandomNumber(1, 10);
