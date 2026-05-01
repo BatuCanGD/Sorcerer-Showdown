@@ -18,6 +18,9 @@
 #include "UnlimitedPurple.h"
 #include "WorldCuttingSlash.h"
 #include "PrivatePureLoveTrain.h"
+#include "Aggressive.h"
+#include "Reactive.h"
+#include "Randomized.h"
 #include "Mahoraga.h"
 #include "Agito.h"
 #include "Copy.h"
@@ -25,7 +28,7 @@
 import std;
 
 std::unique_ptr<Technique> GetTechniqueByName(const std::string& name);
-CharacterBrain::AIType GetCustomAIType(const std::string& name);
+std::unique_ptr<CharacterBrain> GetBrainType(const std::string& name);
 std::unique_ptr<Domain> GetDomainByName(const std::string& name);
 std::unique_ptr<Domain> GetCounterDomainByName(const std::string& name);
 std::unique_ptr<Specials> GetSpecialByName(const std::string& name);
@@ -65,8 +68,7 @@ std::unique_ptr<Character> CharacterCreator::CreateFromJson(const json& j) {
     if (!character) return nullptr;
 
     if (j.contains("ai_type")) {
-        character->SetCustomAI(GetCustomAIType(j.at("ai_type").get<std::string>()));
-        character->SetBrain(std::make_unique<CharacterBrain>());
+        character->SetBrain(GetBrainType(j.at("ai_type").get<std::string>()));
     }
 
     if (j.contains("base_attack_damage")) {
@@ -152,11 +154,11 @@ static std::unique_ptr<Technique> GetTechniqueByName(const std::string& name) {
     return nullptr;
 }
 
-static CharacterBrain::AIType GetCustomAIType(const std::string& name) {
-    if (name == "Aggressive") return CharacterBrain::AIType::Aggressive;
-    if (name == "Reactive") return CharacterBrain::AIType::Reactive;
-    if (name == "Randomized") return CharacterBrain::AIType::Randomized;
-    return CharacterBrain::AIType::Randomized;
+static std::unique_ptr<CharacterBrain> GetBrainType(const std::string& name) {
+    if (name == "Aggressive") return std::make_unique<Aggressive>();
+    if (name == "Reactive") return std::make_unique<Reactive>();
+    if (name == "Randomized") return std::make_unique<Randomized>();
+    return std::make_unique<Aggressive>();
 }
 
 static std::unique_ptr<Domain> GetDomainByName(const std::string& name) {
