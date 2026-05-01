@@ -26,7 +26,7 @@ void Character::OnCharacterTurn(Character*, Battlefield& bf) {
 		return;
 	}
 	if (brain) {
-		brain->ExecuteTurn(this, bf, ai_type);
+		brain->ExecuteTurn(this, bf);
 	}
 	else {
 		std::println("if you see this, it means that you havent assigned"
@@ -301,12 +301,6 @@ void Character::Taunt(Character* taunted) const { // pure aura
 }
 void Character::SetEquippedTool(std::unique_ptr<CursedTool> tool) {
 	cursed_tool = std::move(tool);
-}
-void Character::SetCustomAI(CharacterBrain::AIType type) {
-	ai_type = type;
-}
-CharacterBrain::AIType Character::GetCustomAI() const {
-	return ai_type;
 }
 void Character::SetBrain(std::unique_ptr<CharacterBrain> new_brain) {
 	brain = std::move(new_brain);
