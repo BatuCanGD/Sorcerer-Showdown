@@ -93,6 +93,7 @@ bool Reactive::TryDomainActions(CurseUser* user, Battlefield& bf, Character* tar
         if (user->GetDomain() && !user->DomainActive() && user->GetDomainUses() < 5 && !user->IsStrained()) {
             if (!user->GetTechnique() || !user->GetTechnique()->BurntOut())
             user->ActivateDomain();
+            return true;
         }
         if (user->GetCounterDomain() && !user->CounterDomainActive() && !user->DomainActive()) {
             user->ActivateCounterDomain(); 

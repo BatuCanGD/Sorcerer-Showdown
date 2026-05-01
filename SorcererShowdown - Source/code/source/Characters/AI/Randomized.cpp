@@ -61,7 +61,7 @@ void Randomized::UseShikigami(CurseUser* user) {
 bool Randomized::TryDomainActions(CurseUser* user, Battlefield& bf, Character* target) {
     if (user->GetCounterDomain() && !user->CounterDomainActive() && !user->DomainActive()) {
         user->ActivateCounterDomain(); 
-            return true; 
+        if (user->CounterDomainActive()) return true;
     }
     if (!user->HPMoreThanMax(0.40) && user->GetDomain() && !user->DomainActive()) {
         if (GetRandomNumber(1, 100) >= 90 && user->GetDomainUses() >= 5) {
