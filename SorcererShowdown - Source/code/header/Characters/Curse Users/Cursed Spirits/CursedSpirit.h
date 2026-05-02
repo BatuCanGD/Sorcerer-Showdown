@@ -1,6 +1,5 @@
 #pragma once
 #include "CurseUser.h"
-#include <string>	
 
 class CursedSpirit : public CurseUser {
 protected:

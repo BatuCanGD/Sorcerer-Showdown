@@ -1,8 +1,5 @@
 #pragma once
 #include "Character.h"
-#include <string>
-#include <memory>
-#include <vector>
 
 class Domain;
 class Technique;

@@ -1,11 +1,6 @@
 #pragma once
 #include "json.hpp"
-#include <memory>
-
-#include "Sorcerer.h"
-#include "CursedSpirit.h"
-#include "PhysicallyGifted.h"
-#include "Shikigami.h"
+#include "Character.h"
 
 using json = nlohmann::json;
 struct Battlefield;

@@ -12,7 +12,7 @@
 #include "Specials.h"
 
 
-import std;
+
 
 Character* Aggressive::GetTarget(Character* user, Battlefield& bf){
     Character* target = nullptr;

@@ -1,6 +1,5 @@
 #pragma once
-#include <vector>
-#include <memory>
+#include "std.h"
 class Character;
 class CurseUser;
 class Sorcerer;

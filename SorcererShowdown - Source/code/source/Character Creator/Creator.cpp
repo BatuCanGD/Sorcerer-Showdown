@@ -24,8 +24,10 @@
 #include "Mahoraga.h"
 #include "Agito.h"
 #include "Copy.h"
-#include <fstream>
-import std;
+#include "Sorcerer.h"
+#include "CursedSpirit.h"
+#include "PhysicallyGifted.h"
+#include "CurseUser.h"
 
 std::unique_ptr<Technique> GetTechniqueByName(const std::string& name);
 std::unique_ptr<CharacterBrain> GetBrainType(const std::string& name);

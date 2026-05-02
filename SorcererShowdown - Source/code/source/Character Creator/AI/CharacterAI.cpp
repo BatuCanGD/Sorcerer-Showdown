@@ -13,7 +13,7 @@
 #include "BattlefieldHeader.h"
 #include "Utils.h"
 
-import std;
+
 
 void CharacterBrain::ExecuteTurn(Character* user, Battlefield& bf) {
     Character* target = GetTarget(user, bf);

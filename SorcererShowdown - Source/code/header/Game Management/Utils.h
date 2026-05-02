@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include "std.h"
 
 namespace Color {
     inline const std::string Clear = "\033[0m";

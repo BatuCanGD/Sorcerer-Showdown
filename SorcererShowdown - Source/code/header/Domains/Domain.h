@@ -1,6 +1,5 @@
 #pragma once
-#include <string>
-#include <memory>
+#include "std.h"
 
 class Character;
 class CurseUser;
