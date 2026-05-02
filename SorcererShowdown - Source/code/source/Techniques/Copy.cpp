@@ -152,7 +152,9 @@ void Copy::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf)
     bool dont_copy = false;
     if (target->IsaCurseUser()) {
         auto crs = static_cast<CurseUser*>(target);
-        if (!crs->GetTechnique()) return;
+        if (!crs->GetTechnique()) {
+            dont_copy = true;
+        }
         if (copied_techniques.size() >= max_copies) {
             dont_copy = true;
         }

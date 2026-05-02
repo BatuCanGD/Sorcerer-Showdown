@@ -103,7 +103,12 @@ void PlayerManager::OnPlayerTurn(Character& s, Battlefield& bf) {
 	case 9:
 		if (p_curseuser) {
 			auto src = static_cast<CurseUser*>(&s);
-			src->GetTechnique()->TechniqueSetting(src, bf);
+			if (src->GetTechnique()) {
+				src->GetTechnique()->TechniqueSetting(src, bf);
+			}
+			else {
+				std::println("You dont have a Technique");
+			}
 		}
 		else {
 			std::println("You cant use Techniques");
