@@ -1,7 +1,6 @@
 #pragma once
 #include "PhysicallyGifted.h"
 
-
 class Toji : public PhysicallyGifted {
 public:
 	Toji();

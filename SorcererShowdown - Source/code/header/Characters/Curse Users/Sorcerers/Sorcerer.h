@@ -1,8 +1,4 @@
 #pragma once
-#include <memory>
-#include <vector>
-#include <string>
-
 #include "CurseUser.h"
 
 class Shikigami;

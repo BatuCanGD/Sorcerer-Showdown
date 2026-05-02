@@ -1,13 +1,11 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <memory>
+#include "std.h"
 
 class CurseUser;
 class Character;
 struct Battlefield;
 
-class Technique { // BASE CLASS
+class Technique { 
 protected:
 	static constexpr double base_output = 10.0;
 	enum class ChantLevel {
@@ -48,5 +46,6 @@ public:
 	virtual bool IsShrine() const;
 	virtual bool IsLimitless() const;
 	virtual bool IsInfinityActive() const;
+	virtual bool IsCopy() const;
 };
 
