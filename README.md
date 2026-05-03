@@ -220,7 +220,7 @@ void MyTechnique::TechniqueMenu(CurseUser* user, Character* target, Battlefield&
     }
     std::println("1 - Use My Ability");
     std::print("=> ");
-    if (GetValidInput() == 1) UseMyAbility(user, target);
+    if (GetValidInput() == 1) UseMyAbility(user, target); // GetValidInput is from the Utils.h library. Used to get input and return integers
 }
 
 // AI path — called automatically each turn
@@ -510,7 +510,7 @@ SorcererShowdown/
 
 ## ⚙️ Key Systems
 
-**Domain Clashing** — Two active domains clash each turn. Higher `Refinement` wins outright; equal refinement goes to `Range`; equal range is a stalemate. Three or more active domains all collapse simultaneously.
+**Domain Clashing** — Two active domains clash each turn. Higher `Refinement` wins outright; equal refinement goes to `Range`. Equal range is a stalemate. Three or more active domains all collapse simultaneously.
 
 **Burnout** — Deactivating a domain burns out the technique (0.35× output) for several turns. `RecoverTechniqueBurnout` ticks each end-of-turn until the technique resets to `Usable`.
 
