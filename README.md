@@ -5,7 +5,7 @@
 
 # ⚔️ Sorcerer Showdown
 
-A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++** using modules (`import std`). Fight as iconic sorcerers — or build your own custom characters, cursed techniques, and domains.
+A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++23**. Fight as iconic sorcerers — or build your own custom characters, cursed techniques, and domains.
 
 ---
 
@@ -24,8 +24,52 @@ A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++** using m
 
 ## 🛠 Building
 
-- **Requires** a C++23 compiler with `import std` support (MSVC `/std:c++latest` or Clang 17+)
-- Easiest to use Visual Studio and add all `.cpp` files to one project
+### Requirements
+
+- C++23 compiler:
+  - **MSVC** — Visual Studio 2022 v17.6+ with `/std:c++latest`
+  - **Clang** — 17+ with `-std=c++23`
+  - **GCC** — 14+ with `-std=c++23`
+- CMake 3.28+
+- Internet access on first build (CMake auto-downloads `json.hpp` from the nlohmann/json repo)
+
+### CMake (recommended)
+
+```bash
+cmake -B build
+cmake --build build
+```
+
+The executable lands in `build/`. If a `characters.json` exists in the project root, CMake copies it to the build directory automatically.
+
+### Visual Studio (manual)
+
+1. Create a new empty C++ project
+2. Add all `.cpp` files from `code/source/` to the project
+3. Add all subdirectories under `code/header/` to **Additional Include Directories**
+4. Set **C++ Language Standard** to **ISO C++23** (or `/std:c++latest`)
+5. Download [`json.hpp`](https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp) and place it in the project root
+
+### Project layout expected by CMake
+
+```
+SorcererShowdown/
+├── CMakeLists.txt
+├── json.hpp                  ← auto-downloaded if missing
+├── characters.json           ← optional, copied to build dir
+└── code/
+    ├── header/
+    │   ├── std.h
+    │   ├── Characters/
+    │   ├── Character Creator/
+    │   ├── Cursed Tools/
+    │   ├── Domains/
+    │   ├── Game Management/
+    │   ├── Specials/
+    │   └── Techniques/
+    └── source/
+        └── *.cpp
+```
 
 ---
 
@@ -40,7 +84,7 @@ A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++** using m
 
 ## 🧩 Adding Custom Content
 
-There are two ways to expand the roster: writing a **native C++ class** for full control over AI behaviour and unique mechanics, or dropping a **`characters.json`** file in the same directory as the executable for quick, data-driven characters.
+Two paths: write a **native C++ class** for full control over AI behaviour and unique mechanics, or drop a **`characters.json`** file next to the executable for quick data-driven characters.
 
 ---
 
@@ -53,8 +97,8 @@ Pick your base class:
 | Base Class | Use For |
 |---|---|
 | `Sorcerer` | CE user with RCT and a technique |
-| `CursedSpirit` | CE entity without RCT |
-| `PhysicallyGifted` | Heavenly-restricted, strength-based |
+| `CursedSpirit` | CE entity without RCT, passive HP regen |
+| `PhysicallyGifted` | Heavenly-restricted, strength-based combat |
 
 **MyCharacter.h:**
 ```cpp
@@ -66,7 +110,6 @@ public:
     MyCharacter();
     std::unique_ptr<Character> Clone() const override;
     void OnCharacterTurn(Character*, Battlefield&) override;
-    bool CanBeHit() const override;
 };
 ```
 
@@ -74,35 +117,53 @@ public:
 ```cpp
 #include "MyCharacter.h"
 #include "BattlefieldHeader.h"
-import std;
+// include any technique/domain headers you use
 
 MyCharacter::MyCharacter() : Sorcerer(700.0, 3000.0, 100.0) {
-    // hp, cursed_energy, ce_regen
-    technique  = std::make_unique<MyTechnique>();
-    domain     = std::make_unique<MyDomain>();
-    rct_skill  = RCTProficiency::Adept;
+    // Sorcerer(hp, cursed_energy, ce_regen)
+    technique          = std::make_unique<MyTechnique>();
+    domain             = std::make_unique<MyDomain>();
+    rct_skill          = RCTProficiency::Adept; // None/Crude/Adept/Expert/Absolute
     black_flash_chance = 10;
     base_attack_damage = 30.0;
-    char_name = "My character";
-    name_color = "\033[36m";
+    char_name          = "My Character";
+    name_color         = "\033[36m";
 }
-std::unique_ptr<Character> MyCharacter::Clone() const { return std::make_unique<MyCharacter>(); }
-bool MyCharacter::CanBeHit() const              { return true; }
+
+std::unique_ptr<Character> MyCharacter::Clone() const {
+    return std::make_unique<MyCharacter>();
+}
 
 void MyCharacter::OnCharacterTurn(Character*, Battlefield& bf) {
+    // find a target
     Character* target = nullptr;
     for (const auto& s : bf.battlefield) {
         if (s.get() != this) { target = s.get(); break; }
     }
-    if (target) this->Attack(target);
+    if (!target) return;
+
+    // standard pattern: RCT → reinforcement → technique → attack
+    if (!this->HPMoreThanMax(0.50) && this->CEMoreThanMax(0.20)) {
+        this->BoostRCT();
+    } else {
+        this->DisableRCT();
+    }
+
+    if (this->GetTechnique() && !this->GetTechnique()->BurntOut()) {
+        this->GetTechnique()->AutoTechniqueUse(this, target, bf);
+        return;
+    }
+    this->Attack(target);
 }
 ```
 
-Register in `BattleManager.cpp → SetupBattlefield` and include in `CharacterList.h`.
+**Register:** add `bf.characterlist.push_back(std::make_unique<MyCharacter>())` inside `BattleManager::SetupBattlefield` in `BattleManager.cpp`, and include your header in `CharacterList.h`.
 
 ---
 
 ### ➕ New Cursed Technique
+
+`Technique` has two **pure virtual** methods you must implement — `TechniqueMenu` (player input path) and `AutoTechniqueUse` (AI path) — plus `Clone`. `Chant` and `TechniqueSetting` have default no-op implementations and are optional.
 
 **MyTechnique.h:**
 ```cpp
@@ -114,9 +175,17 @@ protected:
     static constexpr double output_damage = 80.0;
 public:
     MyTechnique();
-    void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
     std::unique_ptr<Technique> Clone() const override;
+
     void UseMyAbility(CurseUser* user, Character* target);
+
+    // required overrides
+    void TechniqueMenu(CurseUser* user, Character* target, Battlefield&) override;
+    void AutoTechniqueUse(CurseUser* user, Character* target, Battlefield&) override;
+
+    // optional overrides
+    void Chant() override;
+    void TechniqueSetting(CurseUser*, Battlefield&) override;
 };
 ```
 
@@ -125,28 +194,67 @@ public:
 #include "MyTechnique.h"
 #include "CurseUser.h"
 #include "Utils.h"
-import std;
 
-MyTechnique::MyTechnique(){
-    tech_name = "My Technique";
+MyTechnique::MyTechnique() {
+    tech_name  = "My Technique";
     tech_color = "\033[32m";
 }
+
+std::unique_ptr<Technique> MyTechnique::Clone() const {
+    return std::make_unique<MyTechnique>(*this);
+}
+
 void MyTechnique::UseMyAbility(CurseUser* user, Character* target) {
-    // CalculateDamage deducts CE cost and applies Boost/Burnout multipliers automatically
+    // CalculateDamage(user, cost) deducts CE, applies Boost/BurntOut multipliers,
+    // warns if CE is insufficient, and returns the final damage value
     double dmg = CalculateDamage(user, output_damage);
     target->Damage(dmg);
     std::println("{} uses My Ability on {}!", user->GetNameWithID(), target->GetNameWithID());
 }
 
+// Player input path
 void MyTechnique::TechniqueMenu(CurseUser* user, Character* target, Battlefield& bf) {
-    if (user->DomainAmplificationActive()) { std::println("Blocked by DA!"); return; }
+    if (user->DomainAmplificationActive()) {
+        std::println("Blocked by Domain Amplification!");
+        return;
+    }
     std::println("1 - Use My Ability");
     std::print("=> ");
     if (GetValidInput() == 1) UseMyAbility(user, target);
 }
 
-std::unique_ptr<Technique> MyTechnique::Clone() const { return std::make_unique<MyTechnique>(*this); }
+// AI path — called automatically each turn
+void MyTechnique::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
+    UseMyAbility(user, target);
+}
+
+// Optional: advance chant level each call (Zero → One → Two → Three → Four)
+// GetChantPower() returns 1.0 + (chant_level * 0.50) — use as a damage multiplier
+void MyTechnique::Chant() {
+    if (chant == ChantLevel::Zero) {
+        std::println("\"First verse...\"");
+        chant = ChantLevel::One;
+    } else if (chant == ChantLevel::Four) {
+        std::println("Technique is at maximum output!");
+    }
+    // add further stages as needed
+}
+
+// Optional: shown via action 9 (Technique Settings) in-game
+void MyTechnique::TechniqueSetting(CurseUser* user, Battlefield& bf) {
+    std::println("No extra settings.");
+}
 ```
+
+**Technique status** is tracked via `Technique::Status`:
+
+| Status | `CalculateDamage` multiplier | Set when |
+|---|---|---|
+| `Usable` | 1× | Default; restored after burnout recovery |
+| `DomainBoost` | 2× | Black Flash lands, or domain activates |
+| `BurntOut` | 0.35× | Domain deactivates |
+
+Check with `Usable()`, `Boosted()`, `BurntOut()`. The base `Set(Status)` propagates status — override it if you need to forward it to sub-techniques (see `Copy::Set` for an example).
 
 ---
 
@@ -160,6 +268,7 @@ std::unique_ptr<Technique> MyTechnique::Clone() const { return std::make_unique<
 class MyDomain : public Domain {
 public:
     MyDomain();
+    std::unique_ptr<Domain> Clone() const override;
     void OnSureHit(CurseUser& user, Character& target) override;
 };
 ```
@@ -168,26 +277,55 @@ public:
 ```cpp
 #include "MyDomain.h"
 #include "Character.h"
-import std;
 
-//           health   overwhelm_strength   range
+//              health   overwhelm_strength   range
 MyDomain::MyDomain() : Domain(600.0, 100.0, 14.0) {
-    ref_level = Refinement::Refined;      // Unstable / Crude / Refined / Absolute
-    hit_type  = HitType::HitsCurseUsers;  // or HitsEveryone
-    domain_name = "My Domain";
+    ref_level  = Refinement::Refined;     // Unstable / Crude / Refined / Absolute
+    hit_type   = HitType::HitsCurseUsers; // or HitsEveryone
+    domain_name  = "My Domain";
     domain_color = "\033[31m";
-	domain_cost    = 400.0;
-	surehit_damage = 90.0;
+    domain_cost    = 400.0;  // CE drained from the user each turn while active
+    surehit_damage = 90.0;   // base damage applied in OnSureHit
+}
+
+std::unique_ptr<Domain> MyDomain::Clone() const {
+    return std::make_unique<MyDomain>(*this);
 }
 
 void MyDomain::OnSureHit(CurseUser& user, Character& target) {
-    if (CheckDomainSurehit(target)) return; // handles counters, Heavenly Restriction, clashing
+    // CheckDomainSurehit handles: counter-domain protection, Heavenly Restriction
+    // immunity (HitsCurseUsers only), and clash suppression — returns true to skip
+    if (CheckDomainSurehit(target)) return;
+
+    // DomainRangeMult() = current_range / base_range — degrades as barrier is damaged
+    // DamageBypass skips CE reinforcement reduction
     target.DamageBypass(surehit_damage * DomainRangeMult());
     std::println("{} is struck inside {}!", target.GetNameWithID(), GetDomainName());
 }
 ```
 
-**Domain constructor params:** `health` (clash barrier HP), `overwhelm_strength` (damage to opposing domain per tick), `range` (larger range wins clash at equal refinement).
+**Constructor parameters:**
+
+| Param | Effect |
+|---|---|
+| `health` | Barrier HP consumed during clashes |
+| `overwhelm_strength` | Damage dealt to the opposing domain's barrier per clash tick |
+| `range` | At equal `Refinement`, higher range wins the clash; also scales surehit damage via `DomainRangeMult()` |
+
+**Clash resolution order:**
+1. `Refinement` mismatch → higher refinement wins outright; lower domain collapses immediately
+2. Equal refinement → `range` comparison; losing domain takes `overwhelm_strength` damage per tick
+3. Equal range → both domains take `0.5 × overwhelm_strength` per tick (stalemate)
+4. Three or more active domains → all collapse simultaneously
+
+**`HitType` options:**
+
+| Value | Who `OnSureHit` targets |
+|---|---|
+| `HitsCurseUsers` | CE users only; `PhysicallyGifted` targets are immune (Heavenly Restriction) |
+| `HitsEveryone` | All characters including `PhysicallyGifted` |
+
+Register by including in `DomainList.h` and adding to `GetDomainByName` in `Creator.cpp` for JSON support.
 
 ---
 
@@ -198,39 +336,43 @@ void MyDomain::OnSureHit(CurseUser& user, Character& target) {
 #pragma once
 #include "CursedTool.h"
 
-class MyTool : public CursedTool{
+class MyTool : public CursedTool {
 public:
     MyTool();
     void UseTool(Character*, Character*) override;
     std::unique_ptr<CursedTool> Clone() const override;
-}
+};
 ```
 
 **MyTool.cpp:**
 ```cpp
-MyTool::MyTool(){
-    tool_name = "My Tool";
+#include "MyTool.h"
+#include "Utils.h"
+
+MyTool::MyTool() {
+    tool_name  = "My Tool";
     tool_color = "\033[35m";
 }
 
 void MyTool::UseTool(Character* user, Character* target) {
-    // GetCalculatedStrength scales with Strength (PhysicallyGifted) or max HP (sorcerers)
+    // GetCalculatedStrength scales with Strength (PhysicallyGifted)
+    // or base_tool_damage + max_hp / 10 (sorcerers / spirits)
     target->Damage(GetCalculatedStrength(user));
     std::println("{} attacks {} with {}!", user->GetNameWithID(), target->GetNameWithID(), GetName());
 }
 
 std::unique_ptr<CursedTool> MyTool::Clone() const {
-	return std::make_unique<MyTool>(*this);
+    return std::make_unique<MyTool>(*this);
 }
 ```
 
-Add to `CursedToolList.h` and equip via `inventory_curse.push_back(std::make_unique<MyTool>())` in a character's constructor.
+Override `IsAntiTechniqueWeapon()` to return `true` if the tool should bypass Infinity (like the Inverted Spear of Heaven). Add to `CursedToolList.h` and equip via `inventory_curse.push_back(std::make_unique<MyTool>())` in a character constructor, or `cursed_tool = std::make_unique<MyTool>()` to start with it already equipped.
 
 ---
 
 ## 2. JSON Modding
 
-Drop a file named `characters.json` next to the executable (or the built project directory) and the game will offer to load it at startup. JSON characters are built on the same base `Character` logic as native ones — they support all existing techniques, domains, tools, and shikigami — but their AI uses the default `OnCharacterTurn` fallback, so they won't tactically chain abilities or manage domains the way hand-coded characters do. Support for richer AI behaviour is planned for a future update.
+Drop a file named `characters.json` next to the executable and the game will offer to load it at startup. JSON characters support all existing techniques, domains, tools, and shikigami but use one of the three generic AI brains — they won't tactically chain abilities the way hand-coded characters do.
 
 > **Current limitations:** JSON cannot define new techniques, domains, or tools — only assign existing ones by name.
 
@@ -240,22 +382,25 @@ Drop a file named `characters.json` next to the executable (or the built project
 |---|---|---|
 | `name` | string | Display name |
 | `type` | string | `"Sorcerer"`, `"Cursed Spirit"`, or `"Physically Gifted"` |
-| `ai_type` | string | `"Aggressive"`, `"Reactive"` or `"Randomized"`; Necessary for the custom character to have a brain |
-| `base_attack_damage` | float | Amount of damage that can be dealt by a character without techniques or cursed tools |
-| `blackflash_chance` | int | The chance of a blackflash happening when attacking without cursed tools, domain amplification or cursed techniques |
+| `ai_type` | string | `"Aggressive"`, `"Reactive"`, or `"Randomized"` — **required** for the character to act |
+| `base_attack_damage` | float | Damage dealt by unarmed attacks without techniques or tools |
+| `blackflash_chance` | int | % chance of Black Flash on a standard attack |
 | `hp` | float | Max health |
-| `ce` | float | Max cursed energy (`"Physically Gifted"` ignores this) |
-| `regen` | float | CE regen per turn (`"Physically Gifted"` ignores this) |
-| `strength` | int | Strength stat — **required** for `"Physically Gifted"`, ignored otherwise |
-| `six_eyes` | bool | Enables Six Eyes CE efficiency reduction (Sorcerer only) |
+| `ce` | float | Max cursed energy (ignored for `"Physically Gifted"`) |
+| `regen` | float | CE regen per turn (ignored for `"Physically Gifted"`) |
+| `strength` | float | Strength stat — **required** for `"Physically Gifted"`, ignored otherwise |
+| `passive_health_regen` | float | HP regained per turn — `"Cursed Spirit"` only |
+| `six_eyes` | bool | Six Eyes CE efficiency — reduces CE costs to ~30% (Sorcerer only) |
 | `rct_proficiency` | string | `"None"`, `"Crude"`, `"Adept"`, `"Expert"`, or `"Absolute"` |
-| `technique` | string | One of the available techniques listed below |
+| `domain_limit` | int | Max domain activations before overuse penalty kicks in (default 5) |
+| `technique` | string | Assigned cursed technique |
 | `domain` | string | Main domain expansion |
-| `counter_domain` | string | Counter-measure domain (Simple Domain / Hollow Wicker Basket) |
+| `counter_domain` | string | Counter-measure domain |
 | `special` | string | Special move |
-| `inventory` | string array | Cursed tools added to the character's inventory |
+| `equipped_tool` | string | Tool equipped at battle start |
+| `inventory` | string array | Tools in the character's inventory (unequipped) |
 | `shikigami` | string array | Shikigami assigned to the character |
-| `color` | string | ANSI escape code for the character's name colour |
+| `color` | string | ANSI escape code for name colour |
 
 ### Available assets
 
@@ -265,7 +410,7 @@ Drop a file named `characters.json` next to the executable (or the built project
 | **Domains** | `Infinite Void`, `Malevolent Shrine`, `Authentic Mutual Love`, `Idle Death Gamble` |
 | **Counter Domains** | `Simple Domain`, `Hollow Wicker Basket` |
 | **Specials** | `Unlimited Purple`, `World Cutting Slash` |
-| **Tools** | `Inverted Spear of Heaven`, `Playful Cloud`, `Katana` |
+| **Tools** | `The Inverted Spear of Heaven`, `Playful Cloud`, `Katana` |
 | **Shikigami** | `Rika`, `Mahoraga`, `Agito` |
 
 ### Example `characters.json`
@@ -289,10 +434,7 @@ Drop a file named `characters.json` next to the executable (or the built project
       "counter_domain": "Simple Domain",
       "special": "Unlimited Purple",
       "inventory": [],
-      "shikigami": [
-        "Rika",
-        "Agito"
-      ],
+      "shikigami": ["Rika", "Agito"],
       "color": "\u001b[36m"
     },
     {
@@ -321,9 +463,9 @@ Drop a file named `characters.json` next to the executable (or the built project
       "base_attack_damage": 75.0,
       "hp": 5000.0,
       "strength": 1250.0,
+      "equipped_tool": "Playful Cloud",
       "inventory": [
         "The Inverted Spear of Heaven",
-        "Playful Cloud",
         "Katana"
       ],
       "color": "\u001b[32m"
@@ -339,17 +481,18 @@ Drop a file named `characters.json` next to the executable (or the built project
 ```
 SorcererShowdown/
 ├── Core
-│   ├── Character           — Base class, HP/CE/reinforcement/tools
-│   ├── CurseUser           — CE users, domain/technique/shikigami management
-│   ├── Sorcerer            — Adds RCT proficiency, Six Eyes
-│   ├── CursedSpirit        — Passive HP regen, no RCT
-│   ├── PhysicallyGifted    — Strength-based combat, heavenly restriction
-│   └── Shikigami           — Shadow/Partial/Full state machine
+│   ├── Character           — Base class: HP, tools, stun, brain dispatch
+│   ├── CurseUser           — CE, domain/technique/shikigami management, Black Flash
+│   ├── Sorcerer            — RCT proficiency tiers, Six Eyes CE efficiency
+│   ├── CursedSpirit        — Passive HP regen per turn, no RCT
+│   ├── PhysicallyGifted    — Strength-based damage/defence, Heavenly Restriction
+│   └── Shikigami           — Shadow / Partial / Full state machine
 ├── Systems
-│   ├── Techniques          — Base class + CalculateDamage, chant, status
-│   ├── Domain              — Base class + clash logic, surehit checks
-│   ├── CursedTool          — Base tool + GetCalculatedStrength
+│   ├── Techniques          — Base class: CalculateDamage, chant levels, status
+│   ├── Domain              — Base class: clash resolution, surehit dispatch
+│   ├── CursedTool          — Base tool: GetCalculatedStrength scaling
 │   ├── Specials            — One-off special move base
+│   ├── CharacterAI         — CharacterBrain: Aggressive / Reactive / Randomized
 │   ├── BattleManager       — Game loop, domain resolution, turn management
 │   ├── PlayerManager       — Player input routing and action handling
 │   └── UIDisplay           — Status panels and action menus
@@ -358,7 +501,7 @@ SorcererShowdown/
 ├── Domains                 — InfiniteVoid, MalevolentShrine, AuthenticMutualLove,
 │                             IdleDeathGamble, SelfEmbodimentOfPerfection,
 │                             SimpleDomain, HollowWickerBasket
-├── Shikigami               — Mahoraga, Rika, Agito
+├── Shikigami               — Mahoraga (Infinity adaptation), Rika (CE amplifier), Agito (passive heal)
 ├── Tools                   — Katana, PlayfulCloud, InvertedSpearOfHeaven
 └── SorcererShowdown.cpp    — main()
 ```
@@ -367,17 +510,17 @@ SorcererShowdown/
 
 ## ⚙️ Key Systems
 
-**Domain Clashing** — Two active domains clash each turn. Higher `Refinement` wins outright; ties go to `Range`. Three+ domains all collapse.
+**Domain Clashing** — Two active domains clash each turn. Higher `Refinement` wins outright; equal refinement goes to `Range`; equal range is a stalemate. Three or more active domains all collapse simultaneously.
 
-**Burnout** — Deactivating a domain burns out the technique (35% output) for several turns.
+**Burnout** — Deactivating a domain burns out the technique (0.35× output) for several turns. `RecoverTechniqueBurnout` ticks each end-of-turn until the technique resets to `Usable`.
 
-**Black Flash** — Configurable per-character chance to deal 4x damage and boost technique to Domain Boost status.
+**Black Flash** — Configurable per-character chance to deal 4.5× damage and boost technique status to `DomainBoost`.
 
-**The Zone** — Sustaining Domain Boost outside a domain gives a temporary CE regen bonus.
+**The Zone** — Sustaining `DomainBoost` status outside an active domain grants a temporary CE regen bonus for up to 3 turns before resetting to `Usable`.
 
-**RCT Proficiency** — Tiers from None → Absolute determine heal amount and CE cost per RCT use.
+**RCT Proficiency** — Tiers from `None` → `Absolute` determine heal amount and CE cost per RCT use. `Overdrive` mode doubles both heal and cost.
 
-**CE Reinforcement** — Reduces incoming damage at the cost of continuous CE drain each turn.
+**CE Reinforcement** — Reduces incoming damage (scales up to 3× at max reinforcement) at the cost of continuous CE drain equal to the reinforcement amount each turn.
 
 ---
 
