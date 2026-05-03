@@ -19,10 +19,6 @@ std::unique_ptr<Character> Toji::Clone() const {
     return std::make_unique<Toji>();
 }
 
-void Toji::TickCharacterSpecialty() {
-    this->Regen(this->GetHealingFactor());
-}
-
 void Toji::OnCharacterTurn(Character*, Battlefield& bf) {
     if (this->IsCharacterStunned()) {
         std::println("{} is stunned and their turn will be skipped", this->GetName());

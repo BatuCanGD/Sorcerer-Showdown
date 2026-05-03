@@ -39,24 +39,27 @@ bool BattleManager::SkipTurnFullyCheck() {
 	}
 }
 
-bool BattleManager::SetupBattlefield(Battlefield& bf) {
-	bool choosing = true, spec_mode = false; 
-	int c = 0;
-	CharacterCreator cc;
+void BattleManager::ReloadSetup(Battlefield& bf) {
+	bf.characterlist.clear();
 	bf.characterlist.push_back(std::make_unique<Gojo>());
 	bf.characterlist.push_back(std::make_unique<Sukuna>());
 	bf.characterlist.push_back(std::make_unique<Yuta>());
 	bf.characterlist.push_back(std::make_unique<Toji>());
 	bf.characterlist.push_back(std::make_unique<Mahito>());
 	bf.characterlist.push_back(std::make_unique<Hakari>());
-	std::println("Load characters from json?\nThis will search the current directory\n1-Yes|2-No\n=>");
-	int csc = GetValidInput();
-	if (csc == 1) {
-		cc.LoadJsonCharacter(bf);
-	}
-
-
+	CharacterCreator cc;
+	cc.LoadJsonCharacter(bf);
 	Character::ResetGlobalID();
+	for (auto& fighter : bf.battlefield) {
+		fighter->AssignID();
+	}
+}
+
+bool BattleManager::SetupBattlefield(Battlefield& bf) {
+	bool choosing = true, spec_mode = false; 
+	int c = 0;
+	
+	ReloadSetup(bf);
 
 	while (choosing) {
 		std::println("Choose your sorcerer and the amount of opponents you want to fight!");
@@ -75,7 +78,7 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 			std::println("{}: {}",i, s->GetName());
 			i++;
 		}
-		std::println("-2 - Spectator mode | -1 - Undo | 0 - Finish ");
+		std::println("-3 - Reload JSON | -2 - Spectator mode | -1 - Undo | 0 - Finish ");
 		
 		if (!(std::cin >> c)) {
 			std::cin.clear();
@@ -105,6 +108,9 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 			else {
 				spec_mode = true;
 			}
+		}
+		else if (c == -3) {
+			ReloadSetup(bf);
 		}
 		else {
 			if (c > 0 && c <= bf.characterlist.size()) {

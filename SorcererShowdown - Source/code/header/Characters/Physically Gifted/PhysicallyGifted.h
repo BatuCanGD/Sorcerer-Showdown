@@ -12,6 +12,7 @@ public:
 	std::unique_ptr<Character> Clone() const override;
 
 	void Attack(Character*) override;
+	void TickCharacterSpecialty() override;
 
 	void SetStrength(double);
 	double GetStrength() const;

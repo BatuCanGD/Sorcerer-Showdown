@@ -73,3 +73,7 @@ double PhysicallyGifted::GetDamageReinforcement() const {
 void PhysicallyGifted::SetStrength(double str) {
     strength = str;
 }
+
+void PhysicallyGifted::TickCharacterSpecialty() {
+    this->Regen(this->GetHealingFactor());
+}
