@@ -124,15 +124,18 @@ void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {
             }
         }
     }
-    InfCheck(strongest);
-    if (strongest && !this->GetTechnique()->BurntOut()) {
+    
+    if (InfCheck(strongest)) {
+        this->SetAmplification(true);
+    }
+    else if (this->DomainAmplificationActive()) {
+        this->SetAmplification(false);
+    }
+
+    if (strongest && !this->GetTechnique()->BurntOut() && !this->DomainAmplificationActive()) {
         this->GetTechnique()->AutoTechniqueUse(this, strongest, bf);
         return;
     }
-    HitCharacter(strongest);
-}
-
-void Yuta::HitCharacter(Character* strongest) {
     this->Attack(strongest);
     if (this->DomainAmplificationActive()) this->SetAmplification(false);
 }
@@ -146,13 +149,6 @@ bool Yuta::InfCheck(Character* strongest) {
                 needs_amplification = true;
             }
         }
-    }
-
-    if (needs_amplification) {
-        this->SetAmplification(true);
-    }
-    else if (this->DomainAmplificationActive()) {
-        this->SetAmplification(false);
     }
     return needs_amplification;
 }

@@ -8,7 +8,7 @@ class BattleManager {
 public:
 	bool GameEndCheck(Battlefield&, bool spectator_mode);
 	bool SetupBattlefield(Battlefield&);
-	void ReloadSetup(Battlefield&);
+	void loadSetup(Battlefield&, bool);
 	bool SkipTurnFullyCheck();
 	void SpawnNewFighters(Battlefield&);
 	bool ManageEndOfTurn(Battlefield&, bool spectator_mode);

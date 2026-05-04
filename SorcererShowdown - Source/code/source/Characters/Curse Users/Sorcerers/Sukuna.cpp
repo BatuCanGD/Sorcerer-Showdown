@@ -99,7 +99,7 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
             strongest = target.get();
         }
     }
-
+    if (!strongest) return;
     
     if (GetRandomNumber(1, 20) <= 11) {
         this->Taunt(strongest);
@@ -200,7 +200,7 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
     if (needs_da) this->SetAmplification(true);
     else if (this->DomainAmplificationActive()) this->SetAmplification(false);
 
-    if (!needs_da) {
+    if (!needs_da && !shrine->BurntOut()) {
         if (GetRandomNumber(1, 100) <= 25 && !shrine->FullyChanted()) {
             shrine->Chant();
             return;

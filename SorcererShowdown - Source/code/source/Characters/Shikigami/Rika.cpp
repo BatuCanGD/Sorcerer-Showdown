@@ -21,14 +21,23 @@ void Rika::OnShikigamiTurn(CurseUser* user, Battlefield& bf) {
             return;
         }
         if (!value_saved) {
-            SaveUserCursedEnergy(user);
+            user_ce = user->GetCharacterMaxCE();
+            user_regen = user->GetCEregen();
+            value_saved = true;
         }
-        user->SetMaxCursedEnergy(rika_ce_increase);
-        user->SetCursedEnergyRegen(rika_regen_increase);
+        if (!value_set) {
+            user->SetMaxCursedEnergy(std::min(user->GetCharacterMaxCE() * ce_mult,double(INT32_MAX)));
+            user->SetCursedEnergyRegen(std::min(user->GetCEregen() * regen_mult, double(INT32_MAX)));
+            value_set = true;
+        }
+
 
         ActiveTimeIncrementor();
     }
     else {
+        if (active_turn_amount > 0 && active_turn_amount < 5) {
+            active_turn_amount = 5;
+        }
         RikaCooldownRegeneration(user);
     }
 }
@@ -44,15 +53,12 @@ void Rika::RikaCooldownRegeneration(CurseUser* user) {
         }
         user->SetMaxCursedEnergy(user_ce);
         user->SetCursedEnergyRegen(user_regen);
+        if (value_set) {
+            value_set = false;
+        }
         if (user->GetCharacterCE() > user->GetCharacterMaxCE()) {
             user->SetCursedEnergy(user->GetCharacterMaxCE());
         }
+        
     }
-}
-
-void Rika::SaveUserCursedEnergy(CurseUser* user) {
-    if (value_saved) return;
-    user_ce = user->GetCharacterMaxCE();
-    user_regen = user->GetCEregen();
-    value_saved = true;
 }

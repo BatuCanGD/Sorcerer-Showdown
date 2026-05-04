@@ -11,26 +11,33 @@ WorldCuttingSlash::WorldCuttingSlash() {
 }
 
 void WorldCuttingSlash::PerformSpecial(CurseUser* user) {
-	Technique* currentTech = user->GetTechnique();
-	Shrine* shrinePtr = dynamic_cast<Shrine*>(currentTech);
+	if (!user->GetTechnique() || !user->GetTechnique()->IsShrine()) return;
 
-	if (shrinePtr == nullptr) return;
+	auto shrine = static_cast<Shrine*>(user->GetTechnique());
+	if (shrine->WorldCuttingSlashUnlocked()) return;
 
 	const auto& shikigami_list = user->GetShikigami();
 	for (const auto& s : shikigami_list) {
-		if (Mahoraga* m = dynamic_cast<Mahoraga*>(s.get())) {
+		if (s->IsMahoraga()) {
+			auto m = static_cast<Mahoraga*>(s.get());
 			if (m->FullyAdapted()) {
-				shrinePtr->SetWCS(true);
-				std::println("The blueprint is complete. World Cutting Slash enabled!");
+				shrine->SetWCS(true);
+				std::println("The blueprint is complete. The World Cutting Slash can be used!");
 				return;
 			}
 			else {
-				std::println("The blueprint is incomplete. World Cutting Slash cannot be used yet.");
+				std::println("The blueprint is incomplete. The World Cutting Slash cannot be used yet.");
+				return;
 			}
 		}
 	}
+	std::println("The World Cutting Slash cannot be unlocked, a core piece is missing!");
 }
 
 std::unique_ptr<Specials> WorldCuttingSlash::Clone() const {
 	return std::make_unique<WorldCuttingSlash>(*this);
+}
+
+bool WorldCuttingSlash::IsWorldCuttingSlash() const {
+	return true;
 }

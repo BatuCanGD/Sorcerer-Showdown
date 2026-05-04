@@ -55,19 +55,23 @@ bool Limitless::CheckInfinity() const {
     return Infinity;
 }
 
-int Limitless::GetUsedBlueAmount() const {
-    return blue_used_amount;
+bool Limitless::UPBlueCheck() const {
+    return blue_used_amount >= 15;
 }
-int Limitless::GetUsedRedAmount() const {
-    return red_used_amount;
+bool Limitless::UPRedCheck() const {
+    return red_used_amount >= 15;
 }
-int Limitless::GetUsedPurpleAmount() const {
-    return purple_used_amount;
+bool Limitless::UPPurpleCheck() const {
+    return purple_used_amount >= 5;
 }
 
 void Limitless::UseUnlimitedHollowPurple(CurseUser* user, Battlefield& bf) {
-    if (chant != ChantLevel::Four) {
+    if (!this->FullyChanted()) {
         std::println("the Unlimited Hollow Purple doesnt have enough output, chant to its maximum output and potential!");
+        return;
+    }
+    if (up_used) {
+        std::println("Unlimited hollow purple cannot be used again");
         return;
     }
     std::println("{}===== !UNLIMITED HOLLOW PURPLE! ====={}", Color::Purple, Color::Clear);
@@ -85,6 +89,7 @@ void Limitless::UseUnlimitedHollowPurple(CurseUser* user, Battlefield& bf) {
         s->Damage(unlpurple_output);
         std::println("{} got hit by Unlimited Hollow Purple for {}{:.1f} damage!{}", s->GetNameWithID(), Color::Red, unlpurple_output , Color::Clear);
     }
+    up_used = true;
     chant = ChantLevel::Zero;
 }
 
@@ -210,19 +215,21 @@ std::unique_ptr<Technique> Limitless::Clone() const {
     return std::make_unique<Limitless>(*this);
 }
 
+bool Limitless::UnlimitedHollowUsed()const {
+    return up_used;
+}
+
 void Limitless::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
     if (GetRandomNumber(1, 30) >= 20) {
         UsePurple(user, target);
         return;
     }
-    if (user->GetSpecial()) {
-        if (auto up = dynamic_cast<UnlimitedPurple*>(user->GetSpecial())) {
-            if (unlimited_hollow_purple_allowed && chant == ChantLevel::Four) {
-                UseUnlimitedHollowPurple(user, bf);
-            }
+    if (user->GetSpecial() && user->GetSpecial()->IsUnlimitedPurple()) {
+        if (!up_used && unlimited_hollow_purple_allowed && this->FullyChanted()){
+            UseUnlimitedHollowPurple(user, bf);
         }
     }
-    if (GetRandomNumber(1, 50) >= 33 || unlimited_hollow_purple_allowed) {
+    if (GetRandomNumber(1, 50) >= 33 || (unlimited_hollow_purple_allowed && !this->FullyChanted() && !up_used)) {
         Chant();
     }
     else {

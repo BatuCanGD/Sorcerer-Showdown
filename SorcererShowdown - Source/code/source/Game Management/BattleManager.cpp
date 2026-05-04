@@ -28,7 +28,7 @@ bool BattleManager::SkipTurnFullyCheck() {
 	std::println("1 - Skip AI sorcerer turns\n"
 				 "2 - Keep AI sorcerer turns");
 	std::println("this is for if you want to read what every sorcerer on the board does line by line\n"
-				 "or if you want to skip to do a game worth of simulation");
+				 "or if you want to skip to do a days worth of simulation");
 	std::print("=> ");
 	int ch = GetValidInput();
 	UserInterface::ClearScreen();
@@ -39,27 +39,27 @@ bool BattleManager::SkipTurnFullyCheck() {
 	}
 }
 
-void BattleManager::ReloadSetup(Battlefield& bf) {
-	bf.characterlist.clear();
+void BattleManager::loadSetup(Battlefield& bf, bool load = false) {
+	if (!bf.characterlist.empty()) bf.characterlist.clear();
 	bf.characterlist.push_back(std::make_unique<Gojo>());
 	bf.characterlist.push_back(std::make_unique<Sukuna>());
 	bf.characterlist.push_back(std::make_unique<Yuta>());
 	bf.characterlist.push_back(std::make_unique<Toji>());
 	bf.characterlist.push_back(std::make_unique<Mahito>());
 	bf.characterlist.push_back(std::make_unique<Hakari>());
-	CharacterCreator cc;
-	cc.LoadJsonCharacter(bf);
-	Character::ResetGlobalID();
-	for (auto& fighter : bf.battlefield) {
-		fighter->AssignID();
+	if (load) {
+		CharacterCreator cc;
+		cc.LoadJsonCharacter(bf);
 	}
+	Character::ResetGlobalID();
+	Character::AddGlobalID(int(bf.battlefield.size()));
 }
 
 bool BattleManager::SetupBattlefield(Battlefield& bf) {
 	bool choosing = true, spec_mode = false; 
 	int c = 0;
 	
-	ReloadSetup(bf);
+	loadSetup(bf);
 
 	while (choosing) {
 		std::println("Choose your sorcerer and the amount of opponents you want to fight!");
@@ -78,7 +78,7 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 			std::println("{}: {}",i, s->GetName());
 			i++;
 		}
-		std::println("-3 - Reload JSON | -2 - Spectator mode | -1 - Undo | 0 - Finish ");
+		std::println("-3 - load JSON | -2 - Spectator mode | -1 - Undo | 0 - Finish ");
 		
 		if (!(std::cin >> c)) {
 			std::cin.clear();
@@ -110,7 +110,7 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 			}
 		}
 		else if (c == -3) {
-			ReloadSetup(bf);
+			loadSetup(bf, true);
 		}
 		else {
 			if (c > 0 && c <= bf.characterlist.size()) {

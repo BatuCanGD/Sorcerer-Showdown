@@ -12,4 +12,7 @@ public:
 	virtual ~Specials() = default;
 	virtual void PerformSpecial(CurseUser* user) = 0;
 	virtual std::string GetSpecialName() const;
+
+	virtual bool IsUnlimitedPurple() const;
+	virtual bool IsWorldCuttingSlash() const;
 };

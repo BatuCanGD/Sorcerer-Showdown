@@ -16,6 +16,7 @@ protected:
 	static constexpr double red_output = 75.0;
 	static constexpr double purple_output = 150.0;
 	static constexpr double unlpurple_output = 1750.0;
+	bool up_used = false;
 public:
 	Limitless();
 	std::unique_ptr<Technique> Clone() const override;
@@ -27,9 +28,10 @@ public:
 	void SetUnlimitedHollow(bool);
 	bool UnlimitedHollowAllowed()const;
 
-	int GetUsedBlueAmount()const;
-	int GetUsedRedAmount()const;
-	int GetUsedPurpleAmount()const;
+	bool UnlimitedHollowUsed()const;
+	bool UPBlueCheck()const;
+	bool UPRedCheck()const;
+	bool UPPurpleCheck()const;
 	
 	void UseUnlimitedHollowPurple(CurseUser* user, Battlefield&);
 	void UseBlue(CurseUser* user, Character* target);

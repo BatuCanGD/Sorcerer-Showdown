@@ -325,7 +325,7 @@ void CurseUser::Attack(Character* target) {
     if (target->IsaCurseUser()) {
         auto target_cuser = static_cast<CurseUser*>(target);
         if (auto* tech = target_cuser->GetTechnique()) {
-            if (tech->IsLimitless() && tech->IsInfinityActive()) {
+            if (tech->IsLimitless() && tech->IsInfinityActive() && !domain_amplification_active) {
                 std::println("{}'s attack was blocked by {}'s {}Infinity{}!", this->GetNameWithID(), target_cuser->GetNameWithID(), Color::Cyan, Color::Clear);
                 return;
             }

@@ -103,7 +103,7 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
         this->Taunt(strongest);
     }
 
-    if ((limitless->GetUsedRedAmount() >= 15 && limitless->GetUsedBlueAmount() >= 15 && limitless->GetUsedPurpleAmount() >= 5) && tntroll >= 70) {
+    if ((limitless->UPBlueCheck() && limitless->UPRedCheck() && limitless->UPPurpleCheck() && tntroll >= 70)) {
         if (!limitless->UnlimitedHollowAllowed()) {
             this->GetSpecial()->PerformSpecial(this);
             return;
@@ -137,29 +137,26 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
             }
         }
     }
-    if (strongest && strongest->IsaCurseUser()) {
-        auto* cur = static_cast<CurseUser*>(strongest);
-        if (auto* tech = cur->GetTechnique()) {
-            if (tech->IsLimitless() && tech->IsInfinityActive()) {
-                this->SetAmplification(true);
-                HitCharacter(strongest);
-                return;
-            }
-        }
+    
+    if (InfCheck(strongest)) {
+        this->SetAmplification(true);
+
+    }
+    else {
+        this->SetAmplification(false);
     }
 
-    if (strongest && 
-        (limitless->Usable() || limitless->Boosted()) && 
-        (this->GetCharacterCE() >= this->GetCharacterMaxCE() * 0.2)) {
-
+    if (strongest && !limitless->BurntOut() && this->CEMoreThanMax(0.05) && !this->DomainAmplificationActive()) {
         int roll = GetRandomNumber(1, 100);
         int croll = GetRandomNumber(1, 10);
 
-        if ((croll <= 4 && !limitless->FullyChanted()) || (limitless->UnlimitedHollowAllowed() && !limitless->FullyChanted())) {
+        if ((croll <= 4 && !limitless->FullyChanted()) || 
+            (limitless->UnlimitedHollowAllowed() && !limitless->FullyChanted() && !limitless->UnlimitedHollowUsed())) 
+        {
             limitless->Chant();
             return;
         }
-        if (limitless->FullyChanted() && limitless->UnlimitedHollowAllowed()) {
+        if (limitless->FullyChanted() && limitless->UnlimitedHollowAllowed() && !limitless->UnlimitedHollowUsed()) {
             limitless->UseUnlimitedHollowPurple(this, bf);
             return;
         }
@@ -175,12 +172,12 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
         }
         return;
     }
-    HitCharacter(strongest);
+    this->Attack(strongest);
+    if (this->DomainAmplificationActive()) this->SetAmplification(false);
 }
 
 bool Gojo::InfCheck(Character* strongest) {
     bool needs_amplification = false;
-
     if (strongest->IsaCurseUser()) {
         auto curse_user = static_cast<CurseUser*>(strongest);
         if (auto* tech = curse_user->GetTechnique()) {
@@ -189,16 +186,5 @@ bool Gojo::InfCheck(Character* strongest) {
             }
         }
     }
-    if (needs_amplification) {
-        this->SetAmplification(true);
-    }
-    else if (this->DomainAmplificationActive()) {
-        this->SetAmplification(false);
-    }
     return needs_amplification;
-}
-
-void Gojo::HitCharacter(Character* strongest) {
-    this->Attack(strongest);
-    if (this->DomainAmplificationActive()) this->SetAmplification(false);
 }

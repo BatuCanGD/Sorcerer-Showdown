@@ -69,7 +69,6 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 				sorcerer->GetDAstatus(), sorcerer->GetRCTstatus(), sorcerer->GetReinforcementStatus());
 		}
 		else if (s->IsaCurseUser()){
-			auto crs = static_cast<CurseUser*>(s);
 			std::print("Domain Amplification: [{}] | CE Reinforcement: [{}]",
 				crs->GetDAstatus(), crs->GetReinforcementStatus());
 		}
