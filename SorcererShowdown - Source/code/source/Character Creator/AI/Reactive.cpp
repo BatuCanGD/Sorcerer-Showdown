@@ -131,7 +131,7 @@ bool Reactive::TryTechniqueActions(CurseUser* user, Battlefield& bf, Character* 
         user->SetAmplification(false);
     }
 
-    if (user->GetTechnique() && !user->GetTechnique()->BurntOut() && (user->GetTechnique()->Usable() || user->GetTechnique()->Boosted()) && !user->DomainAmplificationActive()) {
+    if (user->GetTechnique() && !user->GetTechnique()->BurntOut() && !user->DomainAmplificationActive()) {
         if (!user->HPMoreThanMax(0.50) || user->GetTechnique()->Boosted()) {
             user->GetTechnique()->AutoTechniqueUse(user, target, bf); 
             return true; 
