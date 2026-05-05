@@ -61,10 +61,10 @@ SorcererShowdown/
     ├── header/
     │   ├── std.h
     │   ├── Characters/
-    │   ├── Character Creator/
-    │   ├── Cursed Tools/
+    │   ├── CharacterCreator/
+    │   ├── CursedTools/
     │   ├── Domains/
-    │   ├── Game Management/
+    │   ├── GameManagement/
     │   ├── Specials/
     │   └── Techniques/
     └── source/
