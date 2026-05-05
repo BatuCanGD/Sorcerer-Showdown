@@ -63,7 +63,7 @@ void PrivatePureLoveTrain::UseShutterDoors(CurseUser* user, Character* target) {
 void PrivatePureLoveTrain::UseJackpotRush(CurseUser* user, Character* target) {
 	if (user->GetDomain() && user->GetDomain()->IsIdleDeathGamble()) {
 		auto idg = static_cast<IdleDeathGamble*>(user->GetDomain());
-		if (!idg->HasHitJackpot()) 
+		if (!idg->HasHitJackpot()) return;
 		target->Damage(user->GetBaseAttackDamage() * 2.0);
 		std::println("{} hits {} with a volley of jackpot boosted rush attacks!", user->GetNameWithID(), target->GetNameWithID());
 	}
