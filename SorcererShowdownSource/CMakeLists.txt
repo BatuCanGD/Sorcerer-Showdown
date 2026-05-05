@@ -31,7 +31,7 @@ target_include_directories(SorcererShowdown PRIVATE
     "code/header/Characters/CurseUsers/Sorcerers"
     "code/header/Characters/PhysicallyGifted"
     "code/header/Characters/Shikigami"
-    "code/header/Cursed Tools"
+    "code/header/CursedTools"
     "code/header/Domains"
     "code/header/GameManagement"
     "code/header/Specials"
