@@ -15,6 +15,7 @@ protected:
 	};
 	State shikigami_state = State::Shadow;
 public:
+	virtual ~Shikigami();
 	Shikigami(double hp);
 	bool CanBeAssignedID() const override;
 

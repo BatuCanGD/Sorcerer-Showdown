@@ -27,14 +27,11 @@ target_include_directories(SorcererShowdown PRIVATE
 target_precompile_headers(SorcererShowdown PRIVATE "code/header/std.h")
 
 if(MSVC)
-    target_compile_options(SorcererShowdown PRIVATE /std:c++latest /EHsc /utf-8 /W4)
+    target_compile_options(SorcererShowdown PRIVATE /EHsc /utf-8 /W4)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND WIN32)
+    target_compile_options(SorcererShowdown PRIVATE -Wall -Wextra -Wno-unused-parameter)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(SorcererShowdown PRIVATE 
-        -std=c++23
-        -Wall -Wextra
-        -Wno-unused-parameter
-        -fPIC   
-    )
+    target_compile_options(SorcererShowdown PRIVATE -Wall -Wextra -Wno-unused-parameter -fPIC)
 endif()
 
 set(CMAKE_TLS_VERIFY ON)
