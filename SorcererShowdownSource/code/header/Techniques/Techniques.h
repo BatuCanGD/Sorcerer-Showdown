@@ -14,13 +14,13 @@ protected:
 	std::string tech_name = "";
 	std::string tech_color = "";
 public:
+	virtual ~Technique();
 	enum class Status { Usable, DomainBoost, BurntOut };
 	Status state = Status::Usable;
 
 	std::string GetTechniqueName() const;
 	std::string GetTechniqueSimpleName() const;
 
-	virtual ~Technique() = default;
 	virtual void Set(Status s);
 	Status GetStatus() const;
 	bool FullyChanted()const;

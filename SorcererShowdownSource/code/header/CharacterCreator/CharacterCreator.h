@@ -12,7 +12,6 @@ class Shikigami;
 
 class CharacterCreator {
 public:
-	virtual ~CharacterCreator();
 	static std::unique_ptr<Character> CreateFromJson(const json&);
 	void LoadJsonCharacter(Battlefield&);
 };

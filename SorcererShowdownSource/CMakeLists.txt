@@ -3,6 +3,7 @@ project(SorcererShowdown LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_TLS_VERIFY ON)
 
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/json.hpp")
     file(DOWNLOAD
@@ -31,10 +32,11 @@ if(MSVC)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND WIN32)
     target_compile_options(SorcererShowdown PRIVATE -Wall -Wextra -Wno-unused-parameter)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(SorcererShowdown PRIVATE -Wall -Wextra -Wno-unused-parameter -fPIC)
+    target_compile_options(SorcererShowdown PRIVATE 
+    -Wall -Wextra -Wno-unused-parameter -fPIC -stdlib=libc++
+    )
+    target_link_options(SorcererShowdown PRIVATE -stdlib=libc++)
 endif()
-
-set(CMAKE_TLS_VERIFY ON)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/characters.json")
     configure_file(characters.json ${CMAKE_CURRENT_BINARY_DIR}/characters.json COPYONLY)
