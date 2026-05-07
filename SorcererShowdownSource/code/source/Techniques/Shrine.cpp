@@ -1,7 +1,7 @@
-#include "Shrine.h"
-#include "CurseUser.h"
-#include "Character.h"
-#include "Utils.h"
+#include "code/header/Techniques/Shrine.h"
+#include "code/header/Characters/CurseUsers/CurseUser.h"
+#include "code/header/Characters/Character.h"
+#include "code/header/GameManagement/Utils.h"
 
 
 
@@ -43,7 +43,7 @@ bool Shrine::WorldCuttingSlashUnlocked() const {
     return world_cutting_slash_allowed;
 }
 
-void Shrine::TechniqueMenu(CurseUser* user, Character* target, Battlefield& bf) {
+void Shrine::TechniqueMenu(CurseUser* user, Character* target, Battlefield&) {
     if (user->DomainAmplificationActive()) {
         std::println("You cannot use your innate technique due to domain amplification!");
         return;
@@ -78,7 +78,7 @@ void Shrine::TechniqueMenu(CurseUser* user, Character* target, Battlefield& bf) 
     }
 }
 
-void Shrine::TechniqueSetting(CurseUser* user, Battlefield& bf) {
+void Shrine::TechniqueSetting(CurseUser*, Battlefield&) {
     std::println("Chant level: [{}]", this->GetStringChantLevel());
     std::println("1 - Chant | 2 - Return");
     std::print("=> ");
@@ -117,7 +117,7 @@ void Shrine::Chant() {
     }
 }
 
-void Shrine::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
+void Shrine::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield&) {
     if (GetRandomNumber(1, 30) >= 25) {
         UseCleave(user, target);
     }

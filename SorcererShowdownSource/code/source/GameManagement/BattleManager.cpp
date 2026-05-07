@@ -1,12 +1,12 @@
-#include "BattleManager.h"
-#include "BattlefieldHeader.h"
-#include "CharacterCreator.h"
-#include "CharacterList.h"
-#include "Limitless.h"
-#include "ShikigamiList.h"
-#include "DomainList.h"
-#include "UIDisplay.h"
-#include "Utils.h"
+#include "code/header/GameManagement/BattleManager.h"
+#include "code/header/GameManagement/BattlefieldHeader.h"
+#include "code/header/CharacterCreator/CharacterCreator.h"
+#include "code/header/Characters/CharacterList.h"
+#include "code/header/Techniques/Limitless.h"
+#include "code/header/Characters/Shikigami/ShikigamiList.h"
+#include "code/header/Domains/DomainList.h"
+#include "code/header/GameManagement/UIDisplay.h"
+#include "code/header/GameManagement/Utils.h"
 
 bool BattleManager::GameEndCheck(Battlefield& bf, bool spectator_mode) {
 	int alive_sorcerers = 0;
@@ -113,7 +113,7 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 			loadSetup(bf, true);
 		}
 		else {
-			if (c > 0 && c <= bf.characterlist.size()) {
+			if (c > 0 && c <= static_cast<int>(bf.characterlist.size())) {
 				int index = c - 1;
 				std::unique_ptr<Character> new_character = bf.characterlist[index]->Clone();
 				new_character->AssignID();
@@ -172,9 +172,7 @@ bool BattleManager::ManageEndOfTurn(Battlefield& bf, bool spectator_mode) {
 			curse_user->TickZone();
 			curse_user->RegenCE();
 			curse_user->TickReinforcement();
-
 			double current_ce = curse_user->GetCharacterCE();
-			double total_ce = curse_user->GetCharacterPreviousCE();
 			if (current_ce < ce_before_regen) {
 				double ce_spent = ce_before_regen - current_ce;
 				std::println("{} {}expended{} {:.1f} {}Cursed Energy{} this turn.", c->GetNameWithID(),Color::Red,Color::Clear, ce_spent, Color::Cyan, Color::Clear);

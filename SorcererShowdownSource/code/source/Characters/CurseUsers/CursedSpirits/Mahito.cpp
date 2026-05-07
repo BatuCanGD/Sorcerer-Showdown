@@ -1,8 +1,8 @@
-#include "Mahito.h"
-#include "TransfiguredHuman.h"
-#include "BattlefieldHeader.h"
-#include "IdleTransfiguration.h"
-#include "SelfEmbodimentOfPerfection.h"
+#include "code/header/Characters/CurseUsers/CursedSpirits/Mahito.h"
+#include "code/header/Characters/CurseUsers/CursedSpirits/TransfiguredHuman.h"
+#include "code/header/GameManagement/BattlefieldHeader.h"
+#include "code/header/Techniques/IdleTransfiguration.h"
+#include "code/header/Domains/SelfEmbodimentOfPerfection.h"
 
 
 
@@ -20,7 +20,7 @@ std::unique_ptr<Character> Mahito::Clone() const {
 	return std::make_unique<Mahito>();
 }
 
-void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
+void Mahito::OnCharacterTurn(Character*, Battlefield& bf){
 	if (this->IsCharacterStunned()) {
 		std::println("{} is stunned and their turn will be skipped", this->GetNameWithID());
 		return;
@@ -44,7 +44,7 @@ void Mahito::OnCharacterTurn(Character* unused, Battlefield& bf){
 			weakest_hp_pr = character_pr;
 		}
 	}
-	if (tf_amount == bf.battlefield.size() - 1) summon_humans = false;
+	if (tf_amount == static_cast<int>(bf.battlefield.size() - 1)) summon_humans = false;
 	else if (tf_amount == 0 || tf->GetTFcount() > 5) summon_humans = true;
 	else summon_humans = false;  
 

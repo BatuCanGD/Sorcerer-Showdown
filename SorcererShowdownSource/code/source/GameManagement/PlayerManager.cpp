@@ -1,12 +1,12 @@
-#include "PlayerManager.h"
-#include "BattlefieldHeader.h"
-#include "Shikigami.h"
-#include "Techniques.h"
-#include "CursedTool.h"
-#include "Specials.h"
-#include "Domain.h"
-#include "Sorcerer.h"
-#include "Utils.h"
+#include "code/header/GameManagement/PlayerManager.h"
+#include "code/header/GameManagement/BattlefieldHeader.h"
+#include "code/header/Characters/Shikigami/Shikigami.h"
+#include "code/header/Techniques/Techniques.h"
+#include "code/header/CursedTools/CursedTool.h"
+#include "code/header/Specials/Specials.h"
+#include "code/header/Domains/Domain.h"
+#include "code/header/Characters/CurseUsers/Sorcerers/Sorcerer.h"
+#include "code/header/GameManagement/Utils.h"
 
 
 
@@ -259,7 +259,7 @@ void PlayerManager::PlayerShikigami(Character& s) {
 	}
 	std::println("Choose the shikigami you'd like to use\n=> ");
 	int ch = GetValidInput(); ch--;
-	if (ch >= 0 && ch < p->GetShikigami().size()) {
+	if (ch >= 0 && ch < static_cast<int>(p->GetShikigami().size())) {
 		Shikigami* sk = p->ChooseShikigami(ch);
 		std::println("Chosen Shikigami: {} | [{}]", sk->GetName(), sk->GetShikigamiStatus());
 		if (!sk->IsActivePhysically()) {

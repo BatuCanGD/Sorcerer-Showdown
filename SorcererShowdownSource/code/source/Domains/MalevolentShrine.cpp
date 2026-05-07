@@ -1,5 +1,5 @@
-#include "MalevolentShrine.h"
-#include "Character.h"
+#include "code/header/Domains/MalevolentShrine.h"
+#include "code/header/Characters/Character.h"
 
 
 
@@ -11,7 +11,7 @@ MalevolentShrine::MalevolentShrine() : Domain(1000.0, 300.0, 20.0) {
     surehit_damage = 100.0;
     domain_cost = 750.0;
 }
-void MalevolentShrine::OnSureHit(CurseUser& user, Character& target) {
+void MalevolentShrine::OnSureHit(CurseUser&, Character& target) {
     if (CheckDomainSurehit(target)) return;
     target.DamageBypass(surehit_damage * DomainRangeMult());
     std::println("{} got hit by {}'s SureHit!", target.GetNameWithID(), this->GetDomainName());

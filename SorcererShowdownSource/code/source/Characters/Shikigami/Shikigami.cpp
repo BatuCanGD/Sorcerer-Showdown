@@ -1,8 +1,8 @@
-#include "Shikigami.h"
-#include "Sorcerer.h"
+#include "code/header/Characters/Shikigami/Shikigami.h"
+#include "code/header/Characters/CurseUsers/CurseUser.h"
 
 
-
+Shikigami::~Shikigami() = default;
 Shikigami::Shikigami(double hp) : Character(hp) {}
 
 bool Shikigami::CanBeAssignedID() const {

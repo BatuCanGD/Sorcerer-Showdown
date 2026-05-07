@@ -1,9 +1,9 @@
-#include "Techniques.h"
-#include "CurseUser.h"
-#include "Character.h"
-#include "Utils.h"
+#include "code/header/Techniques/Techniques.h"
+#include "code/header/Characters/CurseUsers/CurseUser.h"
+#include "code/header/Characters/Character.h"
+#include "code/header/GameManagement/Utils.h"
 
-
+Technique::~Technique() = default;
 
 void Technique::Set(Status s) {
     state = s;

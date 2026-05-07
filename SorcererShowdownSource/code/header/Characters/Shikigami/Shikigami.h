@@ -1,5 +1,5 @@
 #pragma once
-#include "Character.h"
+#include "code/header/Characters/Character.h"
 
 struct Battlefield;
 class CurseUser;
@@ -15,6 +15,7 @@ protected:
 	};
 	State shikigami_state = State::Shadow;
 public:
+	virtual ~Shikigami();
 	Shikigami(double hp);
 	bool CanBeAssignedID() const override;
 

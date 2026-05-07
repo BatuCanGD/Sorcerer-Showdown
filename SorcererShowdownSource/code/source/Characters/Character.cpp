@@ -1,15 +1,16 @@
-#include "Character.h"
-#include "Shikigami.h"
-#include "Specials.h"
-#include "BattlefieldHeader.h"
-#include "PhysicallyGifted.h"
-#include "Limitless.h"
-#include "Domain.h"
-#include "Utils.h"
-#include "CursedTool.h"
-#include "Sorcerer.h"
-#include "Techniques.h"
-#include "CharacterAI.h"
+#include "code/header/Characters/Character.h"
+#include "code/header/CursedTools/CursedTool.h"
+#include "code/header/Characters/CurseUsers/CurseUser.h"
+#include "code/header/CharacterCreator/AI/CharacterAI.h"
+#include "code/header/Characters/Shikigami/Shikigami.h"
+#include "code/header/Specials/Specials.h"
+#include "code/header/GameManagement/BattlefieldHeader.h"
+#include "code/header/Characters/PhysicallyGifted/PhysicallyGifted.h"
+#include "code/header/Techniques/Limitless.h"
+#include "code/header/Domains/Domain.h"
+#include "code/header/GameManagement/Utils.h"
+#include "code/header/Techniques/Techniques.h"
+
 
 
 
@@ -38,7 +39,7 @@ bool Character::CanBeAssignedID() const {
 	return true;
 }
 
-void Character::Attack(Character* target) {
+void Character::Attack(Character*) {
 	std::println("this is not supposed to be reached"
 				 "i realized it way too late"
 				 "characters with their chosen types use their own attack function");
@@ -211,7 +212,7 @@ void Character::CursedToolChoice(size_t choice) {
 }
 
 void Character::EquipToolByName(const std::string& weaponName) {
-	for (int i = 0; i < inventory_curse.size(); ++i) {
+	for (size_t i = 0; i < inventory_curse.size(); ++i) {
 		if (inventory_curse[i]->GetSimpleName() == weaponName) {
 			CursedToolChoice(i + 1);
 			return;

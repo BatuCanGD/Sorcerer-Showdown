@@ -1,15 +1,15 @@
-#include "Aggressive.h"
-#include "CurseUser.h"
-#include "Sorcerer.h"
-#include "Shikigami.h"
-#include "PhysicallyGifted.h"
-#include "CursedTool.h"
-#include "Utils.h"
-#include "Character.h"
-#include "BattlefieldHeader.h"
-#include "Techniques.h"
-#include "Domain.h"
-#include "Specials.h"
+#include "code/header/CharacterCreator/AI/Aggressive.h"
+#include "code/header/Characters/CurseUsers/CurseUser.h"
+#include "code/header/Characters/CurseUsers/Sorcerers/Sorcerer.h"
+#include "code/header/Characters/Shikigami/Shikigami.h"
+#include "code/header/Characters/PhysicallyGifted/PhysicallyGifted.h"
+#include "code/header/CursedTools/CursedTool.h"
+#include "code/header/GameManagement/Utils.h"
+#include "code/header/Characters/Character.h"
+#include "code/header/GameManagement/BattlefieldHeader.h"
+#include "code/header/Techniques/Techniques.h"
+#include "code/header/Domains/Domain.h"
+#include "code/header/Specials/Specials.h"
 
 
 
@@ -76,7 +76,7 @@ void Aggressive::UseReinforcement(CurseUser* user) {
     else user->SetCurrentReinforcement(0.0); 
 }
 
-bool Aggressive::TryDomainActions(CurseUser* user, Battlefield& bf, Character* target) {
+bool Aggressive::TryDomainActions(CurseUser* user, Battlefield& bf, Character*) {
     std::vector<CurseUser*> domain_users;
     for (const auto& ch : bf.battlefield) {
         if (ch.get() == user) continue; 

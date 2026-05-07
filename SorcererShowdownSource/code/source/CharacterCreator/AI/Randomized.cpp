@@ -1,14 +1,14 @@
-#include "Randomized.h"
-#include "CurseUser.h"
-#include "Sorcerer.h"
-#include "Shikigami.h"
-#include "PhysicallyGifted.h"
-#include "Utils.h"
-#include "Character.h"
-#include "BattlefieldHeader.h"
-#include "Techniques.h"
-#include "Domain.h"
-#include "Specials.h"
+#include "code/header/CharacterCreator/AI/Randomized.h"
+#include "code/header/Characters/CurseUsers/CurseUser.h"
+#include "code/header/Characters/CurseUsers/Sorcerers/Sorcerer.h"
+#include "code/header/Characters/Shikigami/Shikigami.h"
+#include "code/header/Characters/PhysicallyGifted/PhysicallyGifted.h"
+#include "code/header/GameManagement/Utils.h"
+#include "code/header/Characters/Character.h"
+#include "code/header/GameManagement/BattlefieldHeader.h"
+#include "code/header/Techniques/Techniques.h"
+#include "code/header/Domains/Domain.h"
+#include "code/header/Specials/Specials.h"
 
 Character* Randomized::GetTarget(Character* user, Battlefield& bf){
     std::vector<Character*> targets;
@@ -58,7 +58,7 @@ void Randomized::UseShikigami(CurseUser* user) {
     }
 }
 
-bool Randomized::TryDomainActions(CurseUser* user, Battlefield& bf, Character* target) {
+bool Randomized::TryDomainActions(CurseUser* user, Battlefield&, Character*) {
     if (user->GetCounterDomain() && !user->CounterDomainActive() && !user->DomainActive()) {
         user->ActivateCounterDomain(); 
         if (user->CounterDomainActive()) return true;
@@ -86,7 +86,7 @@ bool Randomized::TryTechniqueActions(CurseUser* user, Battlefield& bf, Character
     return false; 
 }
 
-bool Randomized::TryInventoryActions(Character* user, Character* target) {
+bool Randomized::TryInventoryActions(Character* user, Character*) {
     const auto& inv = user->GetCursedTools(); 
     if (!inv.empty() && !user->GetTool()) {
         user->CursedToolChoice(static_cast<size_t>(GetRandomNumber(1, static_cast<int>(inv.size())))); 

@@ -1,7 +1,7 @@
-#include "Mahoraga.h"
-#include "BattlefieldHeader.h"
-#include "CurseUser.h"
-#include "Utils.h"
+#include "code/header/Characters/Shikigami/Mahoraga.h"
+#include "code/header/GameManagement/BattlefieldHeader.h"
+#include "code/header/Characters/CurseUsers/CurseUser.h"
+#include "code/header/GameManagement/Utils.h"
 
 
 
@@ -55,7 +55,7 @@ bool Mahoraga::FullyAdapted() const {
     return InfStage == InfinityAdaptation::FourthSpin;
 }
 
-void Mahoraga::OnShikigamiTurn(CurseUser* user, Battlefield& bf) {
+void Mahoraga::OnShikigamiTurn(CurseUser* user, Battlefield&) {
     if (!IsActive()) {
         this->Regen(shadow_health_regen);
         return;

@@ -1,6 +1,6 @@
-#include "Agito.h"
-#include "BattlefieldHeader.h"
-#include "CurseUser.h"
+#include "code/header/Characters/Shikigami/Agito.h"
+#include "code/header/GameManagement/BattlefieldHeader.h"
+#include "code/header/Characters/CurseUsers/CurseUser.h"
 
 
 
@@ -16,7 +16,7 @@ void Agito::PassiveSupport(CurseUser* user) {
     }
 }
 
-void Agito::OnShikigamiTurn(CurseUser* user, Battlefield& bf) {
+void Agito::OnShikigamiTurn(CurseUser* user, Battlefield&) {
     if (!IsActive()) {
         this->Regen(shadow_health_regen);
         return;
