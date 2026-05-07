@@ -28,8 +28,8 @@ A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++23**. Figh
 
 - C++23 compiler:
   - **MSVC** — Visual Studio 2022 v17.6+ with `/std:c++latest`
-  - **Clang** — 17+ with `-std=c++23`
-  - **GCC** — 14+ with `-std=c++23`
+  - **Clang** — 18+ with libstdc++14 or libc++
+  - **GCC** — 14+
 - CMake 3.28+
 - Internet access on first build (CMake auto-downloads `json.hpp` from the nlohmann/json repo)
 
@@ -38,6 +38,12 @@ A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++23**. Figh
 ```bash
 cmake -B build
 cmake --build build
+```
+
+To explicitly choose your compiler:
+```bash
+cmake -B build -DCMAKE_CXX_COMPILER=g++-14
+cmake -B build -DCMAKE_CXX_COMPILER=clang++
 ```
 
 The executable lands in `build/`. If a `characters.json` exists in the project root, CMake copies it to the build directory automatically.
@@ -52,13 +58,15 @@ The executable lands in `build/`. If a `characters.json` exists in the project r
 
 ### Project layout expected by CMake
 
+CMake sets the project root as the include base, so all `#include` paths in source files are relative to it (e.g. `"code/header/Characters/Character.h"`). New `.cpp` files placed anywhere under `code/source/` are picked up automatically.
+
 ```
 SorcererShowdown/
 ├── CMakeLists.txt
 ├── json.hpp                  ← auto-downloaded if missing
 ├── characters.json           ← optional, copied to build dir
 └── code/
-    ├── header/
+    ├── header/               ← all #includes are relative to the project root, not this folder
     │   ├── std.h
     │   ├── Characters/
     │   ├── CharacterCreator/
@@ -67,7 +75,7 @@ SorcererShowdown/
     │   ├── GameManagement/
     │   ├── Specials/
     │   └── Techniques/
-    └── source/
+    └── source/               ← all .cpp files here are compiled automatically
         └── *.cpp
 ```
 
@@ -103,51 +111,51 @@ Pick your base class:
 **MyCharacter.h:**
 ```cpp
 #pragma once
-#include "Sorcerer.h"
+#include "code/header/Characters/CurseUsers/Sorcerers/Sorcerer.h"
 
 class MyCharacter : public Sorcerer {
 public:
     MyCharacter();
     std::unique_ptr<Character> Clone() const override;
-    void OnCharacterTurn(Character*, Battlefield&) override;
+
+    // override this for custom AI — omit it to use one of the generic brains instead
+    void OnCharacterTurn(Character* target, Battlefield& bf) override;
 };
 ```
 
 **MyCharacter.cpp:**
 ```cpp
-#include "MyCharacter.h"
-#include "BattlefieldHeader.h"
+#include "code/header/Characters/CurseUsers/Sorcerers/MyCharacter.h"
+#include "code/header/GameManagement/BattlefieldHeader.h"
 // include any technique/domain headers you use
 
 MyCharacter::MyCharacter() : Sorcerer(700.0, 3000.0, 100.0) {
     // Sorcerer(hp, cursed_energy, ce_regen)
     technique          = std::make_unique<MyTechnique>();
     domain             = std::make_unique<MyDomain>();
-    rct_skill          = RCTProficiency::Adept; // None/Crude/Adept/Expert/Absolute
     black_flash_chance = 10;
     base_attack_damage = 30.0;
     char_name          = "My Character";
     name_color         = "\033[36m";
+
+    // optional RCT setup (Sorcerer only)
+    this->SetRCTProficiency("Adept"); // None / Crude / Adept / Expert / Absolute
 }
 
 std::unique_ptr<Character> MyCharacter::Clone() const {
     return std::make_unique<MyCharacter>();
 }
 
-void MyCharacter::OnCharacterTurn(Character*, Battlefield& bf) {
-    // find a target
-    Character* target = nullptr;
-    for (const auto& s : bf.battlefield) {
-        if (s.get() != this) { target = s.get(); break; }
-    }
-    if (!target) return;
+void MyCharacter::OnCharacterTurn(Character* target, Battlefield& bf) {
+    // full control over AI behaviour — write whatever logic you want here
 
-    // standard pattern: RCT → reinforcement → technique → attack
+    // standard pattern: RCT → technique → attack
     if (!this->HPMoreThanMax(0.50) && this->CEMoreThanMax(0.20)) {
         this->BoostRCT();
     } else {
         this->DisableRCT();
     }
+    this->UseRCT();
 
     if (this->GetTechnique() && !this->GetTechnique()->BurntOut()) {
         this->GetTechnique()->AutoTechniqueUse(this, target, bf);
@@ -157,7 +165,20 @@ void MyCharacter::OnCharacterTurn(Character*, Battlefield& bf) {
 }
 ```
 
-**Register:** add `bf.characterlist.push_back(std::make_unique<MyCharacter>())` inside `BattleManager::SetupBattlefield` in `BattleManager.cpp`, and include your header in `CharacterList.h`.
+**Don't want custom AI?** Skip `OnCharacterTurn` entirely and assign one of the three generic brains in the constructor instead — the base `Character::OnCharacterTurn` will dispatch to it automatically:
+```cpp
+#include "code/header/CharacterCreator/AI/Aggressive.h" // or Reactive / Randomized
+
+MyCharacter::MyCharacter() : Sorcerer(700.0, 3000.0, 100.0) {
+    // ...stats...
+    this->SetBrain(std::make_unique<Aggressive>());
+}
+```
+
+**Register:** add your character to the roster by including its header in `CharacterList.h` and pushing it into `bf.characterlist` inside `BattleManager::SetupBattlefield` in `BattleManager.cpp`:
+```cpp
+bf.characterlist.push_back(std::make_unique<MyCharacter>());
+```
 
 ---
 
@@ -168,7 +189,7 @@ void MyCharacter::OnCharacterTurn(Character*, Battlefield& bf) {
 **MyTechnique.h:**
 ```cpp
 #pragma once
-#include "Techniques.h"
+#include "code/header/Techniques/Techniques.h"
 
 class MyTechnique : public Technique {
 protected:
@@ -191,9 +212,9 @@ public:
 
 **MyTechnique.cpp:**
 ```cpp
-#include "MyTechnique.h"
-#include "CurseUser.h"
-#include "Utils.h"
+#include "code/header/Techniques/MyTechnique.h"
+#include "code/header/Characters/CurseUsers/CurseUser.h"
+#include "code/header/GameManagement/Utils.h"
 
 MyTechnique::MyTechnique() {
     tech_name  = "My Technique";
@@ -220,7 +241,7 @@ void MyTechnique::TechniqueMenu(CurseUser* user, Character* target, Battlefield&
     }
     std::println("1 - Use My Ability");
     std::print("=> ");
-    if (GetValidInput() == 1) UseMyAbility(user, target); // GetValidInput is from the Utils.h library. Used to get input and return integers
+    if (GetValidInput() == 1) UseMyAbility(user, target); // GetValidInput() is from Utils.h — reads and returns a validated integer
 }
 
 // AI path — called automatically each turn
@@ -256,6 +277,8 @@ void MyTechnique::TechniqueSetting(CurseUser* user, Battlefield& bf) {
 
 Check with `Usable()`, `Boosted()`, `BurntOut()`. The base `Set(Status)` propagates status — override it if you need to forward it to sub-techniques (see `Copy::Set` for an example).
 
+Register by adding to `GetTechniqueByName` in `Creator.cpp` for JSON support.
+
 ---
 
 ### ➕ New Domain
@@ -263,7 +286,7 @@ Check with `Usable()`, `Boosted()`, `BurntOut()`. The base `Set(Status)` propaga
 **MyDomain.h:**
 ```cpp
 #pragma once
-#include "Domain.h"
+#include "code/header/Domains/Domain.h"
 
 class MyDomain : public Domain {
 public:
@@ -275,13 +298,13 @@ public:
 
 **MyDomain.cpp:**
 ```cpp
-#include "MyDomain.h"
-#include "Character.h"
+#include "code/header/Domains/MyDomain.h"
+#include "code/header/Characters/Character.h"
 
 //              health   overwhelm_strength   range
 MyDomain::MyDomain() : Domain(600.0, 100.0, 14.0) {
-    ref_level  = Refinement::Refined;     // Unstable / Crude / Refined / Absolute
-    hit_type   = HitType::HitsCurseUsers; // or HitsEveryone
+    ref_level    = Refinement::Refined;     // Unstable / Crude / Refined / Absolute
+    hit_type     = HitType::HitsCurseUsers; // or HitsEveryone
     domain_name  = "My Domain";
     domain_color = "\033[31m";
     domain_cost    = 400.0;  // CE drained from the user each turn while active
@@ -325,7 +348,7 @@ void MyDomain::OnSureHit(CurseUser& user, Character& target) {
 | `HitsCurseUsers` | CE users only; `PhysicallyGifted` targets are immune (Heavenly Restriction) |
 | `HitsEveryone` | All characters including `PhysicallyGifted` |
 
-Register by including in `DomainList.h` and adding to `GetDomainByName` in `Creator.cpp` for JSON support.
+Register by adding to `GetDomainByName` or `GetCounterDomainByName` in `Creator.cpp` for JSON support.
 
 ---
 
@@ -334,7 +357,7 @@ Register by including in `DomainList.h` and adding to `GetDomainByName` in `Crea
 **MyTool.h:**
 ```cpp
 #pragma once
-#include "CursedTool.h"
+#include "code/header/CursedTools/CursedTool.h"
 
 class MyTool : public CursedTool {
 public:
@@ -346,8 +369,8 @@ public:
 
 **MyTool.cpp:**
 ```cpp
-#include "MyTool.h"
-#include "Utils.h"
+#include "code/header/CursedTools/MyTool.h"
+#include "code/header/GameManagement/Utils.h"
 
 MyTool::MyTool() {
     tool_name  = "My Tool";
@@ -366,7 +389,11 @@ std::unique_ptr<CursedTool> MyTool::Clone() const {
 }
 ```
 
-Override `IsAntiTechniqueWeapon()` to return `true` if the tool should bypass Infinity (like the Inverted Spear of Heaven). Add to `CursedToolList.h` and equip via `inventory_curse.push_back(std::make_unique<MyTool>())` in a character constructor, or `cursed_tool = std::make_unique<MyTool>()` to start with it already equipped.
+Override `IsAntiTechniqueWeapon()` to return `true` if the tool uses DamageBypass (like the Inverted Spear of Heaven). Register by adding to `GetToolByName` in `Creator.cpp` for JSON support. Equip via:
+```cpp
+inventory_curse.push_back(std::make_unique<MyTool>()); // in inventory, unequipped
+cursed_tool = std::make_unique<MyTool>();               // equipped at battle start
+```
 
 ---
 
