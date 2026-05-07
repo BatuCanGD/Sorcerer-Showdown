@@ -1,5 +1,5 @@
 #include "code/header/Characters/Shikigami/Shikigami.h"
-#include "code/header/Characters/CurseUsers/Sorcerers/Sorcerer.h"
+#include "code/header/Characters/CurseUsers/CurseUser.h"
 
 
 Shikigami::~Shikigami() = default;

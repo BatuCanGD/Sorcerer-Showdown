@@ -3,7 +3,7 @@
 #include "code/header/Characters/Character.h"
 #include "code/header/GameManagement/Utils.h"
 
-
+Domain::~Domain() = default;
 
 Domain::Domain(double hp, double as, double rn) : 
     domain_health(hp), 

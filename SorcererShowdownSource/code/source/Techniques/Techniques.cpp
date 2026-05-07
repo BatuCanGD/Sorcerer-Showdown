@@ -3,7 +3,7 @@
 #include "code/header/Characters/Character.h"
 #include "code/header/GameManagement/Utils.h"
 
-
+Technique::~Technique() = default;
 
 void Technique::Set(Status s) {
     state = s;
