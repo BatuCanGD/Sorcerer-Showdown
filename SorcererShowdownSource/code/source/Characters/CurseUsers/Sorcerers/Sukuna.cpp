@@ -213,12 +213,7 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
             }
         }
     }
-
     this->Attack(strongest);
-
-    if (needs_da) {
-        this->SetAmplification(false);
-    }
 }
 
 

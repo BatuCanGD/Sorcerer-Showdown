@@ -133,8 +133,9 @@ bool Aggressive::TryTechniqueActions(CurseUser* user, Battlefield& bf, Character
 
     if (user->GetTechnique() && !user->GetTechnique()->BurntOut() && !user->DomainAmplificationActive()) {
         if (user->CEMoreThanMax(0.20)) {
-            user->GetTechnique()->AutoTechniqueUse(user, target, bf);
-            return true;
+            if (user->GetTechnique()->AutoTechniqueUse(user, target, bf)) {
+                return true;
+            }
         }
     }
     if (user->GetSpecial() && GetRandomNumber(1, 100) <= 20) {

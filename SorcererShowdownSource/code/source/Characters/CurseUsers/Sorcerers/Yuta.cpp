@@ -103,10 +103,6 @@ void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {
                 this->ActivateDomain();
                 return;
             }
-            else if (GetRandomNumber(1, 100) <= 1) {
-                this->ActivateDomain();
-                return;
-            }
         }
         else if (!(this->CounterDomainActive() && this->DomainActive()) && !this->counter_on_cooldown) {
             this->ActivateCounterDomain();
@@ -133,11 +129,11 @@ void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {
     }
 
     if (strongest && !this->GetTechnique()->BurntOut() && !this->DomainAmplificationActive()) {
-        this->GetTechnique()->AutoTechniqueUse(this, strongest, bf);
-        return;
+        if (this->GetTechnique()->AutoTechniqueUse(this, strongest, bf)) {
+            return;
+        }
     }
     this->Attack(strongest);
-    if (this->DomainAmplificationActive()) this->SetAmplification(false);
 }
 
 bool Yuta::InfCheck(Character* strongest) {

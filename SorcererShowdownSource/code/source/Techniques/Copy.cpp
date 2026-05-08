@@ -147,7 +147,7 @@ void Copy::TechniqueSetting(CurseUser* user, Battlefield& bf) {
     }
 }
 
-void Copy::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
+bool Copy::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
     bool dont_copy = false;
     if (target->IsaCurseUser()) {
         auto crs = static_cast<CurseUser*>(target);
@@ -173,8 +173,9 @@ void Copy::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf)
     Technique* active = GetActive();
     if (active) {
         active->AutoTechniqueUse(user, target, bf);
-        return;
+        return true;
     }
+    return false;
 }
 
 bool Copy::IsCopy() const {

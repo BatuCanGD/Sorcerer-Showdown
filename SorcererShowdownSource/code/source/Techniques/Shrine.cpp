@@ -117,20 +117,24 @@ void Shrine::Chant() {
     }
 }
 
-void Shrine::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield&) {
+bool Shrine::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield&) {
     if (GetRandomNumber(1, 30) >= 25) {
         UseCleave(user, target);
+        return true;
     }
     else {
         if (world_cutting_slash_allowed && chant == ChantLevel::Four){
             UseTheWorldCuttingSlash(user, target);
+            return true;
         }
         else {
             if (GetRandomNumber(1, 10) >= 6 || world_cutting_slash_allowed) {
                 Chant();
+                return true;
             }
             else {
                 UseDismantle(user, target);
+                return true;
             }
         }
     }
