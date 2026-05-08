@@ -43,6 +43,10 @@ void Copy::CopyFrom(CurseUser* target) {
         std::println("Copy limit reached ({})!", max_copies);
         return;
     }
+    if (target->GetTechnique()->IsCopy()) {
+        std::println("Cannot copy from another Copy user!");
+        return;
+    }
     std::string ttname = target->GetTechnique()->GetTechniqueName();
     for (const auto& tech : copied_techniques) {
         if (tech->GetTechniqueName() == ttname) {
