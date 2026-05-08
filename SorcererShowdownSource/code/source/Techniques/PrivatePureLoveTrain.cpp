@@ -114,17 +114,18 @@ std::unique_ptr<Technique> PrivatePureLoveTrain::Clone() const {
 	return std::make_unique<PrivatePureLoveTrain>(*this);
 }
 
-void PrivatePureLoveTrain::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield&) {
+bool PrivatePureLoveTrain::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield&) {
 	if (GetRandomNumber(1, 30) <= 25 && !plinko_used) {
 		UsePlinkoBalls(user, target);
-		return;
+		return true;
 	}
 	if (user->GetDomain() && user->GetDomain()->IsIdleDeathGamble()) {
 		auto idg = static_cast<IdleDeathGamble*>(user->GetDomain());
 		if (idg->HasHitJackpot()) {
 			UseJackpotRush(user, target);
-			return;
+			return true;
 		}
 	}
 	UseShutterDoors(user, target);
+	return true;
 }

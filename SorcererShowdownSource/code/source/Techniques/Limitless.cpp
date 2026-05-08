@@ -219,25 +219,29 @@ bool Limitless::UnlimitedHollowUsed()const {
     return up_used;
 }
 
-void Limitless::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
+bool Limitless::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
     if (GetRandomNumber(1, 30) >= 20) {
         UsePurple(user, target);
-        return;
+        return true;
     }
     if (user->GetSpecial() && user->GetSpecial()->IsUnlimitedPurple()) {
         if (!up_used && unlimited_hollow_purple_allowed && this->FullyChanted()){
             UseUnlimitedHollowPurple(user, bf);
+            return true;
         }
     }
     if (GetRandomNumber(1, 50) >= 33 || (unlimited_hollow_purple_allowed && !this->FullyChanted() && !up_used)) {
         Chant();
+        return true;
     }
     else {
         if (GetRandomNumber(0, 1) == 1) {
             UseRed(user, target);
+            return true;
         }
         else {
             UseBlue(user, target);
+            return true;
         }
     }
 }

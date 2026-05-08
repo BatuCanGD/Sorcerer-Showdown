@@ -79,8 +79,9 @@ bool Randomized::TryDomainActions(CurseUser* user, Battlefield&, Character*) {
 bool Randomized::TryTechniqueActions(CurseUser* user, Battlefield& bf, Character* target) {
     if (user->GetTechnique() && !user->GetTechnique()->BurntOut()) {
         if (!user->HPMoreThanMax(0.50) || user->GetTechnique()->Boosted()) {
-            user->GetTechnique()->AutoTechniqueUse(user, target, bf); 
-            return true; 
+            if (user->GetTechnique()->AutoTechniqueUse(user, target, bf)) {
+                return true;
+            }
         }
     }
     return false; 

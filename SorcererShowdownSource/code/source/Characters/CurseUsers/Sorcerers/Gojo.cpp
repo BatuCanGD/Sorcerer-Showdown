@@ -171,7 +171,6 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
         return;
     }
     this->Attack(strongest);
-    if (this->DomainAmplificationActive()) this->SetAmplification(false);
 }
 
 bool Gojo::InfCheck(Character* strongest) {

@@ -133,8 +133,9 @@ bool Reactive::TryTechniqueActions(CurseUser* user, Battlefield& bf, Character* 
 
     if (user->GetTechnique() && !user->GetTechnique()->BurntOut() && !user->DomainAmplificationActive()) {
         if (!user->HPMoreThanMax(0.50) || user->GetTechnique()->Boosted()) {
-            user->GetTechnique()->AutoTechniqueUse(user, target, bf); 
-            return true; 
+            if (user->GetTechnique()->AutoTechniqueUse(user, target, bf)) {
+                return true;
+            }
         }
     }
     if (user->GetSpecial() && GetRandomNumber(1, 100) <= 20) {

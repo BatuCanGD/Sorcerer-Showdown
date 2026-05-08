@@ -90,12 +90,13 @@ std::unique_ptr<Technique> IdleTransfiguration::Clone() const {
     return std::make_unique<IdleTransfiguration>(*this);
 }
 
-void IdleTransfiguration::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
+bool IdleTransfiguration::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
     if (transfigured_human_count > 3) {
         while(transfigured_human_count > 0){
             SummonTransfiguredHumans(bf);
         }
-        return;
+        return true;
     }
     UseTransfiguration(user, target);
+    return true;
 }
