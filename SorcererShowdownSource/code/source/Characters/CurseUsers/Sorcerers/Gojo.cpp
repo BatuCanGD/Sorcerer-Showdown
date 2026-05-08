@@ -127,6 +127,7 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
     else {
         if (this->CounterDomainActive()) {
             this->DeactivateCounterDomain();
+            return;
         }
         if (!limitless->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
             if (GetRandomNumber(1, 100) <= 30) {

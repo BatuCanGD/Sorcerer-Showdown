@@ -176,8 +176,7 @@ bool Copy::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf)
     }
     Technique* active = GetActive();
     if (active) {
-        active->AutoTechniqueUse(user, target, bf);
-        return true;
+        return this->GetActive()->AutoTechniqueUse(user, target, bf);
     }
     return false;
 }

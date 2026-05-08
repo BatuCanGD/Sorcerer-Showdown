@@ -65,7 +65,7 @@ void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {
     std::vector<CurseUser*> domain_users;
 
     for (const auto& s : bf.battlefield) {
-        if (s.get() == this) continue;
+        if (s.get() == this || s->GetCharacterHealth() <= 0) continue;
         double score = s->GetCharacterHealth() / this->GetCharacterMaxHealth();
 
         if (s->IsaCurseUser()) {
@@ -104,7 +104,7 @@ void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {
                 return;
             }
         }
-        else if (!(this->CounterDomainActive() && this->DomainActive()) && !this->counter_on_cooldown) {
+        else if (!this->DomainActive() && !this->CounterDomainActive() && !this->counter_on_cooldown) {
             this->ActivateCounterDomain();
             return;
         }
@@ -112,6 +112,7 @@ void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {
     else {
         if (this->CounterDomainActive()) {
             this->DeactivateCounterDomain();
+            return;
         }
         if (!this->GetTechnique()->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
             if (GetRandomNumber(1, 100) <= 25) {
@@ -138,6 +139,7 @@ void Yuta::OnCharacterTurn(Character*, Battlefield& bf) {
 
 bool Yuta::InfCheck(Character* strongest) {
     bool needs_amplification = false;
+    if (!strongest) return false;
     if (strongest->IsaCurseUser()) {
         auto crs = static_cast<CurseUser*>(strongest);
         if (auto* tech = crs->GetTechnique()) {

@@ -177,6 +177,7 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
     else {
         if (this->CounterDomainActive()) {
             this->DeactivateCounterDomain();
+            return;
         }
         if (!shrine->BurntOut() && this->GetDomainUses() < 5 && !this->DomainActive()) {
             if (GetRandomNumber(1, 100) <= 20) {
@@ -194,8 +195,12 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
         }
     }
 
-    if (needs_da) this->SetAmplification(true);
-    else if (this->DomainAmplificationActive()) this->SetAmplification(false);
+    if (needs_da) {
+        this->SetAmplification(true);
+    }
+    else if (this->DomainAmplificationActive()) {
+        this->SetAmplification(false);
+    } 
 
     if (!needs_da && !shrine->BurntOut()) {
         if (GetRandomNumber(1, 100) <= 25 && !shrine->FullyChanted()) {
