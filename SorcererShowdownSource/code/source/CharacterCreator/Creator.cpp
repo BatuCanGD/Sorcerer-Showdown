@@ -122,7 +122,7 @@ std::unique_ptr<Character> CharacterCreator::CreateFromJson(const json& j) {
     return character;
 }
 
-void CharacterCreator::LoadJsonCharacter(Battlefield& bf) {
+void CharacterCreator::LoadJsonCharacter(BattleCreator& bc) {
     std::cout << "Looking for JSON in: " << std::filesystem::current_path() << '\n';
     std::ifstream file("characters.json");
 
@@ -143,7 +143,7 @@ void CharacterCreator::LoadJsonCharacter(Battlefield& bf) {
         for (const auto& charData : data["characters"]) {
             std::unique_ptr<Character> newChar = CharacterCreator::CreateFromJson(charData);
             if (newChar) {
-                bf.characterlist.push_back(std::move(newChar));
+                bc.characterlist.push_back(std::move(newChar));
             }
         }
     }

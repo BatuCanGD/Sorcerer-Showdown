@@ -7,6 +7,7 @@
 #include "code/header/Domains/DomainList.h"
 #include "code/header/GameManagement/UIDisplay.h"
 #include "code/header/GameManagement/Utils.h"
+#include "code/header/std.h"
 
 bool BattleManager::GameEndCheck(Battlefield& bf, bool spectator_mode) {
 	int alive_sorcerers = 0;
@@ -39,25 +40,25 @@ bool BattleManager::SkipTurnFullyCheck() {
 	}
 }
 
-void BattleManager::loadSetup(Battlefield& bf, bool load = false) {
-	if (!bf.characterlist.empty()) bf.characterlist.clear();
-	bf.characterlist.push_back(std::make_unique<Gojo>());
-	bf.characterlist.push_back(std::make_unique<Sukuna>());
-	bf.characterlist.push_back(std::make_unique<Yuta>());
-	bf.characterlist.push_back(std::make_unique<Toji>());
-	bf.characterlist.push_back(std::make_unique<Mahito>());
-	bf.characterlist.push_back(std::make_unique<Hakari>());
+void BattleManager::loadSetup(Battlefield& bf, BattleCreator& bc, bool load = false) {
+	if (!bc.characterlist.empty()) bc.characterlist.clear();
+	bc.characterlist.push_back(std::make_unique<Gojo>());
+	bc.characterlist.push_back(std::make_unique<Sukuna>());
+	bc.characterlist.push_back(std::make_unique<Yuta>());
+	bc.characterlist.push_back(std::make_unique<Toji>());
+	bc.characterlist.push_back(std::make_unique<Mahito>());
+	bc.characterlist.push_back(std::make_unique<Hakari>());
 	if (load) {
 		CharacterCreator cc;
-		cc.LoadJsonCharacter(bf);
+		cc.LoadJsonCharacter(bc);
 	}
 	Character::ResetGlobalID();
 	Character::AddGlobalID(int(bf.battlefield.size()));
 }
 
-bool BattleManager::SetupBattlefield(Battlefield& bf) {
+bool BattleManager::SetupBattlefield(Battlefield& bf,BattleCreator& bc) {
 	bool choosing = true, spec_mode = false; 
-	loadSetup(bf);
+	loadSetup(bf, bc);
 	while (choosing) {
 		std::println("Choose your sorcerer and the amount of opponents you want to fight!");
 		if (!spec_mode) {
@@ -66,12 +67,12 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 		else {
 			std::println("[<Spectator Mode Enabled>]");
 		}
-		for (auto const& [name, count] : bf.fighter_counts) {
+		for (auto const& [name, count] : bc.fighter_counts) {
 			if (count > 0) std::println("{} x{}", name, count);
 		}
 		std::println("\n");
 		int i = 1;
-		for (const auto& s : bf.characterlist) {
+		for (const auto& s : bc.characterlist) {
 			std::println("{}: {}",i, s->GetName());
 			i++;
 		}
@@ -79,12 +80,12 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 		
 		int c = GetValidInput();
 
-		if (c > 0 && c <= static_cast<int>(bf.characterlist.size())) 
+		if (c > 0 && c <= static_cast<int>(bc.characterlist.size())) 
 		{
 			size_t idx = static_cast<size_t>(c - 1);
-			std::unique_ptr<Character> new_character = bf.characterlist[idx]->Clone();
+			std::unique_ptr<Character> new_character = bc.characterlist[idx]->Clone();
 			new_character->AssignID();
-			bf.fighter_counts[new_character->GetName()]++;
+			bc.fighter_counts[new_character->GetName()]++;
 			bf.battlefield.push_back(std::move(new_character));
 		}
 		else if (c == 0) 
@@ -100,7 +101,7 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 		}
 		else if (c == -1 && !bf.battlefield.empty()) 
 		{
-			bf.fighter_counts[bf.battlefield.back()->GetName()]--;
+			bc.fighter_counts[bf.battlefield.back()->GetName()]--;
 			bf.battlefield.pop_back();
 			Character::AddGlobalID(-1);
 		}
@@ -115,7 +116,7 @@ bool BattleManager::SetupBattlefield(Battlefield& bf) {
 		}
 		else if (c == -3) 
 		{
-			loadSetup(bf, true);
+			loadSetup(bf, bc, true);
 		}
 		else{
 			std::println("Invalid Input");
@@ -204,52 +205,39 @@ bool BattleManager::ManageEndOfTurn(Battlefield& bf, bool spectator_mode) {
 void BattleManager::DomainCheckAndPerform(Battlefield& bf) {
 	std::println("\n\n{}================= END OF TURN SUMMARY ================={}", Color::Yellow, Color::Clear); // this is here now because its just 1 line away from manage end of turn
 	std::println("{}============= DOMAINS AND CLASHES ============{}", Color::BrightMagenta, Color::Clear);
-	std::vector<CurseUser*> active_domains;
-
 	for (const auto& s : bf.battlefield) {
 		if (s->IsaCurseUser()) {
 			auto curse_user = static_cast<CurseUser*>(s.get());
 			if (curse_user->GetDomain() == nullptr) continue;
 			if (curse_user->DomainActive()) {
-				active_domains.push_back(curse_user);
+				bf.active_domains.push_back(curse_user);
 			}
 		}
 	}
 
-	for (auto s : active_domains) {
+	for (auto s : bf.active_domains) {
 		s->DomainDrain();
 	}
-
-	if (active_domains.size() > 2) {
-		std::println("{}====Its a {}-way domain clash!===={}",Color::BrightMagenta, active_domains.size(), Color::Clear);
-		for (const auto& s : active_domains) {
+	if (bf.active_domains.size() == 1){
+		DoSurehit(bf.active_domains[0], bf);
+	}
+	else if (bf.active_domains.size() > 2) {
+		std::println("{}====Its a {}-way domain clash!===={}",Color::BrightMagenta, bf.active_domains.size(), Color::Clear);
+		for (const auto& s : bf.active_domains) {
 			s->GetDomain()->KillSetDomain(*s, *s->GetDomain());
 		}
 	}
-	else if (active_domains.size() == 2) {
-		for (const auto& s : active_domains) {
+	else if (bf.active_domains.size() == 2) {
+		for (const auto& s : bf.active_domains) {
 			s->GetDomain()->SetClashState(true);
 		}
-		active_domains[0]->GetDomain()->ClashDomains(*active_domains[0], *active_domains[1]);
+		Domain::ClashDomains(*bf.active_domains[0], *bf.active_domains[1]);
 	}
 	else {
-		for (const auto& s : active_domains) {
+		for (const auto& s : bf.active_domains) {
 			if (s->GetDomain()->Clashing()) {
 				s->GetDomain()->SetClashState(false);
 			}
-		}
-	}
-	///// DOMAIN EFFECTS, WITHOUT CLASH /////
-	if (active_domains.size() == 1) {
-		CurseUser* domain_user = active_domains[0];
-
-		for (const auto& s : bf.battlefield) {
-			if (s.get() == domain_user) continue;
-			std::println("{} has been caught inside of {}'s {}",
-				s->GetNameWithID(),
-				domain_user->GetNameWithID(),
-				domain_user->GetDomain()->GetDomainName());
-			domain_user->GetDomain()->OnSureHit(*domain_user,*s);
 		}
 	}
 	for (const auto& s : bf.battlefield) {
@@ -257,6 +245,18 @@ void BattleManager::DomainCheckAndPerform(Battlefield& bf) {
 			auto cr = static_cast<CurseUser*>(s.get());
 			cr->TickDomain();
 		}
+	}
+	bf.active_domains.clear();
+}
+
+void BattleManager::DoSurehit(CurseUser* crs, Battlefield& bf){
+	for (const auto& s : bf.battlefield) {
+		if (s.get() == crs) continue;
+		std::println("{} has been caught inside of {}'s {}",
+			s->GetNameWithID(),
+			crs->GetNameWithID(),
+			crs->GetDomain()->GetDomainName());
+		crs->GetDomain()->OnSureHit(*crs,*s);
 	}
 }
 
