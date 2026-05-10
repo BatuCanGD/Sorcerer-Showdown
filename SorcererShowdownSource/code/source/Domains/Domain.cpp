@@ -17,10 +17,6 @@ bool Domain::Clashing() const {
     return clashing;
 }
 
-bool Domain::GetRefinementComparison(Domain& d1, Domain& d2) const {
-    return d1.GetRefinement() == d2.GetRefinement();
-}
-
 Domain::Refinement Domain::GetRefinement() const {
     return ref_level;
 }
@@ -52,21 +48,18 @@ void Domain::DamageDomain(double damage) {
 }
 
 void Domain::ClashDomains(CurseUser& user1, CurseUser& user2) {
-    Domain* d1 = user1.GetDomain();
-    Domain* d2 = user2.GetDomain();
+    Domain* d1 = user1.GetDomain(); Domain* d2 = user2.GetDomain();
 
-    
-    if (!GetRefinementComparison(*d1, *d2)){
-        if (d1->GetRefinement() > d2->GetRefinement()) {
-            std::println("{}'s domain has been overwhelmed by the more refined {}", user2.GetNameWithID(), d1->GetDomainName());
-            user2.DeactivateDomain();
-            d2->CollapseDomain();
-        }
-        else if (d2->GetRefinement() > d1->GetRefinement()) {
-            std::println("{}'s domain has been overwhelmed by the more refined {}", user1.GetNameWithID(), d2->GetDomainName());
-            user1.DeactivateDomain();
-            d1->CollapseDomain();
-        }
+    if (d1->GetRefinement() > d2->GetRefinement()) {
+        std::println("{}'s domain has been overwhelmed by the more refined {}", user2.GetNameWithID(), d1->GetDomainName());
+        user2.DeactivateDomain();
+        d2->CollapseDomain();
+        return;
+    }
+    else if (d1->GetRefinement() < d2->GetRefinement()) {
+        std::println("{}'s domain has been overwhelmed by the more refined {}", user1.GetNameWithID(), d2->GetDomainName());
+        user1.DeactivateDomain();
+        d1->CollapseDomain();
         return;
     }
 
@@ -86,13 +79,12 @@ void Domain::ClashDomains(CurseUser& user1, CurseUser& user2) {
 
     if (d1->IsDestroyed()) {
         std::println("{}'s {} has been overwhelmed and has collapsed", user1.GetNameWithID(), d1->GetDomainName());
-        KillSetDomain(user2, *d1);
+        KillSetDomain(user1, *d1);
     }
     else if (d2->IsDestroyed()) {
         std::println("{}'s {} has been overwhelmed and has collapsed",user2.GetNameWithID(), d2->GetDomainName());
         KillSetDomain(user2, *d2);
     }
-
 }
 
 void Domain::KillSetDomain(CurseUser& user, Domain& domain) {
@@ -111,40 +103,20 @@ double Domain::GetUseCost() const {
     return domain_cost;
 }
 
-bool Domain::CheckDomainSurehit(Character& target) const {
-    switch (hit_type) {
-    case HitType::HitsCurseUsers:
-        if (clashing) 
-        {
-            return true;
-        }
-        else if (target.IsaCurseUser()) {
-            auto* s = static_cast<CurseUser*>(&target);
-            if (s->CounterDomainActive()) {
-                std::println("{} protected himself from the {}'s surehit by using {}!", s->GetNameWithID(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
-                return true;
-            }
-            return false;
-        }
-        else if (target.IsPhysicallyGifted()) {
-            std::println("{} couldnt detect {} due to their heavenly restriction\nThe domain's surehit didnt work!", this->GetDomainName(), target.GetNameWithID());
+bool Domain::IsSurehitBlocked(Character& target) const {
+    if (clashing){ return true; }
+    if (target.IsaCurseUser()){
+        auto s = static_cast<CurseUser*>(&target);
+        if (s->CounterDomainActive()){
+            std::println("{} protected himself from the {}'s surehit by using {}!", s->GetNameWithID(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
             return true;
         }
         return false;
-    case HitType::HitsEveryone:
-        if (clashing)
-        {
-            return true;
-        }
-        else if (target.IsaCurseUser()) {
-            auto* s = static_cast<CurseUser*>(&target);
-            if (s->CounterDomainActive()) {
-                std::println("{} protected himself from the {}'s surehit by using {}!", s->GetNameWithID(), this->GetDomainName(), s->GetCounterDomain()->GetDomainName());
-                return true;
-            }
-            return false;
-        }
-        return false;
+    }
+    if (hit_type == HitType::HitsCurseUsers && target.IsPhysicallyGifted()) {
+        std::println("{} couldn't detect {} due to their heavenly restriction\n"
+                    "The domain's surehit didn't work!", GetDomainName(), target.GetNameWithID());
+        return true;
     }
     return false;
 }

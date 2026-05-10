@@ -4,15 +4,11 @@
 #include "code/header/GameManagement/PlayerManager.h"
 #include "code/header/GameManagement/UIDisplay.h"
 
-
-
 int main() {
-	Battlefield bf;
-	BattleManager manager;
-	PlayerManager player;
-	UserInterface interface;
-
-	bool spectator_mode = manager.SetupBattlefield(bf);
+	Battlefield bf; BattleCreator bc; BattleManager manager;
+	PlayerManager player; UserInterface interface;
+	
+	bool spectator_mode = manager.SetupBattlefield(bf, bc);
 	bool skip_turns = manager.SkipTurnFullyCheck();
 	interface.ShowBattleEntry(bf.battlefield);
 	

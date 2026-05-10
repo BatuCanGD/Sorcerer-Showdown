@@ -169,7 +169,7 @@ void Sukuna::OnCharacterTurn(Character*, Battlefield& bf) {
                 return;
             }
         }
-        else if (!(this->CounterDomainActive() && this->DomainActive()) && !this->counter_on_cooldown) {
+        else if (!this->CounterDomainActive() && !this->DomainActive() && !this->counter_on_cooldown) {
             this->ActivateCounterDomain();
             return;
         }

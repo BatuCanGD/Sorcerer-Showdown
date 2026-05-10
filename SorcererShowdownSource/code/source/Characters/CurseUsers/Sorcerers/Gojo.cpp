@@ -119,7 +119,7 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
                 return;
             }
         }
-        else if (!(this->CounterDomainActive() && this->DomainActive()) && !this->counter_on_cooldown) {
+        else if (!this->CounterDomainActive() && !this->DomainActive() && !this->counter_on_cooldown) {
             this->ActivateCounterDomain();
             return;
         }
@@ -145,7 +145,7 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
         this->SetAmplification(false);
     }
 
-    if (strongest && !limitless->BurntOut() && this->CEMoreThanMax(0.05) && !this->DomainAmplificationActive()) {
+    if (strongest && !limitless->BurntOut() && this->CEMoreThanMax(0.03) && !this->DomainAmplificationActive()) {
         int roll = GetRandomNumber(1, 100);
         int croll = GetRandomNumber(1, 10);
 
