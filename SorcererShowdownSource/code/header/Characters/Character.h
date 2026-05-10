@@ -26,7 +26,6 @@ protected:
 
 	bool is_player = false;
 	bool is_stunned = false;
-	bool is_heavenly_restricted;
 	bool is_invulnerable = false;
 public:
 	Character(double hp);
