@@ -214,13 +214,7 @@ void BattleManager::DomainCheckAndPerform(Battlefield& bf) {
 		}
 	}
 
-	for (auto s : bf.active_domains) {
-		s->DomainDrain();
-	}
-	if (bf.active_domains.size() == 1){
-		DoSurehit(bf.active_domains[0], bf);
-	}
-	else if (bf.active_domains.size() > 2) {
+	if (bf.active_domains.size() > 2) {
 		std::println("{}====Its a {}-way domain clash!===={}",Color::BrightMagenta, bf.active_domains.size(), Color::Clear);
 		for (const auto& s : bf.active_domains) {
 			s->GetDomain()->KillSetDomain(*s, *s->GetDomain());
@@ -238,11 +232,15 @@ void BattleManager::DomainCheckAndPerform(Battlefield& bf) {
 				s->GetDomain()->SetClashState(false);
 			}
 		}
+		DoSurehit(bf.active_domains[0], bf);
 	}
 	for (const auto& s : bf.battlefield) {
 		if (s->IsaCurseUser()) {
 			auto cr = static_cast<CurseUser*>(s.get());
-			cr->TickDomain();
+			if (cr->GetDomain() && cr->DomainActive()){
+				cr->TickDomain();
+				cr->DomainDrain();
+			}
 		}
 	}
 	bf.active_domains.clear();
