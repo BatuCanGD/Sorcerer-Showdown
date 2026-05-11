@@ -83,7 +83,7 @@ void PlayerManager::OnPlayerTurn(Character& s, Battlefield& bf) {
 			break;
 		}
 		auto src = static_cast<Sorcerer*>(&s);
-		if (src->GetCharacterMaxCE() < 500.0f) {
+		if (src->GetCharacterMaxCE() < 500.0) {
 			std::println("You dont have enough cursed energy to continuously maintain Reverse Cursed Technique");
 			break;
 		}

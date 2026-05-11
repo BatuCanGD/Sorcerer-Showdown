@@ -91,7 +91,7 @@ std::unique_ptr<Character> Character::Clone() const {
 	return nullptr;
 }
 
-double Character::GetDamageReinforcement()const { return 1.0f; }
+double Character::GetDamageReinforcement()const { return 1.0; }
 
 void Character::Damage(double h) {
 	if (!CanBeHit() || is_invulnerable) return;
