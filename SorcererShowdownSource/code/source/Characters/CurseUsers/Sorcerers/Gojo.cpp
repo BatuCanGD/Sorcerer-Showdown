@@ -160,7 +160,7 @@ void Gojo::OnCharacterTurn(Character*, Battlefield& bf) {
             return;
         }
 
-        if (roll <= 15 && this->CEMoreThanMax(0.35) || !limitless->UPPurpleCheck() && roll >= 70) {
+        if ((roll <= 15 && this->CEMoreThanMax(0.35)) || (!limitless->UPPurpleCheck() && roll >= 70)) {
             limitless->UsePurple(this, strongest);
         }
         else if (roll <= 60 && !limitless->UPBlueCheck()) {
