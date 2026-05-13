@@ -129,10 +129,10 @@ void BattleManager::SpawnNewFighters(Battlefield& bf) {
 
 bool BattleManager::ManageEndOfTurn(Battlefield& bf, bool spectator_mode) {
 	std::println("{}=============== TURN AFTERMATH ==============={}", Color::BrightRed, Color::Clear);
-
 	auto [removed_begin, removed_end] = std::ranges::remove_if(bf.battlefield, [](const auto& s) {
 		if (s->GetCharacterHealth() <= 0.0) {
-			std::println("{} has been {}defeated and is removed from the battlefield!{}",s->GetNameWithID(), Color::Red,  Color::Clear);
+			double taken_damage = s->GetCharacterPreviousHealth() - s->GetCharacterHealth();
+			std::println("{} took {}{:.1f} damage{} and is removed from the battlefield!{}",s->GetNameWithID(), Color::Red, taken_damage, Color::Clear, Color::Clear);
 			return true;
 		}
 		return false;
@@ -188,7 +188,9 @@ bool BattleManager::ManageEndOfTurn(Battlefield& bf, bool spectator_mode) {
         	player_alive = true;
     	}
 		c->UpdatePreviousHP();
-		c->ClearStunTime();
+		if (c->IsCharacterStunned()){
+			c->ClearStunTime();
+		}
 	}
 	std::println("{}======================================================={}", Color::Yellow, Color::Clear);
 	return player_alive;
@@ -287,3 +289,12 @@ bool BattleManager::IsBattleOver(bool game_over ,bool player_found,bool spectato
 	return false;
 }
 
+int BattleManager::EndGame() {
+	std::println("Enter 0 to end the program.");
+	while (true) {
+		int input = GetValidInput();
+		if (input == 0) {
+			return 0;
+		}
+	}
+}

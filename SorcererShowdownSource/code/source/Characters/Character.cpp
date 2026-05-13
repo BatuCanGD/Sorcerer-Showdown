@@ -95,19 +95,11 @@ double Character::GetDamageReinforcement()const { return 1.0; }
 
 void Character::Damage(double h) {
 	if (!CanBeHit() || is_invulnerable) return;
-	if (this->IsaCurseUser()) { auto crs = static_cast<CurseUser*>(this);
-		health = std::max(health - (h / crs->GetDamageReinforcement()), 0.0);
-		return;
-	}
-	health = std::max(health - h, 0.0);
+	health = std::max(health - (h / GetDamageReinforcement()), 0.0);
 }
 void Character::DamageBypass(double h) {
 	if (is_invulnerable) return;
-	if (this->IsaCurseUser()) { auto crs = static_cast<CurseUser*>(this);
-		health = std::max(health - (h / crs->GetDamageReinforcement()), 0.0);
-		return;
-	}
-	health = std::max(health - h, 0.0);
+	health = std::max(health - (h / GetDamageReinforcement()), 0.0);
 }
 
 void Character::SetBaseDamage(double d) {

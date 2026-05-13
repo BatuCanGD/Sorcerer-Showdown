@@ -74,12 +74,12 @@ double Technique::GetChantPower()const {
 
 std::string Technique::GetStringChantLevel() const {
     switch (chant) {
-    case ChantLevel::Zero: return "\033[2;90mZero\033[0m";
-    case ChantLevel::One: return "\033[31mOne\033[0m";
-    case ChantLevel::Two: return "\033[33mTwo\033[0m";
-    case ChantLevel::Three: return "\033[32mThree\033[0m";
-    case ChantLevel::Four: return "\033[35mMax\033[0m";
-    default: return "One";
+    case ChantLevel::Zero: return "\033[2;90mZero Chants\033[0m";
+    case ChantLevel::One: return "\033[31mOne Chant\033[0m";
+    case ChantLevel::Two: return "\033[33mTwo Chants\033[0m";
+    case ChantLevel::Three: return "\033[32mThree Chants\033[0m";
+    case ChantLevel::Four: return "\033[35mMax Chants\033[0m";
+    default: return "\033[31mOne Chant\033[0m";
     }
 }
 

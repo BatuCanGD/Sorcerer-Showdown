@@ -53,7 +53,5 @@ int main() {
 		std::cin.clear();
 		interface.ClearScreen();
 	}
-	std::println("press enter to end the game...");
-	std::cin.get();
-	return 0;
+	return manager.EndGame();
 }

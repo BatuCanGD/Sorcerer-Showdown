@@ -49,7 +49,7 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 	}
 	
 
-	std::print("Health: [{}{:.1f}/{:.1f}{}] | ",hp_color, hp, max_hp, Color::Clear);
+	std::print("Health [{}{:.1f}/{:.1f}{}] | ",hp_color, hp, max_hp, Color::Clear);
 	
 	if (s->IsaCurseUser()) {
 		auto crs = static_cast<CurseUser*>(s);
@@ -61,15 +61,15 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 			ce_color = Color::DimGray;
 		}
 
-		std::println("Cursed Energy: [{}{:.1f}/{:.1f}{}]",
+		std::println("Cursed Energy [{}{:.1f}/{:.1f}{}]",
 			ce_color, ce, max_ce, Color::Clear);
 		if (s->IsaSorcerer()) {
 			auto sorcerer = static_cast<Sorcerer*>(s);
-			std::print("Domain Amplification: [{}] | Reverse Cursed Technique: [{}] | CE Reinforcement: [{}]",
+			std::print("Domain Amp [{}] | Reverse Cursed Technique [{}] | Reinforcement [{}]",
 				sorcerer->GetDAstatus(), sorcerer->GetRCTstatus(), sorcerer->GetReinforcementStatus());
 		}
 		else if (s->IsaCurseUser()){
-			std::print("Domain Amplification: [{}] | CE Reinforcement: [{}]",
+			std::print("Domain Amp [{}] | Reinforcement [{}]",
 				crs->GetDAstatus(), crs->GetReinforcementStatus());
 		}
 	}
@@ -78,25 +78,25 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 	if (s->IsaCurseUser()) {
 		auto sorcerer = static_cast<Sorcerer*>(s);
 		if (sorcerer->GetDomain() != nullptr) {
-			std::print("Domain: [{}] [{}]   ",
+			std::print("Domain [{}]:[{}] | ",
 				sorcerer->GetDomain()->GetDomainName(),
 				sorcerer->GetDomainStatus());
 
 		}
 		if (sorcerer->GetCounterDomain() != nullptr) {
-			std::print("Counter: {} [{}]   ",
+			std::print("Counter [{}]:[{}] | ",
 				sorcerer->GetCounterDomain()->GetDomainName(),
 				sorcerer->GetCounterStatus());
 		}
 		if (sorcerer->GetTechnique() != nullptr) {
-			std::print("Technique: [{}] [{}] [{}]",
+			std::print("Technique [{}]:[{}]-[{}]",
 				sorcerer->GetTechnique()->GetTechniqueName(),
 				sorcerer->GetTechnique()->GetStringStatus(),
 				sorcerer->GetTechnique()->GetStringChantLevel());
 		}
 	}
 	if (!s->GetCursedTools().empty() || s->GetTool() != nullptr) {
-		std::print("Inventory: ");
+		std::print("Inventory ");
 		if (s->GetCursedTools().empty()) {
 			std::println("[{}Empty{}]",Color::DimGray,Color::Clear);
 		}
