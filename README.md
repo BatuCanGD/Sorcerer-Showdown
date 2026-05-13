@@ -5,7 +5,7 @@
 
 # ⚔️ Sorcerer Showdown
 
-A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++23**. Fight as iconic sorcerers — or build your own custom characters, cursed techniques, and domains.
+A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++23**. Fight as iconic sorcerers or build your own custom characters, cursed techniques, and domains.
 
 ---
 
@@ -64,7 +64,7 @@ CMake sets the project root as the include base, so all `#include` paths in sour
 SorcererShowdown/
 ├── CMakeLists.txt
 ├── json.hpp                  ← auto-downloaded if missing
-├── characters.json           ← optional, copied to build dir
+├── characters.json           ← optional, copied to build directory
 └── code/
     ├── header/               ← all #includes are relative to the project root, not this folder
     │   ├── std.h
@@ -118,7 +118,7 @@ public:
     MyCharacter();
     std::unique_ptr<Character> Clone() const override;
 
-    // override this for custom AI — omit it to use one of the generic brains instead
+    // override this for custom AI or omit it to use one of the generic brains instead
     void OnCharacterTurn(Character* target, Battlefield& bf) override;
 };
 ```
@@ -169,7 +169,6 @@ void MyCharacter::OnCharacterTurn(Character* target, Battlefield& bf) {
 #include "code/header/CharacterCreator/AI/Aggressive.h" // or Reactive / Randomized
 
 MyCharacter::MyCharacter() : Sorcerer(700.0, 3000.0, 100.0) {
-    // ...stats...
     this->SetBrain(std::make_unique<Aggressive>());
 }
 ```
@@ -240,17 +239,17 @@ void MyTechnique::TechniqueMenu(CurseUser* user, Character* target, Battlefield&
     }
     std::println("1 - Use My Ability");
     std::print("=> ");
-    if (GetValidInput() == 1) UseMyAbility(user, target); // GetValidInput() is from Utils.h — reads and returns a validated integer
+    if (GetValidInput() == 1) UseMyAbility(user, target); // GetValidInput() is from Utils.h, it reads and returns a validated integer
 }
 
-// AI path — called automatically each turn
+// AI path - called automatically each turn
 bool MyTechnique::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf) {
     UseMyAbility(user, target);
     return true;
 }
 
 // Optional: advance chant level each call (Zero → One → Two → Three → Four)
-// GetChantPower() returns 1.0 + (chant_level * 0.50) — use as a damage multiplier
+// GetChantPower() returns 1.0 + (chant_level * 0.50) use as a damage multiplier
 void MyTechnique::Chant() {
     if (chant == ChantLevel::Zero) {
         std::println("\"First verse...\"");
@@ -275,7 +274,7 @@ void MyTechnique::TechniqueSetting(CurseUser* user, Battlefield& bf) {
 | `DomainBoost` | 2× | Black Flash lands, or domain activates |
 | `BurntOut` | 0.35× | Domain deactivates |
 
-Check with `Usable()`, `Boosted()`, `BurntOut()`. The base `Set(Status)` propagates status — override it if you need to forward it to sub-techniques (see `Copy::Set` for an example).
+Check with `Usable()`, `Boosted()`, `BurntOut()`. The base `Set(Status)` propagates status, override it if you need to forward it to sub-techniques (see `Copy::Set` for an example).
 
 Register by adding to `GetTechniqueByName` in `Creator.cpp` for JSON support.
 
@@ -316,12 +315,9 @@ std::unique_ptr<Domain> MyDomain::Clone() const {
 }
 
 void MyDomain::OnSureHit(CurseUser& user, Character& target) {
-    // CheckDomainSurehit handles: counter-domain protection, Heavenly Restriction
-    // immunity (HitsCurseUsers only), and clash suppression — returns true to skip
-    if (CheckDomainSurehit(target)) return;
-
-    // DomainRangeMult() = current_range / base_range — degrades as barrier is damaged
-    // DamageBypass skips CE reinforcement reduction
+    // IsSurehitBlocked handles: counter-domain protection and/or Heavenly Restricted users based on the type of domain surehit
+    if (IsSurehitBlocked(target)) return;
+    // DamageBypass skips over techniques that block damage like infinity
     target.DamageBypass(surehit_damage * DomainRangeMult());
     std::println("{} is struck inside {}!", target.GetNameWithID(), GetDomainName());
 }
@@ -399,9 +395,9 @@ cursed_tool = std::make_unique<MyTool>();               // equipped at battle st
 
 ## 2. JSON Modding
 
-Drop a file named `characters.json` next to the executable and the game will offer to load it at startup. JSON characters support all existing techniques, domains, tools, and shikigami but use one of the three generic AI brains — they won't tactically chain abilities the way hand-coded characters do.
+Drop a file named `characters.json` next to the executable and the game will offer to load it at startup. JSON characters support all existing techniques, domains, tools, and shikigami but since you use one of the three generic AI brains they won't tactically chain abilities the way hand-coded characters do.
 
-> **Current limitations:** JSON cannot define new techniques, domains, or tools — only assign existing ones by name.
+> **Current limitations:** JSON cannot define new techniques, domains, or tools. It can only assign existing ones by name.
 
 ### Supported field reference
 
