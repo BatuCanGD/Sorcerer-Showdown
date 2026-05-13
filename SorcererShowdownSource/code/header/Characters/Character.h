@@ -70,7 +70,6 @@ public:
 
 	void CursedToolChoice(size_t);
 	void EquipToolByName(const std::string& weaponname);
-	void SetCurrentTool(const std::unique_ptr<CursedTool>());
 
 	virtual void TickCharacterSpecialty();
 
