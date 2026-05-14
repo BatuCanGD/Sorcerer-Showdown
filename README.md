@@ -27,9 +27,9 @@ A Jujutsu Kaisen-inspired turn-based battle simulator written in **C++23**. Figh
 ### Requirements
 
 - C++23 compiler:
-  - **MSVC** — Visual Studio 2022 v17.6+ with `/std:c++latest`
-  - **Clang** — 18+ with libstdc++14 or libc++
-  - **GCC** — 14+
+  - **MSVC** Visual Studio 2022 v17.6+ with `/std:c++latest`
+  - **Clang** 18+ with libstdc++14 or libc++
+  - **GCC** 14+
 - CMake 3.28+
 - Internet access on first build (CMake auto-downloads `json.hpp` from the nlohmann/json repo)
 
@@ -129,8 +129,8 @@ public:
 #include "code/header/GameManagement/BattlefieldHeader.h"
 // include any technique/domain headers you use
 
-MyCharacter::MyCharacter() : Sorcerer(700.0, 3000.0, 100.0) {
-    // Sorcerer(hp, cursed_energy, ce_regen)
+MyCharacter::MyCharacter() : Sorcerer(700.0, 3000.0, 100.0) { // can be Sorcerer/PhysicallyGifted/CursedSpirit
+    // Sorcerer inherits from CurseUser(hp, cursed_energy, ce_regen)
     technique          = std::make_unique<MyTechnique>();
     domain             = std::make_unique<MyDomain>();
     black_flash_chance = 10;
@@ -139,7 +139,9 @@ MyCharacter::MyCharacter() : Sorcerer(700.0, 3000.0, 100.0) {
     name_color         = "\033[36m";
 
     // optional RCT setup (Sorcerer only)
-    this->SetRCTProficiency("Adept"); // None / Crude / Adept / Expert / Absolute
+    rct_skill = RCTProficiency::Expert; // None / Crude / Adept / Expert / Absolute
+    // optional passive regen (Cursed Spirit only)
+    passive_health_regen = 40.0;
 }
 
 std::unique_ptr<Character> MyCharacter::Clone() const {
@@ -147,9 +149,9 @@ std::unique_ptr<Character> MyCharacter::Clone() const {
 }
 
 void MyCharacter::OnCharacterTurn(Character* target, Battlefield& bf) {
-    // full control over AI behaviour — write whatever logic you want here
+    // full control over AI behaviour, write whatever logic you want here.
 
-    // standard pattern: RCT → technique → attack
+    // standard pattern: RCT -> technique -> attack
     if (!this->HPMoreThanMax(0.50) && this->CEMoreThanMax(0.20)) {
         this->BoostRCT();
     } else {
@@ -164,7 +166,7 @@ void MyCharacter::OnCharacterTurn(Character* target, Battlefield& bf) {
 }
 ```
 
-**Don't want custom AI?** Skip `OnCharacterTurn` entirely and assign one of the three generic brains in the constructor instead — the base `Character::OnCharacterTurn` will dispatch to it automatically:
+**Don't want custom AI?** Skip `OnCharacterTurn` entirely and assign one of the three generic brains in the constructor instead, the base `Character::OnCharacterTurn` will dispatch to it automatically:
 ```cpp
 #include "code/header/CharacterCreator/AI/Aggressive.h" // or Reactive / Randomized
 
@@ -182,7 +184,7 @@ bf.characterlist.push_back(std::make_unique<MyCharacter>());
 
 ### ➕ New Cursed Technique
 
-`Technique` has two **pure virtual** methods you must implement — `TechniqueMenu` (player input path) and `AutoTechniqueUse` (AI path) — plus `Clone`. `Chant` and `TechniqueSetting` have default no-op implementations and are optional.
+`Technique` has two **pure virtual** methods you must implement. `TechniqueMenu` (player input path) and `AutoTechniqueUse` (AI path), plus `Clone`. `Chant` and `TechniqueSetting` have default no-op implementations and are optional.
 
 **MyTechnique.h:**
 ```cpp
@@ -405,15 +407,15 @@ Drop a file named `characters.json` next to the executable and the game will off
 |---|---|---|
 | `name` | string | Display name |
 | `type` | string | `"Sorcerer"`, `"Cursed Spirit"`, or `"Physically Gifted"` |
-| `ai_type` | string | `"Aggressive"`, `"Reactive"`, or `"Randomized"` — **required** for the character to act |
+| `ai_type` | string | `"Aggressive"`, `"Reactive"`, or `"Randomized"` **required** for the character to act |
 | `base_attack_damage` | float | Damage dealt by unarmed attacks without techniques or tools |
 | `blackflash_chance` | int | % chance of Black Flash on a standard attack |
 | `hp` | float | Max health |
 | `ce` | float | Max cursed energy (ignored for `"Physically Gifted"`) |
 | `regen` | float | CE regen per turn (ignored for `"Physically Gifted"`) |
-| `strength` | float | Strength stat — **required** for `"Physically Gifted"`, ignored otherwise |
-| `passive_health_regen` | float | HP regained per turn — `"Cursed Spirit"` only |
-| `six_eyes` | bool | Six Eyes CE efficiency — reduces CE costs to ~30% (Sorcerer only) |
+| `strength` | float | Strength stat **required** for `"Physically Gifted"`, ignored otherwise |
+| `passive_health_regen` | float | HP regained per turn `"Cursed Spirit"` only |
+| `six_eyes` | bool | Six Eyes CE efficiency  reduces CE costs to ~30% (Sorcerer only) |
 | `rct_proficiency` | string | `"None"`, `"Crude"`, `"Adept"`, `"Expert"`, or `"Absolute"` |
 | `domain_limit` | int | Max domain activations before overuse penalty kicks in (default 5) |
 | `technique` | string | Assigned cursed technique |
