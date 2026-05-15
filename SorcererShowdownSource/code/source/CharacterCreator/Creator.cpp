@@ -5,6 +5,7 @@
 #include "code/header/CharacterCreator/AI/Brawler.h"
 #include "code/header/CharacterCreator/AI/Randomized.h"
 
+#include "code/header/GameManagement/Utils.h"
 #include "code/header/GameManagement/BattlefieldHeader.h"
 
 #include "code/header/Characters/Shikigami/Rika.h"
@@ -131,8 +132,7 @@ void CharacterCreator::LoadJsonCharacter(BattleCreator& bc) {
 
     if (!file.is_open()) {
         std::cerr << "Could not find characters.json!" << '\n';
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cin.get();
+        Utilities::WaitForInput();
         return;
     }
     nlohmann::json data;
@@ -141,6 +141,7 @@ void CharacterCreator::LoadJsonCharacter(BattleCreator& bc) {
     }
     catch (const nlohmann::json::parse_error& e) {
         std::cerr << "JSON Parse Error: " << e.what() << '\n';
+        Utilities::WaitForInput();
         return;
     }
 
