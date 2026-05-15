@@ -204,7 +204,7 @@ void PlayerManager::GetPlayerTools(Character& s) {
 
 	std::print("\n=> ");
 	int choice = Utilities::GetValidInput();
-	s.CursedToolChoice(choice);
+	s.CursedToolChoice(static_cast<size_t>(choice));
 }
 
 void PlayerManager::PlayerRCTusage(Character& s) {

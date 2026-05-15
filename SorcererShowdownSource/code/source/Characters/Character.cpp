@@ -194,7 +194,7 @@ void Character::CursedToolChoice(size_t choice) {
 			inventory_curse.push_back(std::move(cursed_tool));
 		}
 		cursed_tool = std::move(inventory_curse[inv_index]);
-		inventory_curse.erase(inventory_curse.begin() + inv_index);
+		inventory_curse.erase(inventory_curse.begin() + static_cast<std::ptrdiff_t>(inv_index));
 
 		std::println("{}{} equipped {}!{}", Utilities::Color::Cyan, this->GetNameWithID(), cursed_tool->GetName(), Utilities::Color::Clear);
 	}
@@ -224,9 +224,9 @@ CursedTool* Character::GetTool() const {
 
 void Character::Taunt(Character* taunted) const {
     if (!taunted) return;
-    const double healthy = this->HPMoreThanMax(0.70);
-    const double injured = this->HPMoreThanMax(0.50);
-    const double critical = this->HPMoreThanMax(0.25);
+    const bool healthy = this->HPMoreThanMax(0.70);
+    const bool injured = this->HPMoreThanMax(0.50);
+    const bool critical = this->HPMoreThanMax(0.25);
 	std::string target = taunted->GetNameWithID();
     int type = Utilities::GetRandomNumber(1, 4);
 

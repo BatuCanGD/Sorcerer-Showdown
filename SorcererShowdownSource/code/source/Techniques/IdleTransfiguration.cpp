@@ -43,7 +43,7 @@ void IdleTransfiguration::TechniqueMenu(CurseUser* user, Character* target, Batt
     
 
     std::print("=> ");
-    size_t choice = Utilities::GetValidInput();
+    int choice = Utilities::GetValidInput();
     switch (choice) {
     case 1:
         UseTransfiguration(user, target);

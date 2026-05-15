@@ -122,10 +122,10 @@ void Copy::TechniqueSetting(CurseUser* user, Battlefield& bf) {
         }
 
         std::print("=> ");
-        size_t tdex = Utilities::GetValidInput();
-        if (tdex < bf.battlefield.size() && bf.battlefield[tdex].get() != user && bf.battlefield[tdex]->GetCharacterHealth() > 0) {
-            if (bf.battlefield[tdex].get()->IsaCurseUser()) {
-                auto cr = static_cast<CurseUser*>(bf.battlefield[tdex].get());
+        int tdex = Utilities::GetValidInput();
+        if (static_cast<size_t>(tdex) < bf.battlefield.size() && bf.battlefield[static_cast<size_t>(tdex)].get() != user && bf.battlefield[static_cast<size_t>(tdex)]->GetCharacterHealth() > 0) {
+            if (bf.battlefield[static_cast<size_t>(tdex)].get()->IsaCurseUser()) {
+                auto cr = static_cast<CurseUser*>(bf.battlefield[static_cast<size_t>(tdex)].get());
                 this->CopyFrom(cr);
             }
         }
@@ -140,8 +140,8 @@ void Copy::TechniqueSetting(CurseUser* user, Battlefield& bf) {
             break;
         }
         std::println("Enter index: ");
-        size_t dex = Utilities::GetValidInput();
-        SwitchCopy(dex);
+        int dex = Utilities::GetValidInput();
+        SwitchCopy(static_cast<size_t>(dex));
         break;
     }
     case 3:

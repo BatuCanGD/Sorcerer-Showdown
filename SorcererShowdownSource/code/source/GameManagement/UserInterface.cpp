@@ -178,7 +178,7 @@ void UserInterface::DisplaySorcererStatus(Character* s) {
 			? "11 - Reinforcement Level"
 			: std::format("11 - Reinforcement [{}Locked{}]", Utilities::Color::DimGray, Utilities::Color::Clear);
 
-		int col_width = 35;
+		size_t col_width = 35;
 		std::println("  {} | {} | {}",
 			Utilities::StringPad(techniqued, col_width),
 			Utilities::StringPad(fightd, col_width),

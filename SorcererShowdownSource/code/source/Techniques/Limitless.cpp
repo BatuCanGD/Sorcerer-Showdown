@@ -134,7 +134,7 @@ void Limitless::TechniqueMenu(CurseUser* user, Character* target, Battlefield& b
     }
 
     std::print("=> ");
-    size_t choice = Utilities::GetValidInput();
+    int choice = Utilities::GetValidInput();
     if (choice == 4){
         if (can_nuke){
             UseUnlimitedHollowPurple(user, bf);
