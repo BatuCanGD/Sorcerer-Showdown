@@ -9,7 +9,7 @@ public:
 	bool GameEndCheck(Battlefield&, bool spectator_mode);
 	bool SetupBattlefield(Battlefield&, BattleCreator&);
 	static void loadSetup(Battlefield&, BattleCreator&, bool);
-	bool SkipTurnFullyCheck();
+	std::pair<bool, bool> SkipTurnFullyCheck();
 	void SpawnNewFighters(Battlefield&);
 	bool ManageEndOfTurn(Battlefield&, bool spectator_mode);
 	void DomainCheckAndPerform(Battlefield&);

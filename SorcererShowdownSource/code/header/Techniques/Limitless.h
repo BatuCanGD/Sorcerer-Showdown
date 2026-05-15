@@ -12,10 +12,10 @@ protected:
 	int blue_used_amount = 0;
 	int red_used_amount = 0;
 	int purple_used_amount = 0;
-	static constexpr double blue_output = 65.0;
-	static constexpr double red_output = 75.0;
-	static constexpr double purple_output = 150.0;
-	static constexpr double unlpurple_output = 1750.0;
+	static constexpr double blue_output = 105.0;
+	static constexpr double red_output = 145.0;
+	static constexpr double purple_output = 250.0;
+	static constexpr double unlpurple_output = 2000.0;
 	bool up_used = false;
 public:
 	Limitless();
