@@ -196,6 +196,7 @@ static std::unique_ptr<Specials> GetSpecialByName(const std::string& name) {
 static std::unique_ptr<CursedTool> GetToolByName(const std::string& name) {
     if (name == "The Inverted Spear of Heaven") return std::make_unique<InvertedSpearofHeaven>();
     if (name == "Playful Cloud") return std::make_unique<PlayfulCloud>();
+    if (name == "Split Soul Katana") return std::make_unique<SplitSoulKatana>();
     if (name == "Katana") return std::make_unique<Katana>();
     return nullptr;
 }
