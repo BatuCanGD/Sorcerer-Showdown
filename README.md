@@ -524,7 +524,7 @@ SorcererShowdown/
 │   ├── CharacterAI         — CharacterBrain: Aggressive / Reactive / Randomized
 │   ├── BattleManager       — Game loop, domain resolution, turn management
 │   ├── PlayerManager       — Player input routing and action handling
-│   └── UIDisplay           — Status panels and action menus
+│   └── UserInterface       — Status panels and action menus
 ├── Characters              — Gojo, Sukuna, Yuta, Hakari, Mahito, Toji, TransfiguredHuman
 ├── Techniques              — Limitless, Shrine, Copy, IdleTransfiguration, PrivatePureLoveTrain
 ├── Domains                 — InfiniteVoid, MalevolentShrine, AuthenticMutualLove,
