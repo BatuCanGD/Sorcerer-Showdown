@@ -162,7 +162,7 @@ bool Copy::AutoTechniqueUse(CurseUser* user, Character* target, Battlefield& bf)
         auto crs = static_cast<CurseUser*>(target);
         if (!crs->GetTechnique() || 
         user->GetCharacterCE() < 500.0 || 
-        user->GetTechnique()->IsCopy() || 
+        crs->GetTechnique()->IsCopy() || 
         copied_techniques.size() >= max_copies) 
         {
             dont_copy = true;
