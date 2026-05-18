@@ -6,10 +6,10 @@
 
 double CursedTool::GetCalculatedStrength(Character* user)  const {
 	if (user->IsPhysicallyGifted()) { 
-		return base_damage + (static_cast<PhysicallyGifted*>(user)->GetStrengthDamage() * 1.5);
+		return base_damage + (static_cast<PhysicallyGifted*>(user)->GetStrengthDamage() * 2.5);
 	}
 	else {
-		return base_damage + (static_cast<CurseUser*>(user)->GetCharacterCE() / 10.0);
+		return base_damage + ((std::sqrt(static_cast<CurseUser*>(user)->GetCharacterCE()) * 2.5) * 0.67);
 	}
 }
 
