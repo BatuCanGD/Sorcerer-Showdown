@@ -28,7 +28,7 @@ void IdleTransfiguration::SummonTransfiguredHumans(Battlefield& bf) {
         bf.spawn_queue.push_back(std::make_unique<TransfiguredHuman>());
         transfigured_human_count--;
     }
-    std::println("a Transfigured human has been put into the battlefield!", c);
+    std::println("a Transfigured human has been put into the battlefield!");
 }
 
 void IdleTransfiguration::TechniqueMenu(CurseUser* user, Character* target, Battlefield& bf) {
