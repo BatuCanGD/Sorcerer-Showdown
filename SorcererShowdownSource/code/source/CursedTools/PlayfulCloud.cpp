@@ -7,10 +7,18 @@
 PlayfulCloud::PlayfulCloud() {
 	name = "Playful Cloud";
 	color = "\033[31m";
-	base_damage = 65.0;
+	base_damage = 35.0;
+}
+double PlayfulCloud::GetCalculatedStrength(Character* user) const {
+	if (user->IsPhysicallyGifted()) {
+		return base_damage + (static_cast<PhysicallyGifted*>(user)->GetStrengthDamage() * 2.5);
+	}
+	else {
+		return base_damage; 
+	}
 }
 void PlayfulCloud::UseTool(Character* user, Character* target) {
-	target->Damage(GetCalculatedStrength(user));
+	target->Damage(this->GetCalculatedStrength(user));
 	std::println("{} {}attacks{} {} with {}", user->GetNameWithID(), Utilities::Color::Red, Utilities::Color::Clear, target->GetNameWithID(), this->GetName());
 }
 
