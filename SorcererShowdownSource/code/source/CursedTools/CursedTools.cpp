@@ -6,18 +6,18 @@
 double CursedTool::GetCalculatedStrength(Character* user)  const {
 	if (user->IsPhysicallyGifted()) {
 		auto pg = static_cast<PhysicallyGifted*>(user);
-		return base_tool_damage + (pg->GetStrengthDamage() * 1.25);
+		return 10.0 + (pg->GetStrengthDamage() * 1.25);
 	}
 	else {
-		return base_tool_damage + (user->GetCharacterMaxHealth() / 10.0);
+		return 10.0 + (user->GetCharacterMaxHealth() / 10.0);
 	}
 }
 
 std::string CursedTool::GetName() const {
-	return std::format("{}{}{}", tool_color, tool_name, Utilities::Color::Clear);
+	return std::format("{}{}{}", color, name, Utilities::Color::Clear);
 }
 std::string CursedTool::GetSimpleName()const {
-	return tool_name;
+	return name;
 }
 
 bool CursedTool::IsAntiTechniqueWeapon() const {

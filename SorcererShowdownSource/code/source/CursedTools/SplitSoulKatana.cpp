@@ -4,8 +4,8 @@
 #include "code/header/GameManagement/Utils.h"
 
 SplitSoulKatana::SplitSoulKatana() {
-	tool_name = "Split Soul Katana";
-	tool_color = "\033[35m";
+	name = "Split Soul Katana";
+	color = "\033[35m";
 }
 
 void SplitSoulKatana::UseTool(Character* user, Character* target) {

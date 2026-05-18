@@ -5,8 +5,8 @@
 
 
 PlayfulCloud::PlayfulCloud() {
-	tool_name = "Playful Cloud";
-	tool_color = "\033[31m";
+	name = "Playful Cloud";
+	color = "\033[31m";
 }
 void PlayfulCloud::UseTool(Character* user, Character* target) {
 	double dmg = GetCalculatedStrength(user);
